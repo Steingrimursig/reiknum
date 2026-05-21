@@ -339,7 +339,31 @@ async function loadData() {
   document.getElementById('studentArea').innerHTML =
     '<div style="color:#94a3b8;padding:20px;">⏳ Hleð gögnum...</div>'
 
-  const snap = await get(ref(db, 'bekkir/' + bekkur + '/nemendur'))
+  let snap
+  try {
+    snap = await get(ref(db, 'bekkir/' + bekkur + '/nemendur'))
+  } catch(err) {
+    document.getElementById('studentArea').innerHTML =
+      '<div style="background:#fff1f2;border-radius:12px;padding:16px 20px;color:#e11d48;font-weight:700;">'
+      + '⚠️ Heimild vantar. Farðu á Firebase → Realtime Database → Rules og settu inn:'
+      + '<pre style="background:#1e293b;color:#a5f3fc;border-radius:8px;padding:12px;margin-top:10px;font-size:12px;overflow:auto;">'
+      + '{
+  "rules": {
+    "bekkir": {
+      "$bekkur": {
+        ".read": true,
+        "nemendur": {
+          "$nemandi": {
+            ".write": true
+          }
+        }
+      }
+    }
+  }
+}'
+      + '</pre></div>'
+    return
+  }
   if (!snap.exists()) {
     document.getElementById('studentArea').innerHTML =
       '<div style="color:#94a3b8;padding:20px;">Engir nemendur fundust í bekk <strong>' + bekkur + '</strong>. Athugaðu bekkjarkóðann.</div>'
