@@ -238,22 +238,23 @@ body {
     <h1>📊 Kennarasíða</h1>
     <p>Yfirlit yfir framgang nemenda</p>
   </div>
-  <button class="refresh-btn" onclick="loadData()">🔄 Uppfæra</button>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <input id="bekkurInput" placeholder="Bekkjarkóði (t.d. 6ss)" autocomplete="off"
+      style="padding:9px 16px;border-radius:10px;border:2px solid rgba(255,255,255,0.3);
+      background:rgba(255,255,255,0.15);color:white;font-size:15px;font-weight:700;
+      font-family:Nunito,sans-serif;width:220px;outline:none;"
+      onfocus="this.style.background='rgba(255,255,255,0.25)'"
+      onblur="this.style.background='rgba(255,255,255,0.15)'">
+    <button id="loadBtn" class="refresh-btn" style="white-space:nowrap;">🔍 Sækja nemendur</button>
+  </div>
 </div>
 
 <div class="container">
 
   <div class="summary-grid" id="summaryGrid"></div>
 
-  <div style="background:white;border-radius:16px;padding:22px 24px;box-shadow:var(--shadow);margin-bottom:28px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div class="section-title" style="margin-bottom:0;">📊 Hugtakayfirlit bekkjarins</div>
-      <div style="font-size:12px;color:var(--slate-light);font-weight:700;">Raðað eftir erfiðleika — verstu efst</div>
-    </div>
-    <div id="topicArea"></div>
-  </div>
+<div id="topicArea"></div>
 
-  <div id="topicArea"></div>
   <div class="section-title">Nemendur</div>
   <div id="studentArea"></div>
 
@@ -448,11 +449,19 @@ async function loadData() {
 
 // Keyra þegar síða hleðst
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('loadBtn').addEventListener('click', loadData)
-  document.getElementById('bekkurInput').addEventListener('keydown', e => {
+  const btn = document.getElementById('loadBtn')
+  const inp = document.getElementById('bekkurInput')
+  if (btn) btn.addEventListener('click', loadData)
+  if (inp) inp.addEventListener('keydown', e => {
     if (e.key === 'Enter') loadData()
   })
+  // Placeholder sýnt strax
+  document.getElementById('studentArea').innerHTML =
+    '<div style="color:#94a3b8;padding:20px;text-align:center;">Sláðu inn bekkjarkóðann og smelltu 🔍</div>'
 })
+
+// Gera deleteStudent aðgengilegt utan module
+window.deleteStudent = window.deleteStudent || function() {}
 </script>
 </body>
 </html>
