@@ -5,6 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stærðfræði</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"
+  import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCEyFVVA4iHSqVeo_GYtM4H8nlO89KiXyU",
+    authDomain: "reiknir-59545.firebaseapp.com",
+    databaseURL: "https://reiknir-59545-default-rtdb.firebaseio.com",
+    projectId: "reiknir-59545",
+    storageBucket: "reiknir-59545.firebasestorage.app",
+    messagingSenderId: "277838494408",
+    appId: "1:277838494408:web:ffec8f0995c72103a843fd"
+  }
+
+  const app = initializeApp(firebaseConfig)
+  const db = getDatabase(app)
+
+  // Gera Firebase aðgengilegt á window
+  window.firebaseDB = db
+  window.firebaseRef = ref
+  window.firebaseSet = set
+  window.firebaseGet = get
+  window.firebaseOnValue = onValue
+  window.firebaseReady = true
+  window.dispatchEvent(new Event('firebaseReady'))
+</script>
+
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1009,7 +1036,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
     <p>Skrifaðu nafn og bekkjarnúmer til að byrja</p>
     <input id="studentName" placeholder="Nafn nemanda" autocomplete="off"
       onkeydown="if(event.key==='Enter')document.getElementById('studentPass').focus()">
-    <input id="studentPass" placeholder="Bekkjarnúmer (t.d. 6b)" autocomplete="off" style="margin-top:10px;"
+    <input id="studentPass" placeholder="Bekkjarkóði (t.d. 6b)" autocomplete="off" style="margin-top:10px;"
       onkeydown="if(event.key==='Enter')start()">
     <div id="loginMsg" style="font-size:13px;color:#e11d48;margin-top:8px;min-height:18px;"></div>
     <button class="btn-primary" onclick="start()">Byrja →</button>
@@ -1838,36 +1865,70 @@ const engine = createEngine(PROBLEM_SETS)
 
 /* ===== VISTA OG HLAÐA FRAMGANGI ===== */
 function getSaveKey(name, pass) {
-  return 'student-' + name.toLowerCase().trim() + '-' + pass.toLowerCase().trim()
+  // Firebase lyklar mega ekki innihalda . $ # [ ] /
+  return (name + '_' + pass).toLowerCase().trim()
+    .replace(/[.#$\[\]/]/g, '_')
+    .replace(/\s+/g, '_')
+}
+
+function fbPath(name, pass) {
+  const bekkur = pass.toLowerCase().trim().replace(/[.#$\[\]/\s]/g, '_')
+  const nafn = name.toLowerCase().trim().replace(/[.#$\[\]/\s]/g, '_')
+  return 'bekkir/' + bekkur + '/nemendur/' + nafn
 }
 
 function saveState(name, pass) {
   if (!name || !pass) return
   const st = engine.getState()
-  const data = {
-    name, pass,
-    set: st.set,
-    correct: st.correct,
-    timestamp: Date.now()
+  const data = { name, pass, set: st.set, correct: st.correct, timestamp: Date.now() }
+  // Vista í Firebase ef tengt, annars localStorage
+  if (window.firebaseReady) {
+    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/state')
+    window.firebaseSet(r, data)
+  } else {
+    localStorage.setItem('student-' + getSaveKey(name, pass), JSON.stringify(data))
   }
-  localStorage.setItem(getSaveKey(name, pass), JSON.stringify(data))
 }
 
-function loadState(name, pass) {
-  const raw = localStorage.getItem(getSaveKey(name, pass))
-  if (!raw) return null
-  try { return JSON.parse(raw) } catch(e) { return null }
+function loadState(name, pass, callback) {
+  if (window.firebaseReady) {
+    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/state')
+    window.firebaseGet(r).then(snap => {
+      callback(snap.exists() ? snap.val() : null)
+    }).catch(() => callback(null))
+  } else {
+    const raw = localStorage.getItem('student-' + getSaveKey(name, pass))
+    try { callback(raw ? JSON.parse(raw) : null) } catch(e) { callback(null) }
+  }
 }
+
+let progressBuffer = []
+let progressTimer = null
 
 function saveProgress(name, status, topic) {
   if (!name) return
   const pass = document.getElementById('studentPass')?.value || ''
-  const key = "progress-" + name
-  let progress = JSON.parse(localStorage.getItem(key)) || []
-  progress.push({ timestamp: Date.now(), status, topic: topic || null })
-  localStorage.setItem(key, JSON.stringify(progress))
-  saveState(name, pass)
-  // Fylgjast með hugtakaréttum svörum fyrir merki
+  progressBuffer.push({ timestamp: Date.now(), status, topic: topic || null })
+  // Debounce - vista á Firebase á 2 sek fresti til að spara lestur
+  clearTimeout(progressTimer)
+  progressTimer = setTimeout(() => {
+    const toSave = [...progressBuffer]
+    if (window.firebaseReady) {
+      const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/progress')
+      window.firebaseGet(r).then(snap => {
+        let existing = snap.exists() ? snap.val() : []
+        if (!Array.isArray(existing)) existing = []
+        const updated = [...existing, ...toSave].slice(-100) // geyma síðustu 100
+        window.firebaseSet(r, updated)
+      })
+    } else {
+      const key = 'progress-' + name
+      let existing = JSON.parse(localStorage.getItem(key)) || []
+      localStorage.setItem(key, JSON.stringify([...existing, ...toSave].slice(-100)))
+    }
+    progressBuffer = []
+    saveState(name, pass)
+  }, 2000)
   if (status === 'correct' && topic) trackTopicCorrect(topic)
 }
 
@@ -1900,35 +1961,40 @@ function start() {
   if (!pass) { msg.textContent = 'Skrifaðu bekkjarnúmerið þitt'; return }
   msg.textContent = ''
 
-  // Hlaða vistuðum framgangi ef til
-  const saved = loadState(name, pass)
-  const st = engine.getState()
+  // Sýna hleðsluboð
+  msg.textContent = '⏳ Hleð...'
+  msg.style.color = '#64748b'
 
-  if (saved) {
-    st.set = saved.set
-    st.correct = saved.correct
-    st.used = []
-    st.repeatQueue = []
-    st.current = null
-  }
+  // Hlaða vistuðum framgangi úr Firebase
+  loadState(name, pass, function(saved) {
+    const st = engine.getState()
+    if (saved) {
+      st.set = saved.set
+      st.correct = saved.correct
+      st.used = []
+      st.repeatQueue = []
+      st.current = null
+    }
 
-  document.getElementById('login').style.display = 'none'
-  document.getElementById('app').style.display = 'block'
-  document.getElementById('studentDisplay').textContent = '👤 ' + name
-  document.getElementById('riddleQuestion').textContent = RIDDLES[0].question
-  document.getElementById('riddleHint').textContent = '💡 Vísbending: ' + RIDDLES[0].hint
-  initBadges(name, pass)
-  updateProgress(st.correct, st.set)
+    document.getElementById('login').style.display = 'none'
+    document.getElementById('app').style.display = 'block'
+    document.getElementById('studentDisplay').textContent = '👤 ' + name
+    document.getElementById('riddleQuestion').textContent = RIDDLES[0].question
+    document.getElementById('riddleHint').textContent = '💡 Vísbending: ' + RIDDLES[0].hint
+    initBadges(name, pass)
+    updateProgress(st.correct, st.set)
 
-  if (saved) {
-    const setName = PROBLEM_SETS[saved.set]?.name || ''
-    document.getElementById('feedback') && (document.getElementById('feedback').innerHTML =
-      `<div style="background:#f0fdf4;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px;">
-        ✅ Velkominn/n aftur, ${name}! Þú heldur áfram að klifra ${MOUNTAIN_THEME[Math.min(saved.set,4)]?.icon || ''} ${setName} — ${saved.correct} stjörnur.✨
-      </div>`)
-  }
+    if (saved) {
+      const setName = PROBLEM_SETS[saved.set]?.name || ''
+      document.getElementById('feedback') && (document.getElementById('feedback').innerHTML =
+        '<div style="background:#f0fdf4;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px;">'
+        + '✅ Velkominn/n aftur, ' + name + '! Þú heldur áfram að klifra '
+        + (MOUNTAIN_THEME[Math.min(saved.set,4)]?.icon || '') + ' ' + setName
+        + ' — ' + saved.correct + ' stjörnur. ✨</div>')
+    }
 
-  show()
+    show()
+  })
 }
 
 let lastTopicKey = null
@@ -3496,26 +3562,41 @@ const BADGE_DEFS = [
 let badgeState = {}   // { margfoldun: { topicCorrect: 0, earned: false, examUnlocked: false } }
 let examState = null  // núverandi próf
 
-function getBadgeStorage(name, pass) {
-  if (!name || !pass) return {}
-  const raw = localStorage.getItem('badges-' + getSaveKey(name, pass))
-  try { return raw ? JSON.parse(raw) : {} } catch(e) { return {} }
+function getBadgeStorage(name, pass, callback) {
+  if (!name || !pass) { if(callback) callback({}); return {} }
+  if (window.firebaseReady) {
+    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/badges')
+    window.firebaseGet(r).then(snap => {
+      if (callback) callback(snap.exists() ? snap.val() : {})
+    }).catch(() => { if(callback) callback({}) })
+  } else {
+    const raw = localStorage.getItem('badges-' + getSaveKey(name, pass))
+    const val = (() => { try { return raw ? JSON.parse(raw) : {} } catch(e) { return {} } })()
+    if (callback) callback(val)
+    return val
+  }
 }
 
 function saveBadgeStorage() {
   const name = document.getElementById('studentName').value
   const pass = document.getElementById('studentPass').value
   if (!name || !pass) return
-  localStorage.setItem('badges-' + getSaveKey(name, pass), JSON.stringify(badgeState))
+  if (window.firebaseReady) {
+    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/badges')
+    window.firebaseSet(r, badgeState)
+  } else {
+    localStorage.setItem('badges-' + getSaveKey(name, pass), JSON.stringify(badgeState))
+  }
 }
 
 function initBadges(name, pass) {
-  const saved = getBadgeStorage(name, pass)
-  badgeState = {}
-  BADGE_DEFS.forEach(b => {
-    badgeState[b.id] = saved[b.id] || { topicCorrect: 0, earned: false, examUnlocked: false }
+  getBadgeStorage(name, pass, function(saved) {
+    badgeState = {}
+    BADGE_DEFS.forEach(b => {
+      badgeState[b.id] = saved[b.id] || { topicCorrect: 0, earned: false, examUnlocked: false }
+    })
+    updateBadgeBtn()
   })
-  updateBadgeBtn()
 }
 
 function updateBadgeBtn() {
