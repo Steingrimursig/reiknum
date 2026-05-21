@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kennarasíða — Stærðfræði</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --indigo: #4f46e5;
+  --indigo-light: #6366f1;
+  --indigo-pale: #e0e7ff;
+  --teal: #0d9488;
+  --teal-light: #ccfbf1;
+  --amber: #f59e0b;
+  --amber-light: #fef3c7;
+  --rose: #e11d48;
+  --rose-light: #ffe4e6;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --slate: #1e293b;
+  --slate-mid: #475569;
+  --slate-light: #94a3b8;
+  --bg: #f1f5f9;
+  --white: #ffffff;
+  --radius: 18px;
+  --shadow: 0 8px 32px rgba(79,70,229,0.10);
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--slate);
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--indigo), var(--indigo-light));
+  color: white;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h1 { font-size: 22px; font-weight: 900; }
+.header p { font-size: 14px; opacity: 0.75; margin-top: 2px; }
+
+.refresh-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.refresh-btn:hover { background: rgba(255,255,255,0.33); }
+
+.container { padding: 28px 32px; }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.summary-card .label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slate-light);
+  margin-bottom: 8px;
+}
+
+.summary-card .value {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--slate);
+}
+
+.summary-card .value.green { color: var(--green); }
+.summary-card .value.rose { color: var(--rose); }
+.summary-card .value.indigo { color: var(--indigo); }
+
+.section-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--slate);
+  margin-bottom: 16px;
+}
+
+.empty-state {
+  background: white;
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  color: var(--slate-light);
+  font-size: 16px;
+}
+
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.student-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.student-card-header {
+  padding: 18px 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.student-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--indigo-pale);
+  color: var(--indigo);
+  font-size: 16px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.student-card-header h3 { font-size: 16px; font-weight: 800; }
+
+.level-pill {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--teal-light);
+  color: var(--teal);
+}
+
+.student-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 16px 20px;
+  gap: 8px;
+}
+
+.stat { text-align: center; }
+.stat .stat-val { font-size: 22px; font-weight: 900; }
+.stat .stat-val.green { color: var(--green); }
+.stat .stat-val.rose { color: var(--rose); }
+.stat .stat-label { font-size: 11px; color: var(--slate-light); font-weight: 700; margin-top: 2px; }
+
+.mini-bar {
+  height: 6px;
+  background: var(--bg);
+  margin: 0 20px 16px;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.mini-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--green), #22c55e);
+}
+
+.activity-row {
+  padding: 0 20px 16px;
+}
+
+.activity-label { font-size: 12px; font-weight: 700; color: var(--slate-light); margin-bottom: 6px; }
+
+.activity-dots {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.dot.correct { background: var(--green); }
+.dot.incorrect { background: var(--rose); }
+.dot.advance { background: var(--indigo); }
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--slate-light);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.15s;
+}
+.delete-btn:hover { color: var(--rose); background: var(--rose-light); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>📊 Kennarasíða</h1>
+    <p>Yfirlit yfir framgang nemenda</p>
+  </div>
+  <button class="refresh-btn" onclick="loadData()">🔄 Uppfæra</button>
+</div>
+
+<div class="container">
+
+  <div class="summary-grid" id="summaryGrid"></div>
+
+  <div style="background:white;border-radius:16px;padding:22px 24px;box-shadow:var(--shadow);margin-bottom:28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="section-title" style="margin-bottom:0;">📊 Hugtakayfirlit bekkjarins</div>
+      <div style="font-size:12px;color:var(--slate-light);font-weight:700;">Raðað eftir erfiðleika — verstu efst</div>
+    </div>
+    <div id="topicArea"></div>
+  </div>
+
+  <div class="section-title">Nemendur</div>
+  <div id="studentArea"></div>
+
+</div>
+
+<script>
+function getStudents() {
+  const students = []
+  const seen = new Set()
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    // Lesa bæði progress- og student- lykla
+    if (key.startsWith('progress-')) {
+      const name = key.replace('progress-', '')
+      if (!seen.has(name)) {
+        seen.add(name)
+        const data = JSON.parse(localStorage.getItem(key)) || []
+        // Leita að vistuðri stöðu fyrir þennan nemanda
+        let savedState = null
+        for (let j = 0; j < localStorage.length; j++) {
+          const k = localStorage.key(j)
+          if (k.startsWith('student-') && k.includes(name.toLowerCase())) {
+            try { savedState = JSON.parse(localStorage.getItem(k)) } catch(e) {}
+            break
+          }
+        }
+        students.push({ name, data, savedState })
+      }
+    }
+  }
+  return students
+}
+
+function getSetName(setIndex) {
+  const names = ['Dæmasafn 1', 'Dæmasafn 2', 'Dæmasafn 3', 'Dæmasafn 4', 'Dæmasafn 5']
+  return names[setIndex] || 'Dæmasafn ' + (setIndex + 1)
+}
+
+function calcStats(data) {
+  const correct = data.filter(d => d.status === 'correct').length
+  const incorrect = data.filter(d => d.status === 'incorrect').length
+  const advances = data.filter(d => d.status === 'advance').length
+  const total = correct + incorrect
+  const pct = total > 0 ? Math.round((correct / total) * 100) : 0
+  const level = advances + 1
+  return { correct, incorrect, advances, total, pct, level }
+}
+
+function deleteStudent(name) {
+  if (!confirm('Eyða öllum gögnum fyrir ' + name + '?')) return
+  // Eyða progress lykli
+  localStorage.removeItem('progress-' + name)
+  // Eyða öllum student- og badges- lyklum fyrir þennan nemanda
+  const toRemove = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i)
+    if ((k.startsWith('student-') || k.startsWith('badges-')) && k.includes(name.toLowerCase())) {
+      toRemove.push(k)
+    }
+  }
+  toRemove.forEach(k => localStorage.removeItem(k))
+  loadData()
+}
+
+function calcTopics(students) {
+  const topicMap = {}
+  students.forEach(st => {
+    st.data.forEach(d => {
+      if (!d.topic) return
+      if (!topicMap[d.topic]) topicMap[d.topic] = { correct: 0, incorrect: 0 }
+      if (d.status === 'correct') topicMap[d.topic].correct++
+      if (d.status === 'incorrect') topicMap[d.topic].incorrect++
+    })
+  })
+  return Object.entries(topicMap)
+    .map(([key, val]) => {
+      const total = val.correct + val.incorrect
+      const pct = total > 0 ? Math.round((val.correct / total) * 100) : 0
+      return { key, ...val, total, pct }
+    })
+    .filter(t => t.total >= 2)
+    .sort((a, b) => a.pct - b.pct)  // verstu efst
+}
+
+function loadData() {
+  const students = getStudents()
+  const summaryEl = document.getElementById('summaryGrid')
+  const areaEl = document.getElementById('studentArea')
+
+  const totalStudents = students.length
+  const totalCorrect = students.reduce((s, st) => s + calcStats(st.data).correct, 0)
+  const totalAnswers = students.reduce((s, st) => s + calcStats(st.data).total, 0)
+  const avgPct = totalAnswers > 0 ? Math.round((totalCorrect / totalAnswers) * 100) : 0
+
+  summaryEl.innerHTML = `
+    <div class="summary-card">
+      <div class="label">Nemendur</div>
+      <div class="value indigo">${totalStudents}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Rétt svör alls</div>
+      <div class="value green">${totalCorrect}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Svör alls</div>
+      <div class="value">${totalAnswers}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Meðalhlutfall rétt</div>
+      <div class="value ${avgPct >= 70 ? 'green' : 'rose'}">${avgPct}%</div>
+    </div>
+  `
+
+  // Hugtakayfirlit
+  const topics = calcTopics(students)
+  const topicEl = document.getElementById('topicArea')
+  if (topics.length === 0) {
+    topicEl.innerHTML = `<div style="color:var(--slate-light);font-size:14px;padding:16px 0;">Engin gögn enn — þegar nemendur byrja birtast hugtök hér.</div>`
+  } else {
+    topicEl.innerHTML = topics.map(t => {
+      const barColor = t.pct < 50 ? 'var(--rose)' : t.pct < 75 ? 'var(--amber)' : 'var(--green)'
+      const emoji = t.pct < 50 ? '🔴' : t.pct < 75 ? '🟡' : '🟢'
+      return `
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+            <span style="font-size:14px;font-weight:700;color:var(--slate);">${emoji} ${t.key}</span>
+            <span style="font-size:13px;font-weight:800;color:${barColor};">${t.pct}% rétt (${t.total} svör)</span>
+          </div>
+          <div style="height:10px;background:var(--bg);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;width:${t.pct}%;background:${barColor};border-radius:99px;transition:width 0.5s;"></div>
+          </div>
+        </div>`
+    }).join('')
+  }
+
+  if (students.length === 0) {
+    areaEl.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        Enginn nemandi hefur byrjað enn.<br>
+        Þegar nemendur byrja mun gögn birtast hér.
+      </div>`
+    return
+  }
+
+  areaEl.innerHTML = '<div class="student-grid" id="studentGrid"></div>'
+  const grid = document.getElementById('studentGrid')
+
+  students.forEach(st => {
+    const s = calcStats(st.data)
+    const initials = st.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    const recent = st.data.slice(-20)
+    const dots = recent.map(d => `<div class="dot ${d.status}"></div>`).join('')
+
+    // Lesa nákvæma stöðu úr vistuðri stöðu ef til
+    const setIndex = st.savedState?.set ?? (s.level - 1)
+    const currentStars = st.savedState?.correct ?? 0
+    const setName = getSetName(setIndex)
+
+    // Stars row — 15 stjörnur
+    const starsHtml = Array.from({length: 15}, (_, i) =>
+      `<span style="font-size:12px;${i < currentStars ? '' : 'filter:grayscale(1) opacity(0.3)'}">⭐</span>`
+    ).join('')
+
+    const card = document.createElement('div')
+    card.className = 'student-card'
+    card.innerHTML = `
+      <div class="student-card-header">
+        <div class="student-name-row">
+          <div class="avatar">${initials}</div>
+          <div>
+            <h3>${st.name}</h3>
+            <div style="font-size:12px;color:var(--slate-light);margin-top:2px;">Síðast virkur: ${st.savedState ? new Date(st.savedState.timestamp).toLocaleDateString('is-IS') : '—'}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="level-pill">${setName}</div>
+          <button class="delete-btn" onclick="deleteStudent('${st.name.replace(/'/g, "\\'")}')" title="Eyða gögnum">🗑</button>
+        </div>
+      </div>
+      <div style="padding:10px 20px 4px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:12px;font-weight:700;color:var(--slate-light);">Stjörnur að næsta stigi</span>
+        <span style="font-size:12px;font-weight:800;color:var(--indigo);">${currentStars} / 15</span>
+      </div>
+      <div style="padding:4px 20px 10px;line-height:1.6;">${starsHtml}</div>
+      <div class="student-stats">
+        <div class="stat"><div class="stat-val green">${s.correct}</div><div class="stat-label">Rétt</div></div>
+        <div class="stat"><div class="stat-val rose">${s.incorrect}</div><div class="stat-label">Rangt</div></div>
+        <div class="stat"><div class="stat-val">${s.pct}%</div><div class="stat-label">Hlutfall</div></div>
+      </div>
+      <div class="mini-bar"><div class="mini-fill" style="width:${s.pct}%"></div></div>
+      <div class="activity-row">
+        <div class="activity-label">Síðustu 20 svör</div>
+        <div class="activity-dots">${dots}</div>
+      </div>
+    `
+    grid.appendChild(card)
+  })
+}
+
+loadData()
+</script>
+</body>
+</html>

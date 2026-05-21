@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="is">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stærðfræðivefurinn — Kynning</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,300&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0f0e17;
+  --paper: #fffcf5;
+  --gold: #e8b94f;
+  --teal: #1a9e8a;
+  --rose: #d64f3c;
+  --indigo: #3d3bb5;
+  --mist: #f0ede4;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-left {
+  background: var(--ink);
+  padding: 80px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-left::after {
+  content: '';
+  position: absolute;
+  right: -60px; top: 0; bottom: 0;
+  width: 120px;
+  background: var(--ink);
+  clip-path: polygon(0 0, 0% 100%, 100% 100%);
+  z-index: 2;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 2px;
+  margin-bottom: 28px;
+  width: fit-content;
+}
+
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(42px, 5vw, 72px);
+  font-weight: 900;
+  line-height: 1.0;
+  color: #fff;
+  margin-bottom: 24px;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero-sub {
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 44px;
+  max-width: 400px;
+}
+
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.btn-gold {
+  padding: 14px 28px;
+  background: var(--gold);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-block;
+}
+
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,185,79,0.4); }
+
+.btn-outline {
+  padding: 14px 28px;
+  background: transparent;
+  color: rgba(255,255,255,0.8);
+  font-size: 15px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+  display: inline-block;
+}
+.btn-outline:hover { border-color: rgba(255,255,255,0.6); color: white; }
+
+.hero-right {
+  background: var(--mist);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px 80px 80px;
+  position: relative;
+}
+
+/* Floating mockup */
+.mockup {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 32px 80px rgba(15,14,23,0.15), 0 8px 24px rgba(15,14,23,0.08);
+  width: 100%;
+  max-width: 380px;
+  overflow: hidden;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.mock-header {
+  background: var(--indigo);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mock-logo { font-size: 20px; }
+.mock-title { font-size: 14px; font-weight: 600; color: white; }
+
+.mock-body { padding: 20px; }
+
+.mock-badge {
+  display: inline-block;
+  background: #ccfbf1;
+  color: #0d6e5e;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.mock-question {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.mock-progress {
+  height: 10px;
+  background: #e0e7ff;
+  border-radius: 99px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.mock-progress-fill {
+  height: 100%;
+  width: 60%;
+  background: linear-gradient(90deg, #3d3bb5, #6366f1);
+  border-radius: 99px;
+}
+
+.mock-stars {
+  font-size: 14px;
+  margin-bottom: 14px;
+  letter-spacing: 1px;
+}
+
+.mock-options { display: flex; flex-direction: column; gap: 8px; }
+
+.mock-opt {
+  padding: 10px 14px;
+  border: 1.5px solid #e0e7ff;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: #f8faff;
+}
+
+.mock-opt.correct {
+  border-color: #16a34a;
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* Floating chips */
+.chip {
+  position: absolute;
+  background: white;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(15,14,23,0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.chip-1 { top: 15%; right: 2%; animation: float 3.5s 0.5s ease-in-out infinite; }
+.chip-2 { bottom: 20%; left: 5%; animation: float 4.2s 1s ease-in-out infinite; }
+.chip-3 { top: 58%; right: 1%; animation: float 3.8s 0.2s ease-in-out infinite; }
+
+/* ===== STATS ===== */
+.stats {
+  background: var(--ink);
+  padding: 60px 80px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Fraunces', serif;
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+}
+
+/* ===== FEATURES ===== */
+.features {
+  padding: 100px 80px;
+  background: var(--paper);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 60px;
+  max-width: 560px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.feature-card {
+  background: var(--mist);
+  border-radius: 16px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.feature-card:hover { transform: translateY(-4px); }
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+}
+
+.fc-gold::before { background: var(--gold); }
+.fc-teal::before { background: var(--teal); }
+.fc-rose::before { background: var(--rose); }
+.fc-indigo::before { background: var(--indigo); }
+.fc-muted::before { background: #9ca3af; }
+
+.feature-icon {
+  font-size: 36px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.feature-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.feature-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #6b7280;
+}
+
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.ftag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 3px;
+  background: rgba(0,0,0,0.06);
+  color: var(--ink);
+}
+
+/* ===== LEVELS ===== */
+.levels {
+  background: var(--ink);
+  padding: 100px 80px;
+}
+
+.levels .section-title { color: white; }
+
+.levels-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.level-card {
+  border-radius: 12px;
+  padding: 24px 20px;
+  position: relative;
+}
+
+.l1 { background: #1c2a3a; border: 1px solid #2d4a6a; }
+.l2 { background: #1a2e2a; border: 1px solid #2d5045; }
+.l3 { background: #2a2016; border: 1px solid #5a4020; }
+.l4 { background: #1e1a30; border: 1px solid #3d3560; }
+.l5 { background: #2a1818; border: 1px solid #5a2828; }
+
+.level-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.l1 .level-num { color: #60a0d0; }
+.l2 .level-num { color: #4db896; }
+.l3 .level-num { color: var(--gold); }
+.l4 .level-num { color: #9b97e0; }
+.l5 .level-num { color: #e07070; }
+
+.level-name {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.level-topics {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+/* ===== TOOLS ===== */
+.tools {
+  padding: 100px 80px;
+  background: var(--paper);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.tools-text .section-title { margin-bottom: 24px; }
+
+.tools-text p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #4b5563;
+  margin-bottom: 32px;
+}
+
+.tool-list { display: flex; flex-direction: column; gap: 16px; }
+
+.tool-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.tool-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ti-gold { background: #fef3c7; }
+.ti-teal { background: #ccfbf1; }
+.ti-rose { background: #ffe4e6; }
+.ti-indigo { background: #e0e7ff; }
+
+.tool-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.tool-info p {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tools-visual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.mini-card {
+  background: var(--mist);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.mini-card:hover { transform: scale(1.03); }
+.mini-card:first-child { grid-column: 1 / -1; background: var(--ink); }
+.mini-card:first-child .mc-title { color: white; }
+.mini-card:first-child .mc-sub { color: rgba(255,255,255,0.5); }
+
+.mc-icon { font-size: 32px; margin-bottom: 10px; }
+.mc-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.mc-sub { font-size: 12px; color: #9ca3af; }
+
+/* ===== TEACHER ===== */
+.teacher {
+  background: linear-gradient(135deg, var(--teal) 0%, #0d6e5e 100%);
+  padding: 80px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.teacher-text h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 900;
+  color: white;
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.teacher-text p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.75);
+  margin-bottom: 0;
+}
+
+.teacher-features {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tf-item {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.tf-icon { font-size: 24px; flex-shrink: 0; }
+
+.tf-text h4 { font-size: 14px; font-weight: 600; color: white; margin-bottom: 3px; }
+.tf-text p { font-size: 13px; color: rgba(255,255,255,0.6); margin: 0; }
+
+/* ===== CTA ===== */
+.cta {
+  padding: 120px 80px;
+  text-align: center;
+  background: var(--paper);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta::before {
+  content: '∑ π ÷ × √ %';
+  position: absolute;
+  font-family: 'Fraunces', serif;
+  font-size: 120px;
+  color: rgba(15,14,23,0.03);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  font-weight: 900;
+  letter-spacing: 20px;
+}
+
+.cta h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.cta h2 em {
+  font-style: italic;
+  color: var(--teal);
+}
+
+.cta p {
+  font-size: 18px;
+  color: #6b7280;
+  margin-bottom: 48px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.cta-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.btn-dark {
+  padding: 16px 36px;
+  background: var(--ink);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-block;
+}
+
+.btn-dark:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(15,14,23,0.25); }
+
+.btn-teal {
+  padding: 16px 36px;
+  background: var(--teal);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-block;
+}
+
+.btn-teal:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(26,158,138,0.35); }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--ink);
+  padding: 40px 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+footer p { font-size: 13px; color: rgba(255,255,255,0.35); }
+footer .footer-logo { font-family: 'Fraunces', serif; font-size: 20px; color: var(--gold); font-weight: 900; }
+
+/* ===== ANIMATIONS ===== */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-left::after { display: none; }
+  .hero-right { display: none; }
+  .stats { grid-template-columns: repeat(2, 1fr); padding: 48px 32px; }
+  .features { padding: 64px 32px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .levels { padding: 64px 32px; }
+  .levels-row { grid-template-columns: 1fr 1fr; }
+  .tools { grid-template-columns: 1fr; padding: 64px 32px; }
+  .teacher { grid-template-columns: 1fr; padding: 48px 32px; }
+  .cta { padding: 80px 32px; }
+  footer { flex-direction: column; gap: 12px; padding: 32px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="tag">🏫 Fyrir 6. bekk</div>
+    <h1 class="hero-title">Stærðfræði<br>sem <em>virkar</em><br>í reynd</h1>
+    <p class="hero-sub">Snjall vefsíða sem lærir á hraða nemandans, þynir á erfiðum hugtökum og gerir stærðfræðiæfingu að ævintýri.</p>
+    <div class="hero-btns">
+      <a href="staerdfraedi.html" class="btn-gold">Opna forritið →</a>
+      <a href="#features" class="btn-outline">Sjá möguleikana</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="chip chip-1">⭐⭐⭐⭐⭐⭐ 6/15 rétt</div>
+    <div class="chip chip-2">🏆 Margföldunarmeistari!</div>
+    <div class="chip chip-3">💡 Nú ert þú að æfa brot</div>
+    <div class="mockup">
+      <div class="mock-header">
+        <span class="mock-logo">🔢</span>
+        <span class="mock-title">Stærðfræði — Dæmasafn 2</span>
+      </div>
+      <div class="mock-body">
+        <div class="mock-badge">📐 Flatarmál</div>
+        <div class="mock-question">🌻 Garðurinn er 6m langur og 4m breiður. Hvað er flatarmál hans?</div>
+        <div class="mock-progress"><div class="mock-progress-fill"></div></div>
+        <div class="mock-stars">⭐⭐⭐⭐⭐⭐☆☆☆☆ <small style="color:#94a3b8;font-size:11px;">6/15</small></div>
+        <div class="mock-options">
+          <div class="mock-opt">20 m²</div>
+          <div class="mock-opt correct">✅ 24 m²</div>
+          <div class="mock-opt">28 m²</div>
+          <div class="mock-opt">18 m²</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="fade-in">
+    <div class="stat-num">146</div>
+    <div class="stat-label">Stærðfræðidæmi</div>
+  </div>
+  <div class="fade-in">
+    <div class="stat-num">5</div>
+    <div class="stat-label">Stigskipt dæmasöfn</div>
+  </div>
+  <div class="fade-in">
+    <div class="stat-num">15</div>
+    <div class="stat-label">Stærðfræðigátur</div>
+  </div>
+  <div class="fade-in">
+    <div class="stat-num">∞</div>
+    <div class="stat-label">Mögulegar lotur</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">Aðaleiginleikar</div>
+  <h2 class="section-title fade-in">Allt sem nemandi þarf — á einum stað</h2>
+  <div class="features-grid">
+
+    <div class="feature-card fc-indigo fade-in">
+      <span class="feature-icon">🎯</span>
+      <h3 class="feature-title">Stigskipt námsferð</h3>
+      <p class="feature-desc">Nemandinn byrjar á einföldum dæmum og þarf 15 rétt í röð til að fara upp á næsta stig. Ein villa og aftur á byrjunarreit — þannig lærir hann af mistökum.</p>
+      <div class="feature-tags">
+        <span class="ftag">5 dæmasöfn</span>
+        <span class="ftag">15 rétt í röð</span>
+        <span class="ftag">Framgangsstika</span>
+      </div>
+    </div>
+
+    <div class="feature-card fc-teal fade-in">
+      <span class="feature-icon">🧠</span>
+      <span class="feature-icon" style="font-size:20px;margin-top:-20px;display:block;">Greind endurtekning</span>
+      <p class="feature-desc">Ef nemandinn fær sama hugtak rangt tvisvar í röð, kviknar sjálfkrafa æfingahamur með þrjú dæmi í viðbót af sama tagi — þar til hann tileinkar sér efnið.</p>
+      <div class="feature-tags">
+        <span class="ftag">Sjálfvirkt</span>
+        <span class="ftag">Sniðið að nemanda</span>
+      </div>
+    </div>
+
+    <div class="feature-card fc-gold fade-in">
+      <span class="feature-icon">🏆</span>
+      <h3 class="feature-title">Verðlaunakerfi</h3>
+      <p class="feature-desc">Eftir 30 rétt margföldunardæmi opnast formlegt próf. 9 af 10 rétt gefur nemandanum „Margföldunarmeistari" merkið — til viðbótar við fleiri hugtak síðar.</p>
+      <div class="feature-tags">
+        <span class="ftag">Próf</span>
+        <span class="ftag">Merki</span>
+        <span class="ftag">Hvatningu</span>
+      </div>
+    </div>
+
+    <div class="feature-card fc-rose fade-in">
+      <span class="feature-icon">🛒</span>
+      <h3 class="feature-title">Stærðfræðibúðin</h3>
+      <p class="feature-desc">Fjögur stig af búðarverkefnum: leggja fram peninga, reikna heildarverð, finna skiptimynt og fljóta afsláttar- og magndæmi. Tilviljunarlægur listi í hvert skipti.</p>
+      <div class="feature-tags">
+        <span class="ftag">4 stig</span>
+        <span class="ftag">Raunveruleg dæmi</span>
+      </div>
+    </div>
+
+    <div class="feature-card fc-muted fade-in">
+      <span class="feature-icon">🧩</span>
+      <h3 class="feature-title">Stærðfræðigátur</h3>
+      <p class="feature-desc">15 krefjandi hugsunarverkefni — t.d. borðadæmið með 190 nemendur þar sem nemandinn finnur lausn með tveimur svarmátum og staðfestir stærðfræðina sjálfur.</p>
+      <div class="feature-tags">
+        <span class="ftag">Opnar spurningar</span>
+        <span class="ftag">Margar lausnir</span>
+      </div>
+    </div>
+
+    <div class="feature-card fc-teal fade-in">
+      <span class="feature-icon">💡</span>
+      <h3 class="feature-title">Lærdómstip í hliðarstikunni</h3>
+      <p class="feature-desc">Nemandinn getur hvenær sem er opnað fræðiglugga um margföldun, deilingu, brot, flatarmál og hlutföll — með skref fyrir skref dæmum og mynstrum.</p>
+      <div class="feature-tags">
+        <span class="ftag">5 hugtakaflokkar</span>
+        <span class="ftag">Alltaf aðgengilegt</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LEVELS -->
+<section class="levels">
+  <div class="section-label" style="color: var(--gold);">Námsferðin</div>
+  <h2 class="section-title fade-in">Frá grunni til <em style="font-style:italic;color:var(--gold);">meistarastigs</em></h2>
+  <div class="levels-row">
+    <div class="level-card l1 fade-in">
+      <div class="level-num">Dæmasafn 1</div>
+      <div class="level-name">Grunnur</div>
+      <div class="level-topics">Samlagning og frádráttur upp í 100 · Margföldun upp í 5×5</div>
+    </div>
+    <div class="level-card l2 fade-in">
+      <div class="level-num">Dæmasafn 2</div>
+      <div class="level-name">Grunnþekking</div>
+      <div class="level-topics">Margföldun · Deilding · Einföld brot · Flatarmál · Tími</div>
+    </div>
+    <div class="level-card l3 fade-in">
+      <div class="level-num">Dæmasafn 3</div>
+      <div class="level-name">Þróun</div>
+      <div class="level-topics">Prósentur · Tugabrot · Mælingar · Hraðadæmi · Brot</div>
+    </div>
+    <div class="level-card l4 fade-in">
+      <div class="level-num">Dæmasafn 4</div>
+      <div class="level-name">Áskorun</div>
+      <div class="level-topics">Brotalgebra · Jöfnur · Hnitakerfi · Tölfræði · Líkur</div>
+    </div>
+    <div class="level-card l5 fade-in">
+      <div class="level-num">Dæmasafn 5</div>
+      <div class="level-name">Skapandi</div>
+      <div class="level-topics">Youcubed-stíll · Mynstrar · Rökrænt hugsun · Opnar spurningar</div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section class="tools">
+  <div class="tools-text fade-in">
+    <div class="section-label">Tæki nemandans</div>
+    <h2 class="section-title">Fjórir takkar sem breyta öllu</h2>
+    <p>Í hliðarstikunni eru fjórir takkar sem nemandinn getur notað hvenær sem er — óháð því hvar hann er í námsferðinni.</p>
+    <div class="tool-list">
+      <div class="tool-item">
+        <div class="tool-icon ti-indigo">🧠</div>
+        <div class="tool-info">
+          <h4>Heilahlé</h4>
+          <p>2 mínútna hlé með líkamlegri hreyfingu — hlaup, hnébeygjur, teikna. 30 mínútna kælingtími á milli.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <div class="tool-icon ti-gold">💡</div>
+        <div class="tool-info">
+          <h4>Lærdómstip</h4>
+          <p>Skref-fyrir-skref útskýringar á 5 hugtökum með raunverulegum dæmum sem nemandinn þekkir.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <div class="tool-icon ti-rose">🧩</div>
+        <div class="tool-info">
+          <h4>Gátur</h4>
+          <p>15 krefjandi stærðfræðigátur með vísbendingum og ítarlegum lausnaútskýringum.</p>
+        </div>
+      </div>
+      <div class="tool-item">
+        <div class="tool-icon ti-teal">🛒</div>
+        <div class="tool-info">
+          <h4>Búðin</h4>
+          <p>Fjögur stig af innkaupadæmum — frá greiðslu til afsláttar og margföldunardæma.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tools-visual fade-in">
+    <div class="mini-card">
+      <div class="mc-icon">📊</div>
+      <div class="mc-title">Hugtak birtist sjálfkrafa</div>
+      <div class="mc-sub">„Hér ert þú að æfa flatarmál 📐"</div>
+    </div>
+    <div class="mini-card">
+      <div class="mc-icon">🔄</div>
+      <div class="mc-title">Blönduð svarmát</div>
+      <div class="mc-sub">50% krossar, 50% skriflegt</div>
+    </div>
+    <div class="mini-card">
+      <div class="mc-icon">💫</div>
+      <div class="mc-title">Villa = byrjunarreit</div>
+      <div class="mc-sub">Þyngir á nákvæmni</div>
+    </div>
+    <div class="mini-card">
+      <div class="mc-icon">💾</div>
+      <div class="mc-title">Framgangur vistaður</div>
+      <div class="mc-sub">Nafn + bekkjarnúmer</div>
+    </div>
+  </div>
+</section>
+
+<!-- TEACHER -->
+<section class="teacher">
+  <div class="teacher-text fade-in">
+    <h2>Kennarasíðan — fullt yfirlit á einum stað</h2>
+    <p>Þú þarft ekki að spyrja hvern nemanda um sig. Kennarasíðan sýnir þér nákvæmlega hvar allir eru — og hvað er að valda vandræðum.</p>
+  </div>
+  <div class="teacher-features fade-in">
+    <div class="tf-item">
+      <span class="tf-icon">📊</span>
+      <div class="tf-text">
+        <h4>Hugtakayfirlit bekkjarins</h4>
+        <p>Hvaða hugtak er að valda mestum vandræðum? Rautt, gult eða grænt á hverja flokk.</p>
+      </div>
+    </div>
+    <div class="tf-item">
+      <span class="tf-icon">⭐</span>
+      <div class="tf-text">
+        <h4>Stjörnur að næsta stigi</h4>
+        <p>Sérð nákvæmlega hvar sérhver nemandi er — t.d. 7/15 stjörnur á Dæmasafni 3.</p>
+      </div>
+    </div>
+    <div class="tf-item">
+      <span class="tf-icon">🔴</span>
+      <div class="tf-text">
+        <h4>Virkniþættur</h4>
+        <p>Litapunktar sýna síðustu 20 svör hvers nemanda — rétt, rangt og stiggengið.</p>
+      </div>
+    </div>
+    <div class="tf-item">
+      <span class="tf-icon">📅</span>
+      <div class="tf-text">
+        <h4>Síðast virkur</h4>
+        <p>Dagsetning síðasta skipti sem nemandinn notaði forritið.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2 class="fade-in">Tilbúið til notkunar<br><em>núna þegar</em></h2>
+  <p class="fade-in">Ein HTML-skrá. Engin uppsetning. Opnaðu í vafranum og byrjaðu.</p>
+  <div class="cta-btns fade-in">
+    <a href="staerdfraedi.html" class="btn-teal">🚀 Opna stærðfræðisíðuna</a>
+    <a href="kennari.html" class="btn-dark">📊 Opna kennarasíðuna</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">🔢 Stærðfræðivefurinn</span>
+  <p>Búið til fyrir 6. bekk · Akranesi · 2025</p>
+</footer>
+
+<script>
+// Fade in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible')
+    }
+  })
+}, { threshold: 0.1 })
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
+</script>
+
+</body>
+</html>
