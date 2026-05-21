@@ -253,74 +253,56 @@ body {
     <div id="topicArea"></div>
   </div>
 
+  <div id="topicArea"></div>
   <div class="section-title">Nemendur</div>
   <div id="studentArea"></div>
 
 </div>
 
-<script>
-function getStudents() {
-  const students = []
-  const seen = new Set()
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i)
-    // Lesa bæði progress- og student- lykla
-    if (key.startsWith('progress-')) {
-      const name = key.replace('progress-', '')
-      if (!seen.has(name)) {
-        seen.add(name)
-        const data = JSON.parse(localStorage.getItem(key)) || []
-        // Leita að vistuðri stöðu fyrir þennan nemanda
-        let savedState = null
-        for (let j = 0; j < localStorage.length; j++) {
-          const k = localStorage.key(j)
-          if (k.startsWith('student-') && k.includes(name.toLowerCase())) {
-            try { savedState = JSON.parse(localStorage.getItem(k)) } catch(e) {}
-            break
-          }
-        }
-        students.push({ name, data, savedState })
-      }
-    }
-  }
-  return students
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"
+import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCEyFVVA4iHSqVeo_GYtM4H8nlO89KiXyU",
+  authDomain: "reiknir-59545.firebaseapp.com",
+  databaseURL: "https://reiknir-59545-default-rtdb.firebaseio.com",
+  projectId: "reiknir-59545",
+  storageBucket: "reiknir-59545.firebasestorage.app",
+  messagingSenderId: "277838494408",
+  appId: "1:277838494408:web:ffec8f0995c72103a843fd"
 }
 
+const app = initializeApp(firebaseConfig)
+const db = getDatabase(app)
+
 function getSetName(setIndex) {
-  const names = ['Dæmasafn 1', 'Dæmasafn 2', 'Dæmasafn 3', 'Dæmasafn 4', 'Dæmasafn 5']
-  return names[setIndex] || 'Dæmasafn ' + (setIndex + 1)
+  const mountains = [
+    { name: 'Esja', icon: '🏔️' },
+    { name: 'Akrafjall', icon: '⛰️' },
+    { name: 'Tindastóll', icon: '🗻' },
+    { name: 'Askja', icon: '🌋' },
+    { name: 'Katla', icon: '🌋' }
+  ]
+  const mt = mountains[setIndex]
+  return mt ? mt.icon + ' ' + mt.name : 'Stig ' + (setIndex + 1)
 }
 
 function calcStats(data) {
-  const correct = data.filter(d => d.status === 'correct').length
-  const incorrect = data.filter(d => d.status === 'incorrect').length
-  const advances = data.filter(d => d.status === 'advance').length
+  const arr = Array.isArray(data) ? data : Object.values(data || {})
+  const correct = arr.filter(d => d.status === 'correct').length
+  const incorrect = arr.filter(d => d.status === 'incorrect').length
+  const advances = arr.filter(d => d.status === 'advance').length
   const total = correct + incorrect
   const pct = total > 0 ? Math.round((correct / total) * 100) : 0
-  const level = advances + 1
-  return { correct, incorrect, advances, total, pct, level }
-}
-
-function deleteStudent(name) {
-  if (!confirm('Eyða öllum gögnum fyrir ' + name + '?')) return
-  // Eyða progress lykli
-  localStorage.removeItem('progress-' + name)
-  // Eyða öllum student- og badges- lyklum fyrir þennan nemanda
-  const toRemove = []
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i)
-    if ((k.startsWith('student-') || k.startsWith('badges-')) && k.includes(name.toLowerCase())) {
-      toRemove.push(k)
-    }
-  }
-  toRemove.forEach(k => localStorage.removeItem(k))
-  loadData()
+  return { correct, incorrect, advances, total, pct }
 }
 
 function calcTopics(students) {
   const topicMap = {}
   students.forEach(st => {
-    st.data.forEach(d => {
+    const arr = Array.isArray(st.data) ? st.data : Object.values(st.data || {})
+    arr.forEach(d => {
       if (!d.topic) return
       if (!topicMap[d.topic]) topicMap[d.topic] = { correct: 0, incorrect: 0 }
       if (d.status === 'correct') topicMap[d.topic].correct++
@@ -334,88 +316,100 @@ function calcTopics(students) {
       return { key, ...val, total, pct }
     })
     .filter(t => t.total >= 2)
-    .sort((a, b) => a.pct - b.pct)  // verstu efst
+    .sort((a, b) => a.pct - b.pct)
 }
 
-function loadData() {
-  const students = getStudents()
-  const summaryEl = document.getElementById('summaryGrid')
-  const areaEl = document.getElementById('studentArea')
+window.deleteStudent = async function(bekkur, nafn) {
+  if (!confirm('Eyða öllum gögnum fyrir ' + nafn + '?')) return
+  const r = ref(db, 'bekkir/' + bekkur + '/nemendur/' + nafn)
+  await remove(r)
+  loadData()
+}
 
-  const totalStudents = students.length
+async function loadData() {
+  const bekkur = document.getElementById('bekkurInput').value.trim()
+    .toLowerCase().replace(/[.#$\[\]/\s]/g, '_')
+  if (!bekkur) {
+    document.getElementById('studentArea').innerHTML =
+      '<div style="color:#94a3b8;padding:20px;">Sláðu inn bekkjarkóðann til að sjá nemendur.</div>'
+    return
+  }
+
+  document.getElementById('studentArea').innerHTML =
+    '<div style="color:#94a3b8;padding:20px;">⏳ Hleð gögnum...</div>'
+
+  const snap = await get(ref(db, 'bekkir/' + bekkur + '/nemendur'))
+  if (!snap.exists()) {
+    document.getElementById('studentArea').innerHTML =
+      '<div style="color:#94a3b8;padding:20px;">Engir nemendur fundust í bekk <strong>' + bekkur + '</strong>. Athugaðu bekkjarkóðann.</div>'
+    document.getElementById('summaryGrid').innerHTML = ''
+    document.getElementById('topicArea').innerHTML = ''
+    return
+  }
+
+  const nemendur = snap.val()
+  const students = Object.entries(nemendur).map(([nafn, val]) => ({
+    name: val.state?.name || nafn,
+    nafn,
+    bekkur,
+    data: Array.isArray(val.progress) ? val.progress : Object.values(val.progress || {}),
+    savedState: val.state || null
+  }))
+
+  // Summary
   const totalCorrect = students.reduce((s, st) => s + calcStats(st.data).correct, 0)
   const totalAnswers = students.reduce((s, st) => s + calcStats(st.data).total, 0)
   const avgPct = totalAnswers > 0 ? Math.round((totalCorrect / totalAnswers) * 100) : 0
 
-  summaryEl.innerHTML = `
+  document.getElementById('summaryGrid').innerHTML = `
     <div class="summary-card">
       <div class="label">Nemendur</div>
-      <div class="value indigo">${totalStudents}</div>
+      <div class="value indigo">${students.length}</div>
     </div>
     <div class="summary-card">
       <div class="label">Rétt svör alls</div>
       <div class="value green">${totalCorrect}</div>
     </div>
     <div class="summary-card">
-      <div class="label">Svör alls</div>
-      <div class="value">${totalAnswers}</div>
-    </div>
-    <div class="summary-card">
-      <div class="label">Meðalhlutfall rétt</div>
-      <div class="value ${avgPct >= 70 ? 'green' : 'rose'}">${avgPct}%</div>
-    </div>
-  `
+      <div class="label">Meðalhlutfall</div>
+      <div class="value amber">${avgPct}%</div>
+    </div>`
 
-  // Hugtakayfirlit
+  // Topics
   const topics = calcTopics(students)
-  const topicEl = document.getElementById('topicArea')
-  if (topics.length === 0) {
-    topicEl.innerHTML = `<div style="color:var(--slate-light);font-size:14px;padding:16px 0;">Engin gögn enn — þegar nemendur byrja birtast hugtök hér.</div>`
-  } else {
-    topicEl.innerHTML = topics.map(t => {
-      const barColor = t.pct < 50 ? 'var(--rose)' : t.pct < 75 ? 'var(--amber)' : 'var(--green)'
-      const emoji = t.pct < 50 ? '🔴' : t.pct < 75 ? '🟡' : '🟢'
-      return `
-        <div style="margin-bottom:14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-            <span style="font-size:14px;font-weight:700;color:var(--slate);">${emoji} ${t.key}</span>
-            <span style="font-size:13px;font-weight:800;color:${barColor};">${t.pct}% rétt (${t.total} svör)</span>
-          </div>
-          <div style="height:10px;background:var(--bg);border-radius:99px;overflow:hidden;">
-            <div style="height:100%;width:${t.pct}%;background:${barColor};border-radius:99px;transition:width 0.5s;"></div>
-          </div>
-        </div>`
-    }).join('')
-  }
-
-  if (students.length === 0) {
-    areaEl.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        Enginn nemandi hefur byrjað enn.<br>
-        Þegar nemendur byrja mun gögn birtast hér.
+  if (topics.length > 0) {
+    document.getElementById('topicArea').innerHTML = `
+      <div class="section-title" style="margin-top:24px;">Hugtakayfirlit bekkjarins</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;">
+        ${topics.map(t => {
+          const col = t.pct < 50 ? '#e11d48' : t.pct < 75 ? '#f59e0b' : '#16a34a'
+          const bg = t.pct < 50 ? '#fff1f2' : t.pct < 75 ? '#fffbeb' : '#f0fdf4'
+          return `<div style="padding:8px 14px;border-radius:10px;background:${bg};border:1.5px solid ${col}22;">
+            <span style="font-size:13px;font-weight:700;color:${col};">${t.key}</span>
+            <span style="font-size:12px;color:#64748b;margin-left:8px;">${t.pct}%</span>
+          </div>`
+        }).join('')}
       </div>`
-    return
   }
 
-  areaEl.innerHTML = '<div class="student-grid" id="studentGrid"></div>'
-  const grid = document.getElementById('studentGrid')
-
-  students.forEach(st => {
+  // Student cards
+  const areaEl = document.getElementById('studentArea')
+  areaEl.innerHTML = ''
+  students.sort((a, b) => a.name.localeCompare(b.name)).forEach(st => {
     const s = calcStats(st.data)
-    const initials = st.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-    const recent = st.data.slice(-20)
-    const dots = recent.map(d => `<div class="dot ${d.status}"></div>`).join('')
-
-    // Lesa nákvæma stöðu úr vistuðri stöðu ef til
-    const setIndex = st.savedState?.set ?? (s.level - 1)
-    const currentStars = st.savedState?.correct ?? 0
+    const currentStars = st.savedState?.correct || 0
+    const setIndex = st.savedState?.set || 0
     const setName = getSetName(setIndex)
-
-    // Stars row — 15 stjörnur
-    const starsHtml = Array.from({length: 15}, (_, i) =>
+    const initials = st.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    const dots = st.data.slice(-20).map(d => {
+      const col = d.status === 'correct' ? '#16a34a' : d.status === 'advance' ? '#4f46e5' : '#e11d48'
+      return `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${col};margin:1px;"></span>`
+    }).join('')
+    const starsHtml = Array.from({length:15}, (_,i) =>
       `<span style="font-size:12px;${i < currentStars ? '' : 'filter:grayscale(1) opacity(0.3)'}">⭐</span>`
     ).join('')
+    const lastSeen = st.savedState?.timestamp
+      ? new Date(st.savedState.timestamp).toLocaleDateString('is-IS') : '—'
 
     const card = document.createElement('div')
     card.className = 'student-card'
@@ -425,12 +419,12 @@ function loadData() {
           <div class="avatar">${initials}</div>
           <div>
             <h3>${st.name}</h3>
-            <div style="font-size:12px;color:var(--slate-light);margin-top:2px;">Síðast virkur: ${st.savedState ? new Date(st.savedState.timestamp).toLocaleDateString('is-IS') : '—'}</div>
+            <div style="font-size:12px;color:var(--slate-light);margin-top:2px;">Síðast virkur: ${lastSeen}</div>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <div class="level-pill">${setName}</div>
-          <button class="delete-btn" onclick="deleteStudent('${st.name.replace(/'/g, "\\'")}')" title="Eyða gögnum">🗑</button>
+          <button class="delete-btn" onclick="deleteStudent('${st.bekkur}','${st.nafn}')" title="Eyða gögnum">🗑</button>
         </div>
       </div>
       <div style="padding:10px 20px 4px;display:flex;align-items:center;justify-content:space-between;">
@@ -447,13 +441,18 @@ function loadData() {
       <div class="activity-row">
         <div class="activity-label">Síðustu 20 svör</div>
         <div class="activity-dots">${dots}</div>
-      </div>
-    `
-    grid.appendChild(card)
+      </div>`
+    areaEl.appendChild(card)
   })
 }
 
-loadData()
+// Keyra þegar síða hleðst
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loadBtn').addEventListener('click', loadData)
+  document.getElementById('bekkurInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadData()
+  })
+})
 </script>
 </body>
 </html>
