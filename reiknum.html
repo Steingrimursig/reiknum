@@ -187,8 +187,112 @@ body {
   line-height: 1;
 }
 
+/* ===== RÚÐUNET PANEL ===== */
+.grid-panel {
+  width: 200px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.grid-panel.visible { display: flex; }
+.grid-panel-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--slate-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.grid-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 auto;
+}
+.grid-table td {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #e2e8f0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--slate);
+  font-family: Nunito, sans-serif;
+  position: relative;
+}
+.grid-table td.op-cell {
+  border: none;
+  font-size: 20px;
+  color: var(--indigo);
+  padding-right: 4px;
+  text-align: right;
+  width: 28px;
+}
+.grid-table tr.line-row td {
+  border-top: 3px solid var(--slate);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  height: 8px;
+}
+.grid-table td.carry {
+  font-size: 11px;
+  color: var(--rose);
+  font-weight: 900;
+  vertical-align: top;
+  padding-top: 2px;
+}
+.grid-table td.result {
+  color: var(--green);
+  font-size: 20px;
+}
+.grid-table td.borrowed {
+  color: var(--rose);
+}
+.grid-table td.dim {
+  color: #cbd5e1;
+}
+.grid-step-btn {
+  background: var(--indigo-pale);
+  color: var(--indigo);
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  font-family: Nunito, sans-serif;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+}
+.grid-step-btn:hover { background: var(--indigo); color: white; }
+.grid-step-text {
+  font-size: 12px;
+  color: var(--slate-mid);
+  line-height: 1.6;
+  min-height: 48px;
+  padding: 6px 0;
+}
+.grid-reset-btn {
+  background: none;
+  border: none;
+  color: var(--slate-light);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Nunito, sans-serif;
+  text-align: center;
+}
+.grid-reset-btn:hover { color: var(--indigo); }
+
 /* ===== MAIN ===== */
 .main { flex: 1; padding: 28px 24px; display: flex; flex-direction: column; }
+.main-body { display: flex; gap: 20px; align-items: flex-start; flex: 1; }
+.question-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0; }
 
 /* ===== TOPBAR ===== */
 .topbar {
@@ -1110,15 +1214,31 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
         <div class="stars-row" id="starsRow"></div>
       </div>
 
-      <!-- QUESTION CARD -->
-      <div class="content" id="mainContent">
-        <div class="set-label" id="setLabel">Dæmasafn 1</div>
-        <div class="topic-banner hide" id="topicBanner">💡 <span id="topicText"></span></div>
-        <h3 id="question"></h3>
-        <div id="options"></div>
-        <input id="answerInput" placeholder="Svarið þitt..." autocomplete="off">
-        <button class="send-btn" onclick="submitAnswer()">Senda ✓</button>
-        <div id="feedback"></div>
+      <!-- QUESTION + GRID PANEL -->
+      <div class="main-body">
+
+        <!-- Question column -->
+        <div class="question-col">
+          <div class="content" id="mainContent">
+            <div class="set-label" id="setLabel">Esja</div>
+            <div class="topic-banner hide" id="topicBanner">💡 <span id="topicText"></span></div>
+            <h3 id="question"></h3>
+            <div id="options"></div>
+            <input id="answerInput" placeholder="Svarið þitt..." autocomplete="off">
+            <button class="send-btn" onclick="submitAnswer()">Senda ✓</button>
+            <div id="feedback"></div>
+          </div>
+        </div>
+
+        <!-- Rúðunet panel -->
+        <div class="grid-panel" id="gridPanel">
+          <div class="grid-panel-title">📐 Þú getur líka sett dæmið upp svona</div>
+          <table class="grid-table" id="gridTable"></table>
+          <div class="grid-step-text" id="gridStepText"></div>
+          <button class="grid-step-btn" id="gridStepBtn" onclick="gridNextStep()">Skref ▶</button>
+          <button class="grid-reset-btn" onclick="gridReset()">↺ Byrja aftur</button>
+        </div>
+
       </div>
 
     </div>
@@ -2021,6 +2141,7 @@ function makeFourthOption(p) {
 }
 
 function show() {
+  updateGridPanel()
   const p = engine.getProblem()
   if (!p) return
   document.getElementById('question').innerHTML = p.question
@@ -3423,6 +3544,221 @@ function updateHexStatus() {
     } else {
       statusEl.innerHTML = '<span style="color:#64748b;">Allar 19 tölur eru á borðinu — athugaðu línurnar 🔍</span>'
     }
+  }
+}
+
+
+/* ===== RÚÐUNET ===== */
+let gridState = null
+
+function parseNumbers(questionText) {
+  // Strip HTML tags
+  const plain = questionText.replace(/<[^>]+>/g, ' ')
+  // Find addition: X + Y
+  let m = plain.match(/(\d+)\s*\+\s*(\d+)/)
+  if (m) return { op: '+', a: parseInt(m[1]), b: parseInt(m[2]) }
+  // Find subtraction: X - Y or X - Y
+  m = plain.match(/(\d+)\s*[-−]\s*(\d+)/)
+  if (m) return { op: '-', a: parseInt(m[1]), b: parseInt(m[2]) }
+  return null
+}
+
+function updateGridPanel() {
+  const panel = document.getElementById('gridPanel')
+  const setIndex = engine.getState().set
+  // Only show for set 0 (Esja)
+  if (setIndex !== 0) {
+    panel.classList.remove('visible')
+    return
+  }
+  const p = engine.getProblem()
+  if (!p) { panel.classList.remove('visible'); return }
+
+  const nums = parseNumbers(p.question)
+  if (!nums) { panel.classList.remove('visible'); return }
+
+  panel.classList.add('visible')
+  gridState = { ...nums, step: 0 }
+  renderGrid()
+}
+
+function gridReset() {
+  if (gridState) { gridState.step = 0; renderGrid() }
+}
+
+function gridNextStep() {
+  if (!gridState) return
+  const maxSteps = gridState.op === '+' ? 3 : 4
+  if (gridState.step < maxSteps) {
+    gridState.step++
+    renderGrid()
+  }
+}
+
+function renderGrid() {
+  if (!gridState) return
+  const { op, a, b, step } = gridState
+  const table = document.getElementById('gridTable')
+  const stepText = document.getElementById('gridStepText')
+  const stepBtn = document.getElementById('gridStepBtn')
+
+  // Get digits
+  const aStr = String(a).padStart(2, ' ')
+  const bStr = String(b).padStart(2, ' ')
+  const aDigits = String(a).split('').map(Number)
+  const bDigits = String(b).split('').map(Number)
+
+  // Pad to same length
+  const len = Math.max(aDigits.length, bDigits.length)
+  while (aDigits.length < len) aDigits.unshift(0)
+  while (bDigits.length < len) bDigits.unshift(0)
+
+  let html = ''
+  const maxSteps = op === '+' ? 3 : 4
+
+  if (op === '+') {
+    const result = a + b
+    const rDigits = String(result).split('').map(Number)
+    while (rDigits.length < len + 1) rDigits.unshift(0)
+
+    // Carry row
+    const carry = (aDigits[aDigits.length-1] + bDigits[bDigits.length-1]) >= 10 ? 1 : 0
+    let carryHtml = '<tr>'
+    carryHtml += '<td class="op-cell"></td>'
+    for (let i = 0; i < len; i++) {
+      const isCarryCol = i === len - 2
+      const showCarry = step >= 2 && carry && isCarryCol
+      carryHtml += '<td class="carry">' + (showCarry ? '1' : '') + '</td>'
+    }
+    carryHtml += '</tr>'
+
+    // A row
+    let aHtml = '<tr><td class="op-cell"></td>'
+    aDigits.forEach(d => { aHtml += '<td>' + (d === 0 && aDigits.indexOf(d) === 0 ? '' : d) + '</td>' })
+    aHtml += '</tr>'
+
+    // B row
+    let bHtml = '<tr><td class="op-cell">+</td>'
+    bDigits.forEach(d => { bHtml += '<td>' + (d === 0 && bDigits.indexOf(d) === 0 ? '' : d) + '</td>' })
+    bHtml += '</tr>'
+
+    // Line
+    let lineHtml = '<tr class="line-row"><td class="op-cell"></td>'
+    for (let i = 0; i < len; i++) lineHtml += '<td></td>'
+    lineHtml += '</tr>'
+
+    // Result row
+    let resHtml = '<tr><td class="op-cell"></td>'
+    if (step >= 3) {
+      rDigits.slice(-(len+1)).forEach((d, i) => {
+        const cls = i === 0 && d === 0 ? 'dim' : 'result'
+        resHtml += '<td class="' + cls + '">' + (i === 0 && d === 0 ? '' : d) + '</td>'
+      })
+    } else if (step >= 1) {
+      // Show ones digit
+      const onesResult = (aDigits[len-1] + bDigits[len-1]) % 10
+      for (let i = 0; i < len-1; i++) resHtml += '<td></td>'
+      resHtml += '<td class="result">' + onesResult + '</td>'
+    } else {
+      for (let i = 0; i < len; i++) resHtml += '<td></td>'
+    }
+    resHtml += '</tr>'
+
+    html = carryHtml + aHtml + bHtml + lineHtml + resHtml
+
+    const steps = [
+      'Settu upp dæmið í dálka — tug og eining hvort í sínum dálk.',
+      '1. Leggjum saman einingar: ' + aDigits[len-1] + ' + ' + bDigits[len-1] + ' = ' + (aDigits[len-1]+bDigits[len-1]) + (carry ? ' — skrifum ' + (aDigits[len-1]+bDigits[len-1])%10 + ' og færum 1 í tugadálkinn' : ''),
+      carry ? '2. Leggjum saman tuga + lánið: ' + aDigits[len-2] + ' + ' + bDigits[len-2] + ' + 1 = ' + (aDigits[len-2]+bDigits[len-2]+1) : '2. Leggjum saman tuga: ' + aDigits[len-2] + ' + ' + bDigits[len-2] + ' = ' + (aDigits[len-2]+bDigits[len-2]),
+      '✅ Svarið er ' + result
+    ]
+    stepText.textContent = steps[Math.min(step, steps.length-1)]
+
+  } else {
+    // Subtraction
+    const result = a - b
+    const aOnes = aDigits[len-1] !== null ? aDigits[len-1] : 0
+    const bOnes = bDigits[len-1] !== null ? bDigits[len-1] : 0
+    const aTens = aDigits[len-2] !== null ? aDigits[len-2] : 0
+    const bTens = bDigits[len-2] !== null ? bDigits[len-2] : 0
+    const borrowed = aOnes < bOnes
+
+    // A row (with borrowing shown)
+    let aHtml = '<tr><td class="op-cell"></td>'
+    aDigits.forEach((d, i) => {
+      if (d === null) { aHtml += '<td></td>'; return }
+      if (step >= 2 && borrowed && i === len-2) {
+        aHtml += '<td class="borrowed">' + (d-1) + '</td>'
+      } else if (step >= 2 && borrowed && i === len-1) {
+        aHtml += '<td class="borrowed">' + (d+10) + '</td>'
+      } else {
+        aHtml += '<td>' + d + '</td>'
+      }
+    })
+    aHtml += '</tr>'
+
+    // Borrow row
+    let borrowHtml = '<tr>'
+    borrowHtml += '<td class="op-cell"></td>'
+    for (let i = 0; i < len; i++) {
+      if (step >= 2 && borrowed && i === len-2) {
+        borrowHtml += '<td class="carry" style="font-size:10px;color:#e11d48;">lán</td>'
+      } else {
+        borrowHtml += '<td></td>'
+      }
+    }
+    borrowHtml += '</tr>'
+
+    // B row
+    let bHtml = '<tr><td class="op-cell">−</td>'
+    bDigits.forEach(d => { bHtml += '<td>' + (d === null ? '' : d) + '</td>' })
+    bHtml += '</tr>'
+
+    // Line
+    let lineHtml = '<tr class="line-row"><td class="op-cell"></td>'
+    for (let i = 0; i < len; i++) lineHtml += '<td></td>'
+    lineHtml += '</tr>'
+
+    // Result
+    const rDigits = String(result).split('').map(Number)
+    while (rDigits.length < len) rDigits.unshift(0)
+    let resHtml = '<tr><td class="op-cell"></td>'
+    if (step >= 4) {
+      rDigits.forEach((d, i) => {
+        resHtml += '<td class="' + (d===0&&i===0?'dim':'result') + '">' + (d===0&&i===0?'':d) + '</td>'
+      })
+    } else if (step >= 3) {
+      const onesResult = borrowed ? (aDigits[len-1]+10 - bDigits[len-1]) : (aDigits[len-1] - bDigits[len-1])
+      for (let i = 0; i < len-1; i++) resHtml += '<td></td>'
+      resHtml += '<td class="result">' + onesResult + '</td>'
+    } else {
+      for (let i = 0; i < len; i++) resHtml += '<td></td>'
+    }
+    resHtml += '</tr>'
+
+    html = borrowHtml + aHtml + bHtml + lineHtml + resHtml
+
+    const steps = [
+      'Settu upp dæmið í dálka — tug og eining hvort í sínum dálk.',
+      '1. Getum við dregið ' + bDigits[len-1] + ' frá ' + aDigits[len-1] + '?' + (borrowed ? ' Nei! ' + aDigits[len-1] + ' < ' + bDigits[len-1] + ' — við þurfum að taka að láni.' : ' Já! ' + aDigits[len-1] + ' ≥ ' + bDigits[len-1]),
+      borrowed ? '2. Tökum 1 tug að láni — ' + aDigits[len-2] + ' verður ' + (aDigits[len-2]-1) + ' og ' + aDigits[len-1] + ' verður ' + (aDigits[len-1]+10) : '2. Drögum frá einingar: ' + aDigits[len-1] + ' − ' + bDigits[len-1] + ' = ' + (aDigits[len-1]-bDigits[len-1]),
+      borrowed ? '3. Drögum frá einingar: ' + (aDigits[len-1]+10) + ' − ' + bDigits[len-1] + ' = ' + (aDigits[len-1]+10-bDigits[len-1]) : '3. Drögum frá tuga: ' + aDigits[len-2] + ' − ' + bDigits[len-2] + ' = ' + (aDigits[len-2]-bDigits[len-2]),
+      '✅ Svarið er ' + result
+    ]
+    stepText.textContent = steps[Math.min(step, steps.length-1)]
+  }
+
+  table.innerHTML = html
+
+  const totalSteps = op === '+' ? 3 : 4
+  if (step >= totalSteps) {
+    stepBtn.textContent = '✅ Lokið'
+    stepBtn.style.background = '#dcfce7'
+    stepBtn.style.color = '#16a34a'
+  } else {
+    stepBtn.textContent = 'Skref ▶'
+    stepBtn.style.background = ''
+    stepBtn.style.color = ''
   }
 }
 
