@@ -3602,153 +3602,141 @@ function renderGrid() {
   const stepText = document.getElementById('gridStepText')
   const stepBtn = document.getElementById('gridStepBtn')
 
-  // Get digits
-  const aStr = String(a).padStart(2, ' ')
-  const bStr = String(b).padStart(2, ' ')
-  const aDigits = String(a).split('').map(Number)
-  const bDigits = String(b).split('').map(Number)
+  // Build digit arrays with null for empty leading positions
+  function digits(n, length) {
+    const d = String(n).split('').map(Number)
+    while (d.length < length) d.unshift(null)
+    return d
+  }
 
-  // Pad to same length
-  const len = Math.max(aDigits.length, bDigits.length)
-  while (aDigits.length < len) aDigits.unshift(0)
-  while (bDigits.length < len) bDigits.unshift(0)
+  const result = op === '+' ? a + b : a - b
+  const len = String(Math.max(a, b, Math.abs(result))).length
+  const A = digits(a, len)
+  const B = digits(b, len)
+  const R = digits(Math.abs(result), len)
+
+  // Named digit positions
+  const aOnes = A[len-1] || 0
+  const bOnes = B[len-1] || 0
+  const aTens = len >= 2 ? (A[len-2] || 0) : 0
+  const bTens = len >= 2 ? (B[len-2] || 0) : 0
+
+  // Helper to render a cell
+  function cell(val, cls) {
+    const c = cls ? ' class="' + cls + '"' : ''
+    return '<td' + c + '>' + (val === null || val === '' ? '' : val) + '</td>'
+  }
+
+  // Line separator
+  const line = '<tr class="line-row"><td class="op-cell"></td>' + '<td></td>'.repeat(len) + '</tr>'
 
   let html = ''
-  const maxSteps = op === '+' ? 3 : 4
+  let steps = []
 
   if (op === '+') {
-    const result = a + b
-    const rDigits = String(result).split('').map(Number)
-    while (rDigits.length < len + 1) rDigits.unshift(0)
+    const carry = (aOnes + bOnes) >= 10 ? 1 : 0
+    const onesSum = aOnes + bOnes
+    const onesDigit = onesSum % 10
 
     // Carry row
-    const carry = (aDigits[aDigits.length-1] + bDigits[bDigits.length-1]) >= 10 ? 1 : 0
-    let carryHtml = '<tr>'
-    carryHtml += '<td class="op-cell"></td>'
+    let carryRow = '<tr><td class="op-cell"></td>'
     for (let i = 0; i < len; i++) {
-      const isCarryCol = i === len - 2
-      const showCarry = step >= 2 && carry && isCarryCol
-      carryHtml += '<td class="carry">' + (showCarry ? '1' : '') + '</td>'
+      const showCarry = step >= 2 && carry && i === len-2
+      carryRow += cell(showCarry ? '1' : '', 'carry')
     }
-    carryHtml += '</tr>'
+    carryRow += '</tr>'
 
     // A row
-    let aHtml = '<tr><td class="op-cell"></td>'
-    aDigits.forEach(d => { aHtml += '<td>' + (d === 0 && aDigits.indexOf(d) === 0 ? '' : d) + '</td>' })
-    aHtml += '</tr>'
+    let aRow = '<tr><td class="op-cell"></td>'
+    A.forEach(d => { aRow += cell(d, '') })
+    aRow += '</tr>'
 
     // B row
-    let bHtml = '<tr><td class="op-cell">+</td>'
-    bDigits.forEach(d => { bHtml += '<td>' + (d === 0 && bDigits.indexOf(d) === 0 ? '' : d) + '</td>' })
-    bHtml += '</tr>'
-
-    // Line
-    let lineHtml = '<tr class="line-row"><td class="op-cell"></td>'
-    for (let i = 0; i < len; i++) lineHtml += '<td></td>'
-    lineHtml += '</tr>'
+    let bRow = '<tr><td class="op-cell">+</td>'
+    B.forEach(d => { bRow += cell(d, '') })
+    bRow += '</tr>'
 
     // Result row
-    let resHtml = '<tr><td class="op-cell"></td>'
+    let resRow = '<tr><td class="op-cell"></td>'
     if (step >= 3) {
-      rDigits.slice(-(len+1)).forEach((d, i) => {
-        const cls = i === 0 && d === 0 ? 'dim' : 'result'
-        resHtml += '<td class="' + cls + '">' + (i === 0 && d === 0 ? '' : d) + '</td>'
-      })
+      R.forEach(d => { resRow += cell(d, d === null ? '' : 'result') })
+      // If result has extra digit (carry into hundreds)
+      if (result >= 100 && len < 3) {
+        resRow = '<tr><td class="op-cell"></td>' + cell(Math.floor(result/100), 'result') + cell(Math.floor((result%100)/10), 'result') + cell(result%10, 'result') + '</tr>'
+      }
     } else if (step >= 1) {
-      // Show ones digit
-      const onesResult = (aDigits[len-1] + bDigits[len-1]) % 10
-      for (let i = 0; i < len-1; i++) resHtml += '<td></td>'
-      resHtml += '<td class="result">' + onesResult + '</td>'
+      for (let i = 0; i < len-1; i++) resRow += cell('', '')
+      resRow += cell(onesDigit, 'result')
     } else {
-      for (let i = 0; i < len; i++) resHtml += '<td></td>'
+      for (let i = 0; i < len; i++) resRow += cell('', '')
     }
-    resHtml += '</tr>'
+    resRow += '</tr>'
 
-    html = carryHtml + aHtml + bHtml + lineHtml + resHtml
+    html = carryRow + aRow + bRow + line + resRow
 
-    const steps = [
-      'Settu upp dæmið í dálka — tug og eining hvort í sínum dálk.',
-      '1. Leggjum saman einingar: ' + aDigits[len-1] + ' + ' + bDigits[len-1] + ' = ' + (aDigits[len-1]+bDigits[len-1]) + (carry ? ' — skrifum ' + (aDigits[len-1]+bDigits[len-1])%10 + ' og færum 1 í tugadálkinn' : ''),
-      carry ? '2. Leggjum saman tuga + lánið: ' + aDigits[len-2] + ' + ' + bDigits[len-2] + ' + 1 = ' + (aDigits[len-2]+bDigits[len-2]+1) : '2. Leggjum saman tuga: ' + aDigits[len-2] + ' + ' + bDigits[len-2] + ' = ' + (aDigits[len-2]+bDigits[len-2]),
+    steps = [
+      'Settu upp dæmið í dálka — tug yfir tug, eining yfir einingu.',
+      '1. Leggjum saman einingar: ' + aOnes + ' + ' + bOnes + ' = ' + onesSum + (carry ? ' → skrifum ' + onesDigit + ', færum 1 í tugadálk' : ''),
+      carry ? '2. Leggjum saman tuga + lánið: ' + aTens + ' + ' + bTens + ' + 1 = ' + (aTens+bTens+1) : '2. Leggjum saman tuga: ' + aTens + ' + ' + bTens + ' = ' + (aTens+bTens),
       '✅ Svarið er ' + result
     ]
-    stepText.textContent = steps[Math.min(step, steps.length-1)]
 
   } else {
     // Subtraction
-    const result = a - b
-    const aOnes = aDigits[len-1] !== null ? aDigits[len-1] : 0
-    const bOnes = bDigits[len-1] !== null ? bDigits[len-1] : 0
-    const aTens = aDigits[len-2] !== null ? aDigits[len-2] : 0
-    const bTens = bDigits[len-2] !== null ? bDigits[len-2] : 0
     const borrowed = aOnes < bOnes
+    const onesResult = borrowed ? aOnes + 10 - bOnes : aOnes - bOnes
+    const tensResult = borrowed ? aTens - 1 - bTens : aTens - bTens
 
-    // A row (with borrowing shown)
-    let aHtml = '<tr><td class="op-cell"></td>'
-    aDigits.forEach((d, i) => {
-      if (d === null) { aHtml += '<td></td>'; return }
-      if (step >= 2 && borrowed && i === len-2) {
-        aHtml += '<td class="borrowed">' + (d-1) + '</td>'
+    // Borrow indicator row
+    let borrowRow = '<tr><td class="op-cell"></td>'
+    for (let i = 0; i < len; i++) {
+      borrowRow += cell(step >= 2 && borrowed && i === len-2 ? 'lán' : '', 'carry')
+    }
+    borrowRow += '</tr>'
+
+    // A row (show borrowed values at step 2+)
+    let aRow = '<tr><td class="op-cell"></td>'
+    A.forEach((d, i) => {
+      if (step >= 2 && borrowed && i === len-2 && d !== null) {
+        aRow += cell(d - 1, 'borrowed')
       } else if (step >= 2 && borrowed && i === len-1) {
-        aHtml += '<td class="borrowed">' + (d+10) + '</td>'
+        aRow += cell(aOnes + 10, 'borrowed')
       } else {
-        aHtml += '<td>' + d + '</td>'
+        aRow += cell(d, '')
       }
     })
-    aHtml += '</tr>'
-
-    // Borrow row
-    let borrowHtml = '<tr>'
-    borrowHtml += '<td class="op-cell"></td>'
-    for (let i = 0; i < len; i++) {
-      if (step >= 2 && borrowed && i === len-2) {
-        borrowHtml += '<td class="carry" style="font-size:10px;color:#e11d48;">lán</td>'
-      } else {
-        borrowHtml += '<td></td>'
-      }
-    }
-    borrowHtml += '</tr>'
+    aRow += '</tr>'
 
     // B row
-    let bHtml = '<tr><td class="op-cell">−</td>'
-    bDigits.forEach(d => { bHtml += '<td>' + (d === null ? '' : d) + '</td>' })
-    bHtml += '</tr>'
+    let bRow = '<tr><td class="op-cell">−</td>'
+    B.forEach(d => { bRow += cell(d, '') })
+    bRow += '</tr>'
 
-    // Line
-    let lineHtml = '<tr class="line-row"><td class="op-cell"></td>'
-    for (let i = 0; i < len; i++) lineHtml += '<td></td>'
-    lineHtml += '</tr>'
-
-    // Result
-    const rDigits = String(result).split('').map(Number)
-    while (rDigits.length < len) rDigits.unshift(0)
-    let resHtml = '<tr><td class="op-cell"></td>'
+    // Result row
+    let resRow = '<tr><td class="op-cell"></td>'
     if (step >= 4) {
-      rDigits.forEach((d, i) => {
-        resHtml += '<td class="' + (d===0&&i===0?'dim':'result') + '">' + (d===0&&i===0?'':d) + '</td>'
-      })
+      R.forEach(d => { resRow += cell(d, d === null ? '' : 'result') })
     } else if (step >= 3) {
-      const onesResult = borrowed ? (aDigits[len-1]+10 - bDigits[len-1]) : (aDigits[len-1] - bDigits[len-1])
-      for (let i = 0; i < len-1; i++) resHtml += '<td></td>'
-      resHtml += '<td class="result">' + onesResult + '</td>'
+      for (let i = 0; i < len-1; i++) resRow += cell('', '')
+      resRow += cell(onesResult, 'result')
     } else {
-      for (let i = 0; i < len; i++) resHtml += '<td></td>'
+      for (let i = 0; i < len; i++) resRow += cell('', '')
     }
-    resHtml += '</tr>'
+    resRow += '</tr>'
 
-    html = borrowHtml + aHtml + bHtml + lineHtml + resHtml
+    html = borrowRow + aRow + bRow + line + resRow
 
-    const steps = [
-      'Settu upp dæmið í dálka — tug og eining hvort í sínum dálk.',
-      '1. Getum við dregið ' + bDigits[len-1] + ' frá ' + aDigits[len-1] + '?' + (borrowed ? ' Nei! ' + aDigits[len-1] + ' < ' + bDigits[len-1] + ' — við þurfum að taka að láni.' : ' Já! ' + aDigits[len-1] + ' ≥ ' + bDigits[len-1]),
-      borrowed ? '2. Tökum 1 tug að láni — ' + aDigits[len-2] + ' verður ' + (aDigits[len-2]-1) + ' og ' + aDigits[len-1] + ' verður ' + (aDigits[len-1]+10) : '2. Drögum frá einingar: ' + aDigits[len-1] + ' − ' + bDigits[len-1] + ' = ' + (aDigits[len-1]-bDigits[len-1]),
-      borrowed ? '3. Drögum frá einingar: ' + (aDigits[len-1]+10) + ' − ' + bDigits[len-1] + ' = ' + (aDigits[len-1]+10-bDigits[len-1]) : '3. Drögum frá tuga: ' + aDigits[len-2] + ' − ' + bDigits[len-2] + ' = ' + (aDigits[len-2]-bDigits[len-2]),
+    steps = [
+      'Settu upp dæmið í dálka — tug yfir tug, eining yfir einingu.',
+      '1. Getum við dregið ' + bOnes + ' frá ' + aOnes + '?' + (borrowed ? ' Nei — þurfum að taka að láni!' : ' Já — ' + aOnes + ' ≥ ' + bOnes),
+      borrowed ? '2. Tökum 1 tug að láni — ' + aTens + ' verður ' + (aTens-1) + ' og ' + aOnes + ' verður ' + (aOnes+10) : '2. Drögum frá einingar: ' + aOnes + ' − ' + bOnes + ' = ' + onesResult,
+      borrowed ? '3. Drögum frá einingar: ' + (aOnes+10) + ' − ' + bOnes + ' = ' + onesResult : '3. Drögum frá tuga: ' + aTens + ' − ' + bTens + ' = ' + tensResult,
       '✅ Svarið er ' + result
     ]
-    stepText.textContent = steps[Math.min(step, steps.length-1)]
   }
 
   table.innerHTML = html
+  stepText.textContent = steps[Math.min(step, steps.length-1)]
 
   const totalSteps = op === '+' ? 3 : 4
   if (step >= totalSteps) {
@@ -3762,9 +3750,14 @@ function renderGrid() {
   }
 }
 
+</script>
 
+<!-- ===== OVERLAYS ===== -->
+}
 
-
+function newShopList() {
+  startShopTier(shopTier)
+}
 </script>
 
 <!-- ===== GÁTU POPUP ===== -->
@@ -3887,52 +3880,41 @@ function renderGrid() {
 <script>
 /* ===== MERKI OG PRÓF ===== */
 const BADGE_DEFS = [
-  { id: 'margfoldun', name: 'Margföldunarmeistari', icon: '✖️', desc: 'Fáðu 9/10 rétt í margföldunarprófi', topic: 'margföldun', unlockAfter: 30, examSize: 10, passScore: 9 },
-  { id: 'deilding', name: 'Deilingarsnillingur', icon: '➗', desc: 'Fáðu 9/10 rétt í deilingarprófi', topic: 'deilding', unlockAfter: 20, examSize: 10, passScore: 9 },
-  { id: 'brot', name: 'Brotahetja', icon: '🍕', desc: 'Fáðu 8/10 rétt í brotaprófi', topic: 'brot', unlockAfter: 20, examSize: 10, passScore: 8 },
-  { id: 'flatarmal', name: 'Rúmfræðimeistari', icon: '📐', desc: 'Fáðu 8/10 rétt í rúmfræðiprófi', topic: 'flatarmál', unlockAfter: 6, examSize: 10, passScore: 8 },
-  { id: 'prosentur', name: 'Prósentumógúll', icon: '💯', desc: 'Fáðu 8/10 rétt í prósentuprófi', topic: 'prósentur', unlockAfter: 8, examSize: 10, passScore: 8 },
-  { id: 'samlagning', name: 'Samlagningarsérfræðingur', icon: '➕', desc: 'Fáðu 9/10 rétt í samlagningarprófi', topic: 'samlagning', unlockAfter: 20, examSize: 10, passScore: 9 }
+  {
+    id: 'margfoldun',
+    name: 'Margföldunarmeistari',
+    icon: '✖️',
+    desc: 'Farðu í próf og fáðu 9/10 rétt í margföldun',
+    topic: 'margföldun',
+    unlockAfter: 30,   // rétt svör til að opna próf
+    examSize: 10,
+    passScore: 9
+  }
 ]
 
 let badgeState = {}   // { margfoldun: { topicCorrect: 0, earned: false, examUnlocked: false } }
 let examState = null  // núverandi próf
 
-function getBadgeStorage(name, pass, callback) {
-  if (!name || !pass) { if(callback) callback({}); return {} }
-  if (window.firebaseReady) {
-    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/badges')
-    window.firebaseGet(r).then(snap => {
-      if (callback) callback(snap.exists() ? snap.val() : {})
-    }).catch(() => { if(callback) callback({}) })
-  } else {
-    const raw = localStorage.getItem('badges-' + getSaveKey(name, pass))
-    const val = (() => { try { return raw ? JSON.parse(raw) : {} } catch(e) { return {} } })()
-    if (callback) callback(val)
-    return val
-  }
+function getBadgeStorage(name, pass) {
+  if (!name || !pass) return {}
+  const raw = localStorage.getItem('badges-' + getSaveKey(name, pass))
+  try { return raw ? JSON.parse(raw) : {} } catch(e) { return {} }
 }
 
 function saveBadgeStorage() {
   const name = document.getElementById('studentName').value
   const pass = document.getElementById('studentPass').value
   if (!name || !pass) return
-  if (window.firebaseReady) {
-    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/badges')
-    window.firebaseSet(r, badgeState)
-  } else {
-    localStorage.setItem('badges-' + getSaveKey(name, pass), JSON.stringify(badgeState))
-  }
+  localStorage.setItem('badges-' + getSaveKey(name, pass), JSON.stringify(badgeState))
 }
 
 function initBadges(name, pass) {
-  getBadgeStorage(name, pass, function(saved) {
-    badgeState = {}
-    BADGE_DEFS.forEach(b => {
-      badgeState[b.id] = saved[b.id] || { topicCorrect: 0, earned: false, examUnlocked: false }
-    })
-    updateBadgeBtn()
+  const saved = getBadgeStorage(name, pass)
+  badgeState = {}
+  BADGE_DEFS.forEach(b => {
+    badgeState[b.id] = saved[b.id] || { topicCorrect: 0, earned: false, examUnlocked: false }
   })
+  updateBadgeBtn()
 }
 
 function updateBadgeBtn() {
@@ -4062,8 +4044,7 @@ function renderExamDots() {
 function showExamQuestion() {
   const p = examState.questions[examState.current]
   examState.answered = false
-  // innerHTML til að SVG myndir birtist rétt
-  document.getElementById('examQuestion').innerHTML = p.question
+  document.getElementById('examQuestion').textContent = p.question
   document.getElementById('examFeedback').style.display = 'none'
   document.getElementById('examFeedback').textContent = ''
 
@@ -4074,8 +4055,6 @@ function showExamQuestion() {
   inp.value = ''
   btn.style.display = 'block'
   btn.textContent = 'Svara ✓'
-  btn.style.opacity = '0.4'
-  btn.style.pointerEvents = 'none'
 
   if (p.options) {
     inp.style.display = 'none'
@@ -4084,27 +4063,13 @@ function showExamQuestion() {
       b.textContent = o
       b.style.cssText = 'display:block;width:100%;margin-bottom:8px;padding:12px 16px;font-size:16px;font-weight:700;font-family:Nunito,sans-serif;border:2px solid var(--amber-light);border-radius:12px;background:#fffbeb;cursor:pointer;text-align:left;transition:background 0.15s;'
       b.onmouseover = () => b.style.background = '#fef3c7'
-      b.onmouseout = () => { if (inp.value !== o) b.style.background = '#fffbeb' }
-      b.onclick = () => {
-        inp.value = o
-        // Auðkenna valinn valmöguleika
-        opts.querySelectorAll('button').forEach(x => { x.style.background = '#fffbeb'; x.style.borderColor = 'var(--amber-light)' })
-        b.style.background = '#fef3c7'
-        b.style.borderColor = '#f59e0b'
-        btn.style.display = 'block'
-        btn.style.opacity = '1'
-        btn.style.pointerEvents = 'auto'
-      }
+      b.onmouseout = () => b.style.background = '#fffbeb'
+      b.onclick = () => { inp.value = o; submitExam() }
       opts.appendChild(b)
     })
     btn.style.display = 'none'
   } else {
     inp.style.display = 'block'
-    inp.oninput = () => {
-      const hasVal = inp.value.trim().length > 0
-      btn.style.opacity = hasVal ? '1' : '0.4'
-      btn.style.pointerEvents = hasVal ? 'auto' : 'none'
-    }
     setTimeout(() => inp.focus(), 50)
   }
 }
@@ -4181,5 +4146,6 @@ function finishExam() {
   examState = null
 }
 </script>
+
 </body>
 </html>
