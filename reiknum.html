@@ -1714,6 +1714,127 @@ const PROBLEM_SETS = [
       { question: "⚗️ Lyfjan þarf 500 mg. Taflan er 0,25 g. Hversu margar töflur?", options: ["1","2","3","4"], answer: "2", solution: ["0,25 g = 250 mg", "500 ÷ 250 = 2 töflur"], topic: { key: "mælingar", msg: "Hér átt þú að læra um mælingar 📏" } },
       { question: "🚴 Hjól hefur ummál 2 m. Hvað kemst hjólið á 500 snúningum?", options: ["0,5km","1km","1,5km","2km"], answer: ["1km","1"], solution: ["500 × 2 = 1000 m = 1 km"], topic: { key: "mælingar", msg: "Hér átt þú að læra um mælingar 📏" } }
     ]
+  },
+
+  // =============================================
+  // DÆMASAFN 6 — Eyjafjallajökull (7. bekkur)
+  // Röð reikniaðgerða + Negatívar tölur
+  // =============================================
+  {
+    name: "Eyjafjallajökull",
+    problems: [
+      { question: "🔢 Hvað er 3 + 4 × 2?", options: ["14","11","10","12"], answer: "11", solution: ["Margföldun fyrst: 4 × 2 = 8","Síðan samlagning: 3 + 8 = 11"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "🔢 Hvað er (3 + 4) × 2?", options: ["14","11","10","12"], answer: "14", solution: ["Svigar fyrst: 3 + 4 = 7","Síðan margföldun: 7 × 2 = 14"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "🌡️ Hitastigið er −3°C. Það hækkar um 8 stig. Hvað er hitinn?", options: ["3°C","5°C","6°C","11°C"], answer: "5°C", solution: ["−3 + 8 = 5°C"], topic: { key: "negatívar tölur", msg: "Hér átt þú að læra um negatívar tölur 🌡️" } },
+      { question: "🔢 Hvað er 2 + 3 × 4 − 1?", options: ["13","19","20","15"], answer: "13", solution: ["Margföldun fyrst: 3 × 4 = 12","Síðan: 2 + 12 − 1 = 13"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "🌡️ Hitinn er −8°C að morgni og −2°C að kvöldi. Um hvað margar gráður hækkaði?", options: ["4","5","6","10"], answer: "6", solution: ["−2 − (−8) = −2 + 8 = 6 gráður"], topic: { key: "negatívar tölur", msg: "Hér átt þú að læra um negatívar tölur 🌡️" } },
+      { question: "🔢 Hvað er 10 − 2 × 3 + 1?", options: ["5","25","26","4"], answer: "5", solution: ["Margföldun fyrst: 2 × 3 = 6","Síðan: 10 − 6 + 1 = 5"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "📊 Hvaða tala er minni: −5 eða −2?", options: ["−5","−2","Þær eru jafnar","Má ekki bera saman"], answer: "−5", solution: ["Á talnalínu er −5 til vinstri við −2","Tölur til vinstri eru minni → −5 < −2"], topic: { key: "negatívar tölur", msg: "Hér átt þú að læra um negatívar tölur 🌡️" } },
+      { question: "🔢 Hvað er (5 + 3) × (4 − 2)?", options: ["14","16","18","20"], answer: "16", solution: ["Svigar fyrst: 5 + 3 = 8 og 4 − 2 = 2","Síðan: 8 × 2 = 16"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "🏢 Lyftan er á hæð −2 (kjallarinn). Hún fer upp 5 hæðir. Á hvaða hæð er hún?", options: ["Hæð 2","Hæð 3","Hæð 4","Hæð 7"], answer: "Hæð 3", solution: ["−2 + 5 = 3 → Hæð 3"], topic: { key: "negatívar tölur", msg: "Hér átt þú að læra um negatívar tölur 🌡️" } },
+      { question: "🔢 Hvað er 3 × 4 + 2 × 5?", options: ["22","50","70","17"], answer: "22", solution: ["3 × 4 = 12 og 2 × 5 = 10","12 + 10 = 22"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "🌡️ −7 + 3 = ?", options: ["−10","−4","4","10"], answer: "−4", solution: ["Byrjum á −7 og förum 3 skref til hægri","−7 + 3 = −4"], topic: { key: "negatívar tölur", msg: "Hér átt þú að læra um negatívar tölur 🌡️" } },
+      { question: "🔢 Hvað er 20 ÷ (2 + 3)?", options: ["13","4","10","12"], answer: "4", solution: ["Svigar fyrst: 2 + 3 = 5","Síðan: 20 ÷ 5 = 4"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "🌡️ Hiti í Reykjavík er −5°C, í Akureyri er −12°C. Hvað er munurinn?", options: ["5°C","6°C","7°C","17°C"], answer: "7°C", solution: ["−5 − (−12) = −5 + 12 = 7°C"], topic: { key: "negatívar tölur", msg: "Hér átt þú að læra um negatívar tölur 🌡️" } },
+      { question: "🔢 Jón reiknar 3 + 4 × 2 = 14. Er þetta rétt?", options: ["Já","Nei — svarið á að vera 11","Nei — svarið á að vera 10","Nei — svarið á að vera 13"], answer: "Nei — svarið á að vera 11", solution: ["Margföldun fyrst: 4 × 2 = 8","Síðan: 3 + 8 = 11 (ekki 14)"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } },
+      { question: "🔢 Hvað er 100 − 4 × (3 + 2)?", options: ["80","75","485","20"], answer: "80", solution: ["Svigar fyrst: 3 + 2 = 5","Margföldun: 4 × 5 = 20","Síðan: 100 − 20 = 80"], topic: { key: "röð reikniaðgerða", msg: "Hér átt þú að læra röð reikniaðgerða 🔢" } }
+    ]
+  },
+  // =============================================
+  // DÆMASAFN 7 — Hekla (7. bekkur)
+  // Tölfræði: meðaltal, miðgildi, tíðasta gildi
+  // =============================================
+  {
+    name: "Hekla",
+    problems: [
+      { question: "📊 Einkunnir: 6, 8, 7, 9, 5. Hvað er meðaltalið?", options: ["6","7","8","9"], answer: "7", solution: ["6+8+7+9+5 = 35","35 ÷ 5 = 7"], topic: { key: "tölfræði — meðaltal", msg: "Hér átt þú að læra um meðaltal 📊" } },
+      { question: "📈 Tölur í röð: 3, 5, 7, 9, 11. Hvað er miðgildið?", options: ["5","7","9","6"], answer: "7", solution: ["Miðgildið er talan í miðjunni","5 tölur — þriðja er miðjan: 7"], topic: { key: "tölfræði — miðgildi", msg: "Hér átt þú að læra um miðgildi 📈" } },
+      { question: "🔢 Gögn: 4, 6, 6, 7, 8, 6, 9. Hvað er tíðasta gildið?", options: ["4","6","7","9"], answer: "6", solution: ["6 kemur 3 sinnum — oftar en aðrar tölur","Tíðasta gildi = 6"], topic: { key: "tölfræði — tíðasta", msg: "Hér átt þú að læra um tíðasta gildi 📊" } },
+      { question: "📊 Hitastig í viku: 4°, 6°, 3°, 8°, 5°, 7°, 2°. Hvað er meðaltalið?", options: ["4°","5°","6°","7°"], answer: "5°", solution: ["4+6+3+8+5+7+2 = 35","35 ÷ 7 = 5°C"], topic: { key: "tölfræði — meðaltal", msg: "Hér átt þú að læra um meðaltal 📊" } },
+      { question: "📈 Raðaðu í stærðarröð: 9, 3, 7, 1, 5. Hvað er miðgildið?", options: ["3","5","7","9"], answer: "5", solution: ["Í röð: 1, 3, 5, 7, 9","Miðgildið er þriðja talan: 5"], topic: { key: "tölfræði — miðgildi", msg: "Hér átt þú að læra um miðgildi 📈" } },
+      { question: "📊 Bekkhöggull mældur í 5 skiptum: 12m, 14m, 11m, 15m, 13m. Hvað er meðaltal?", options: ["12m","13m","14m","15m"], answer: "13m", solution: ["12+14+11+15+13 = 65","65 ÷ 5 = 13m"], topic: { key: "tölfræði — meðaltal", msg: "Hér átt þú að læra um meðaltal 📊" } },
+      { question: "📈 6 nemendur: einkunnir 5, 7, 8, 6, 9, 7. Hvað er miðgildið?", options: ["6,5","7","7,5","8"], answer: "7", solution: ["Í röð: 5, 6, 7, 7, 8, 9","6 tölur — miðjan er milli 3. og 4.","(7+7) ÷ 2 = 7"], topic: { key: "tölfræði — miðgildi", msg: "Hér átt þú að læra um miðgildi 📈" } },
+      { question: "📊 Gögn: 2, 3, 3, 4, 5, 3, 6, 7. Hvað er tíðasta gildið?", options: ["2","3","4","5"], answer: "3", solution: ["3 kemur þrisvar sinnum","Það er fleiri en neinar aðrar tölur"], topic: { key: "tölfræði — tíðasta", msg: "Hér átt þú að læra um tíðasta gildi 📊" } },
+      { question: "📊 Þrír vinir vinna: 4.500 kr, 6.000 kr og 4.500 kr. Hvað er meðallaun?", options: ["4.500 kr","5.000 kr","5.500 kr","6.000 kr"], answer: "5.000 kr", solution: ["4500 + 6000 + 4500 = 15000","15000 ÷ 3 = 5.000 kr"], topic: { key: "tölfræði — meðaltal", msg: "Hér átt þú að læra um meðaltal 📊" } },
+      { question: "📈 Gögn: 10, 20, 30, 40, 50. Hvað er miðgildið?", options: ["20","25","30","35"], answer: "30", solution: ["Þetta eru þegar í röð","5 tölur — þriðja er miðjan: 30"], topic: { key: "tölfræði — miðgildi", msg: "Hér átt þú að læra um miðgildi 📈" } },
+      { question: "📊 Meðaltal tveggja talna er 15. Önnur talan er 12. Hvað er hin?", options: ["15","16","17","18"], answer: "18", solution: ["Meðaltal = 15 þýðir summa = 30","30 − 12 = 18"], topic: { key: "tölfræði — meðaltal", msg: "Hér átt þú að læra um meðaltal 📊" } },
+      { question: "📊 Gögn: 5, 5, 5, 5, 5. Hvað er tíðasta gildið, miðgildið og meðaltalið?", options: ["5, 5, 5","5, 5, 25","5, 1, 5","Má ekki reikna"], answer: "5, 5, 5", solution: ["Allt sama talan → allt jafnt 5","Tíðasta = 5, miðgildi = 5, meðaltal = 5"], topic: { key: "tölfræði — meðaltal", msg: "Hér átt þú að læra um meðaltal 📊" } },
+      { question: "📈 4 nemendur mæla teningshæð: 3cm, 5cm, 4cm, 8cm. Hvað er miðgildið?", options: ["3,5cm","4cm","4,5cm","5cm"], answer: "4,5cm", solution: ["Í röð: 3, 4, 5, 8","4 tölur — miðjan: (4+5) ÷ 2 = 4,5 cm"], topic: { key: "tölfræði — miðgildi", msg: "Hér átt þú að læra um miðgildi 📈" } },
+      { question: "📊 Á prófum fær nemandi: 60%, 70%, 80%, 90%. Hvað er meðaleinkunn?", options: ["70%","75%","80%","72%"], answer: "75%", solution: ["60+70+80+90 = 300","300 ÷ 4 = 75%"], topic: { key: "tölfræði — meðaltal", msg: "Hér átt þú að læra um meðaltal 📊" } },
+      { question: "📊 Gögn: 1, 2, 3, 100. Er meðaltalið eða miðgildið betri lýsing á gögnunum?", options: ["Meðaltal (26,5)","Miðgildi (2,5)","Báðar jafngildar","Hvorug heldur"], answer: "Miðgildi (2,5)", solution: ["100 er útlægur gildi sem skekkir meðaltalið","Miðgildi (2,5) lýsir betur meginmassanum"], topic: { key: "tölfræði — miðgildi", msg: "Hér átt þú að læra um miðgildi 📈" } }
+    ]
+  },
+  // =============================================
+  // DÆMASAFN 8 — Snæfellsjökull (7. bekkur)
+  // Margföldun tveggja stafa + Frumtölur
+  // =============================================
+  {
+    name: "Snæfellsjökull",
+    problems: [
+      { question: "🔢 Hvað er 43 × 21? (43 × 20 + 43 × 1)", options: ["863","893","903","923"], answer: "903", solution: ["43 × 20 = 860","43 × 1 = 43","860 + 43 = 903"], topic: { key: "margföldun tveggja stafa", msg: "Hér átt þú að læra margföldun tveggja stafa ✖️" } },
+      { question: "🔢 Er 17 frumtala?", options: ["Já","Nei — 17 = 1 × 17","Nei — hægt að deila í 2","Nei — hægt að deila í 3"], answer: "Já", solution: ["17 er deilanlegt bara með 1 og 17","Það er frumtala"], topic: { key: "frumtölur", msg: "Hér átt þú að læra um frumtölur 🔢" } },
+      { question: "🔢 Hvað er 84 ÷ 4? (80 ÷ 4 + 4 ÷ 4)", options: ["19","20","21","22"], answer: "21", solution: ["80 ÷ 4 = 20","4 ÷ 4 = 1","20 + 1 = 21"], topic: { key: "deilingaraðferð", msg: "Hér átt þú að læra deilingaraðferðina ➗" } },
+      { question: "🔢 Hvaða tala er EKKI frumtala?", options: ["11","13","15","17"], answer: "15", solution: ["15 = 3 × 5","Hægt að deila með 3 og 5 → ekki frumtala"], topic: { key: "frumtölur", msg: "Hér átt þú að læra um frumtölur 🔢" } },
+      { question: "🔢 Hvað er 32 × 14?", options: ["428","438","448","458"], answer: "448", solution: ["32 × 10 = 320","32 × 4 = 128","320 + 128 = 448"], topic: { key: "margföldun tveggja stafa", msg: "Hér átt þú að læra margföldun tveggja stafa ✖️" } },
+      { question: "🔢 Finndu alla þætti tölunnar 24.", options: ["1,2,3,4,6,8,12,24","1,2,4,6,12,24","1,3,8,24","2,3,4,6,8,12"], answer: "1,2,3,4,6,8,12,24", solution: ["1×24, 2×12, 3×8, 4×6","Þættirnir eru: 1, 2, 3, 4, 6, 8, 12, 24"], topic: { key: "þáttun", msg: "Hér átt þú að læra um þáttun 🔢" } },
+      { question: "🔢 Hvað er 96 ÷ 6?", options: ["14","15","16","17"], answer: "16", solution: ["60 ÷ 6 = 10","36 ÷ 6 = 6","10 + 6 = 16"], topic: { key: "deilingaraðferð", msg: "Hér átt þú að læra deilingaraðferðina ➗" } },
+      { question: "🧥 4 búningar og 3 skór — hversu margar mismunandi samsetningar?", options: ["7","9","10","12"], answer: "12", solution: ["4 × 3 = 12 samsetningar"], topic: { key: "margföldun tveggja stafa", msg: "Hér átt þú að læra margföldun tveggja stafa ✖️" } },
+      { question: "🔢 Hversu margar frumtölur eru á milli 1 og 20?", options: ["6","7","8","9"], answer: "8", solution: ["Frumtölur: 2, 3, 5, 7, 11, 13, 17, 19","Það eru 8 frumtölur"], topic: { key: "frumtölur", msg: "Hér átt þú að læra um frumtölur 🔢" } },
+      { question: "🔢 Hvað er 25 × 16?", options: ["375","380","400","425"], answer: "400", solution: ["25 × 16 = 25 × 4 × 4 = 100 × 4 = 400"], topic: { key: "margföldun tveggja stafa", msg: "Hér átt þú að læra margföldun tveggja stafa ✖️" } },
+      { question: "🔢 Er 1 frumtala?", options: ["Já","Nei — 1 telst ekki frumtala","Nei — 1 er samsett tala","Já — 1 er deilanlegt með sjálfu sér"], answer: "Nei — 1 telst ekki frumtala", solution: ["Frumtölur þurfa að vera stærri en 1","1 er sérstök tala sem telst ekki frumtala"], topic: { key: "frumtölur", msg: "Hér átt þú að læra um frumtölur 🔢" } },
+      { question: "🔢 Þáttu 36 í frumtöluþætti.", options: ["2×18","2²×3²","2×3×6","4×9"], answer: "2²×3²", solution: ["36 = 2 × 18 = 2 × 2 × 9 = 2 × 2 × 3 × 3","= 2² × 3²"], topic: { key: "þáttun", msg: "Hér átt þú að læra um þáttun 🔢" } },
+      { question: "🔢 Hvað er 78 ÷ 6?", options: ["11","12","13","14"], answer: "13", solution: ["60 ÷ 6 = 10","18 ÷ 6 = 3","10 + 3 = 13"], topic: { key: "deilingaraðferð", msg: "Hér átt þú að læra deilingaraðferðina ➗" } },
+      { question: "🔢 Hvað er 54 × 13?", options: ["692","702","712","722"], answer: "702", solution: ["54 × 10 = 540","54 × 3 = 162","540 + 162 = 702"], topic: { key: "margföldun tveggja stafa", msg: "Hér átt þú að læra margföldun tveggja stafa ✖️" } },
+      { question: "🔢 Hvaða frumtala er stærst undir 50?", options: ["43","45","47","49"], answer: "47", solution: ["45 = 5×9, 49 = 7×7 — ekki frumtölur","47 er bara deilanlegt með 1 og 47 ✓"], topic: { key: "frumtölur", msg: "Hér átt þú að læra um frumtölur 🔢" } }
+    ]
+  },
+  // =============================================
+  // DÆMASAFN 9 — Krafla (7. bekkur)
+  // Rúmfræði: horn, hringur, flatarmál, rúmmál
+  // =============================================
+  {
+    name: "Krafla",
+    problems: [
+      { question: "📐 Hvað er rétt horn?", options: ["45°","90°","120°","180°"], answer: "90°", solution: ["Rétt horn = nákvæmlega 90°","Þetta er hornið sem er í hornum fernings"], topic: { key: "rúmfræði — horn", msg: "Hér átt þú að læra um horn 📐" } },
+      { question: "⭕ Geisli hrings er 5 cm. Hvað er þvermálið?", options: ["5 cm","10 cm","15 cm","25 cm"], answer: "10 cm", solution: ["Þvermál = 2 × geisli","2 × 5 = 10 cm"], topic: { key: "rúmfræði — hringur", msg: "Hér átt þú að læra um hring ⭕" } },
+      { question: "📐 Hvað er hvasst horn?", options: ["Nákvæmlega 90°","Meira en 90°","Minna en 90°","Nákvæmlega 180°"], answer: "Minna en 90°", solution: ["Hvasst horn < 90°","Gleitt horn > 90°","Rétt horn = 90°"], topic: { key: "rúmfræði — horn", msg: "Hér átt þú að læra um horn 📐" } },
+      { question: "⭕ Þvermál hrings er 14 cm. Hvað er geislinn?", options: ["5 cm","6 cm","7 cm","8 cm"], answer: "7 cm", solution: ["Geisli = þvermál ÷ 2","14 ÷ 2 = 7 cm"], topic: { key: "rúmfræði — hringur", msg: "Hér átt þú að læra um hring ⭕" } },
+      { question: "📏 Ferhyrningur er 8 cm × 5 cm. Hvað er flatarmálið?", options: ["26 cm²","40 cm²","13 cm²","80 cm²"], answer: "40 cm²", solution: ["Flatarmál ferhyrnings = l × b","8 × 5 = 40 cm²"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
+      { question: "📦 Kassi er 4 cm × 3 cm × 2 cm. Hvað er rúmmálið?", options: ["9 cm³","18 cm³","24 cm³","36 cm³"], answer: "24 cm³", solution: ["Rúmmál kassa = l × b × h","4 × 3 × 2 = 24 cm³"], topic: { key: "rúmfræði — rúmmál", msg: "Hér átt þú að læra um rúmmál 📦" } },
+      { question: "⭕ Hringur hefur þvermál 10 cm. Hvað er ummálið? (π ≈ 3,14)", options: ["15,7 cm","31,4 cm","62,8 cm","314 cm"], answer: "31,4 cm", solution: ["Ummál = π × þvermál","3,14 × 10 = 31,4 cm"], topic: { key: "rúmfræði — hringur", msg: "Hér átt þú að læra um hring ⭕" } },
+      { question: "📐 Topphorn tveggja línustrika sem skerast eru alltaf:", options: ["Jafnstórar","Koma í pörum","Summan er 180°","Allt hér að ofan er rangt"], answer: ["Jafnstórar","jafnstórar"], solution: ["Topphorn eru þær hornpörin sem eru beint á móti hvort öðru","Þau eru alltaf jafnstór"], topic: { key: "rúmfræði — horn", msg: "Hér átt þú að læra um horn 📐" } },
+      { question: "📏 Þríhyrningur með grunn 10 cm og hæð 6 cm. Hvað er flatarmálið?", options: ["60 cm²","30 cm²","16 cm²","8 cm²"], answer: "30 cm²", solution: ["Flatarmál þríhyrnings = (g × h) ÷ 2","(10 × 6) ÷ 2 = 30 cm²"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
+      { question: "📦 Hvað þýðir 1 dm³?", options: ["1 lítri","10 lítrar","100 lítrar","0,1 lítri"], answer: "1 lítri", solution: ["1 dm³ = 1 lítri","Þetta er mikilvæg umbreyting!"], topic: { key: "rúmfræði — rúmmál", msg: "Hér átt þú að læra um rúmmál 📦" } },
+      { question: "⭕ Geisli hrings er 7 cm. Hvað er ummálið? (π ≈ 3,14)", options: ["21,98 cm","43,96 cm","87,92 cm","153,86 cm"], answer: "43,96 cm", solution: ["Þvermál = 2 × 7 = 14 cm","Ummál = π × þvermál = 3,14 × 14 = 43,96 cm"], topic: { key: "rúmfræði — hringur", msg: "Hér átt þú að læra um hring ⭕" } },
+      { question: "📐 Grannhorn eru horn sem:", options: ["Eru jafnstór","Leggja saman í 180°","Leggja saman í 90°","Eru í þríhyrningi"], answer: "Leggja saman í 180°", solution: ["Grannhorn = horn sem mynda beinan horn saman","Summan er alltaf 180°"], topic: { key: "rúmfræði — horn", msg: "Hér átt þú að læra um horn 📐" } },
+      { question: "📏 Herbergi er 5 m × 4 m. Hvað kostar gólfteppið ef 1 m² kostar 3.500 kr?", options: ["35.000 kr","60.000 kr","70.000 kr","80.000 kr"], answer: "70.000 kr", solution: ["Flatarmál: 5 × 4 = 20 m²","Kostnaður: 20 × 3.500 = 70.000 kr"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
+      { question: "📦 Geymir er 2 m × 1,5 m × 1 m. Hvað er rúmmálið í lítrum?", options: ["300 lítrar","3000 lítrar","30 lítrar","30.000 lítrar"], answer: "3000 lítrar", solution: ["Rúmmál: 2 × 1,5 × 1 = 3 m³","3 m³ = 3000 dm³ = 3000 lítrar"], topic: { key: "rúmfræði — rúmmál", msg: "Hér átt þú að læra um rúmmál 📦" } },
+      { question: "⭕ Hringskífa hefur geisla 3 cm. Hvað er flatarmálið? (π ≈ 3,14)", options: ["9,42 cm²","18,84 cm²","28,26 cm²","56,52 cm²"], answer: "28,26 cm²", solution: ["Flatarmál hrings = π × r²","3,14 × 3² = 3,14 × 9 = 28,26 cm²"], topic: { key: "rúmfræði — hringur", msg: "Hér átt þú að læra um hring ⭕" } }
+    ]
+  },
+  // =============================================
+  // DÆMASAFN 10 — Öræfajökull (7. bekkur)
+  // Brot, prósentur og heildarmyndin
+  // =============================================
+  {
+    name: "Öræfajökull",
+    problems: [
+      { question: "💯 Formúlan fyrir prósentur er: H × % ÷ 100. Hvað er 30% af 4.000 kr?", options: ["800 kr","1.000 kr","1.200 kr","1.400 kr"], answer: "1.200 kr", solution: ["4.000 × 30 ÷ 100 = 1.200 kr","Eða: 10% = 400, þá 30% = 3 × 400 = 1.200"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } },
+      { question: "🔢 Leggðu saman: 3/8 + 2/8 = ?", options: ["5/16","5/8","1/8","6/8"], answer: "5/8", solution: ["Sama nefnari — leggjum saman teljara","3 + 2 = 5 → 5/8"], topic: { key: "brot — samlagning", msg: "Hér ert þú að leggja brot saman ➕" } },
+      { question: "💯 Verð lækkar úr 8.000 kr í 6.000 kr. Hversu margar prósent er það lækkun?", options: ["20%","25%","30%","75%"], answer: "25%", solution: ["Lækkun: 8.000 − 6.000 = 2.000 kr","2.000 ÷ 8.000 × 100 = 25%"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } },
+      { question: "🔢 Margfalda: 2/3 × 3/5 = ?", options: ["5/8","6/15","2/5","6/8"], answer: ["6/15","2/5"], solution: ["Teljari × teljari: 2 × 3 = 6","Nefnari × nefnari: 3 × 5 = 15","6/15 = 2/5"], topic: { key: "margföldun brota", msg: "Hér átt þú að læra margföldun brota ✖️" } },
+      { question: "💯 Hvað er 15% af 2.000 kr?", options: ["200 kr","250 kr","300 kr","350 kr"], answer: "300 kr", solution: ["10% af 2.000 = 200","5% = 100","15% = 200 + 100 = 300 kr"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } },
+      { question: "🔢 Lengdu brotið 3/4 með 25: 3/4 = ?/100", options: ["25/100","50/100","75/100","100/100"], answer: "75/100", solution: ["3/4 × 25/25 = 75/100","75/100 = 75%"], topic: { key: "brot — lengja", msg: "Hér ert þú að lengja brot 🔢" } },
+      { question: "💯 Nemandi fær 18 af 24 spurningum rétt. Hversu margar prósent?", options: ["65%","70%","75%","80%"], answer: "75%", solution: ["18 ÷ 24 × 100 = 75%"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } },
+      { question: "🔢 Dragðu frá: 5/6 − 1/6 = ?", options: ["4/6","4/12","6/6","2/3"], answer: ["4/6","2/3"], solution: ["Sama nefnari: 5 − 1 = 4","4/6 = 2/3"], topic: { key: "brot — frádráttur", msg: "Hér ert þú að draga brot frá brotum 🍕" } },
+      { question: "💯 Verð er 12.000 kr með 20% afslætti. Hvað er upprunalegt verð?", options: ["9.600 kr","14.000 kr","15.000 kr","16.000 kr"], answer: "15.000 kr", solution: ["80% af upprunalegu = 12.000","100% = 12.000 ÷ 0,8 = 15.000 kr"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } },
+      { question: "🔢 Leggðu saman með samnefnara: 1/3 + 1/4 = ?", options: ["2/7","7/12","2/12","3/7"], answer: "7/12", solution: ["1/3 = 4/12, 1/4 = 3/12","4/12 + 3/12 = 7/12"], topic: { key: "brot — samlagning", msg: "Hér ert þú að leggja brot saman ➕" } },
+      { question: "💯 Í bekknum eru 24 nemendur. 25% fóru veikir. Hversu margir?", options: ["4","5","6","8"], answer: "6", solution: ["25% = 1/4","24 ÷ 4 = 6 nemendur"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } },
+      { question: "🔢 Styttu brotið 18/24.", options: ["3/4","6/8","9/12","2/3"], answer: "3/4", solution: ["Deilum bæði með 6","18 ÷ 6 = 3, 24 ÷ 6 = 4","18/24 = 3/4"], topic: { key: "brot — stytta", msg: "Hér ert þú að stytta brot 🔢" } },
+      { question: "💯 Hlutfall stúlkna í bekk er 60%. Ef 18 stúlkur eru í bekknum, hversu margir eru í bekknum alls?", options: ["24","28","30","36"], answer: "30", solution: ["60% = 18 stúlkur","1% = 18 ÷ 60 = 0,3","100% = 30 nemendur"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } },
+      { question: "🔢 Hvað er 3/4 af 120?", options: ["80","85","90","95"], answer: "90", solution: ["1/4 af 120 = 30","3/4 = 3 × 30 = 90"], topic: { key: "brot af heild", msg: "Hér ert þú að reikna brot af heild 🍕" } },
+      { question: "💯 Launin hækkuðu um 8% úr 350.000 kr. Hvað eru ný laun?", options: ["358.000 kr","372.000 kr","378.000 kr","380.000 kr"], answer: "378.000 kr", solution: ["8% af 350.000 = 28.000","350.000 + 28.000 = 378.000 kr"], topic: { key: "prósentur", msg: "Hér átt þú að læra hvað prósentur eru 💯" } }
+    ]
   }
 ]
 
@@ -1784,12 +1905,78 @@ const MOUNTAIN_THEME = [
     gradient: "linear-gradient(135deg, #9f1239, #e11d48)",
     progressGradient: "linear-gradient(90deg, #be123c, #f43f5e)",
     bg: "#fff1f2",
-    advance: "Katla er sigruð! 🌋🏆 Þú ert stærðfræðiklifrarasnillingur!"
+    advance: "Katla er sigruð! 🌋 7. bekkur kallar — Eyjafjallajökull bíður!"
+  },
+  // ===== 7. BEKKUR =====
+  {
+    name: "Eyjafjallajökull",
+    icon: "🌋",
+    height: "1.651 m",
+    subtitle: "Frægasta eldfjall Íslands",
+    desc: "Eyjafjallajökull gerði gos sitt 2010 og stöðvaði flug yfir Evrópu. Röð reikniaðgerða og negatívar tölur bíða þín!",
+    color: "#0f4c81",
+    colorLight: "#dbeafe",
+    gradient: "linear-gradient(135deg, #0f4c81, #1e6bb8)",
+    progressGradient: "linear-gradient(90deg, #0f4c81, #3b82f6)",
+    bg: "#eff6ff",
+    advance: "Eyjafjallajökull sigruð! 🌋 Nú bíður Hekla — drottning íslenskra eldfjalla!"
+  },
+  {
+    name: "Hekla",
+    icon: "🌋",
+    height: "1.491 m",
+    subtitle: "Drottning íslenskra eldfjalla",
+    desc: "Hekla er eitt virknasta eldfjall Íslands. Tölfræðin — meðaltal, miðgildi og tíðasta gildi — bíða þín hér!",
+    color: "#065f46",
+    colorLight: "#d1fae5",
+    gradient: "linear-gradient(135deg, #065f46, #059669)",
+    progressGradient: "linear-gradient(90deg, #065f46, #10b981)",
+    bg: "#ecfdf5",
+    advance: "Hekla er sigruð! 🌋 Snæfellsjökull — frægasta jökull Íslands — kallar!"
+  },
+  {
+    name: "Snæfellsjökull",
+    icon: "🏔️",
+    height: "1.446 m",
+    subtitle: "Frægasti jökull Íslands",
+    desc: "Jules Verne skrifaði um Snæfellsjökul í Ferð til miðju jarðar. Margföldun tveggja stafa og frumtölur bíða þín!",
+    color: "#4338ca",
+    colorLight: "#e0e7ff",
+    gradient: "linear-gradient(135deg, #3730a3, #4f46e5)",
+    progressGradient: "linear-gradient(90deg, #4338ca, #818cf8)",
+    bg: "#eef2ff",
+    advance: "Snæfellsjökull sigruð! 🏔️ Krafla — eldfjall á miðhálendinu — bíður!"
+  },
+  {
+    name: "Krafla",
+    icon: "🌋",
+    height: "818 m",
+    subtitle: "Eldfjall á miðhálendinu",
+    desc: "Krafla er virkt eldfjallakerfið í Norður-Þingeyjarsýslu. Rúmfræðin — horn, hringur, flatarmál og rúmmál — bíður!",
+    color: "#92400e",
+    colorLight: "#fef3c7",
+    gradient: "linear-gradient(135deg, #78350f, #d97706)",
+    progressGradient: "linear-gradient(90deg, #92400e, #f59e0b)",
+    bg: "#fffbeb",
+    advance: "Krafla er sigruð! 🌋 Öræfajökull — hæsta fjall Íslands — kallar!"
+  },
+  {
+    name: "Öræfajökull",
+    icon: "🏔️",
+    height: "2.110 m",
+    subtitle: "Hæsta fjall Íslands",
+    desc: "Öræfajökull er hæsta fjall Íslands og stærsta eldfjall landsins. Brot og prósentur á hæsta stigi bíða þín!",
+    color: "#7c3aed",
+    colorLight: "#ede9fe",
+    gradient: "linear-gradient(135deg, #6d28d9, #7c3aed)",
+    progressGradient: "linear-gradient(90deg, #7c3aed, #a78bfa)",
+    bg: "#f5f3ff",
+    advance: "Öræfajökull sigruð! 🏔️🏆 Þú hefur klífið öll fjöll Íslands — SNILLINGUR!"
   }
 ]
 
 function applyMountainTheme(setIndex) {
-  const mt = MOUNTAIN_THEME[Math.min(setIndex, 4)]
+  const mt = MOUNTAIN_THEME[Math.min(setIndex, MOUNTAIN_THEME.length - 1)]
   if (!mt) return
   // Update CSS variables
   document.documentElement.style.setProperty('--indigo', mt.color)
@@ -2057,7 +2244,7 @@ function updateProgress(correctCount, setIndex) {
   const pct = (correctCount / 15) * 100
   document.getElementById('progressFill').style.width = pct + '%'
   document.getElementById('progressCount').textContent = correctCount + ' / 15 rétt í röð'
-  const mt = MOUNTAIN_THEME[Math.min(setIndex, 4)]
+  const mt = MOUNTAIN_THEME[Math.min(setIndex, MOUNTAIN_THEME.length - 1)]
   const displayName = mt ? mt.icon + ' ' + mt.name : (PROBLEM_SETS[setIndex]?.name || '')
   document.getElementById('levelBadge').textContent = displayName
   document.getElementById('setLabel').textContent = displayName
@@ -2109,7 +2296,7 @@ function start() {
       document.getElementById('feedback') && (document.getElementById('feedback').innerHTML =
         '<div style="background:#f0fdf4;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;color:#16a34a;margin-bottom:8px;">'
         + '✅ Velkominn/n aftur, ' + name + '! Þú heldur áfram að klifra '
-        + (MOUNTAIN_THEME[Math.min(saved.set,4)]?.icon || '') + ' ' + setName
+        + (MOUNTAIN_THEME[Math.min(saved.set, MOUNTAIN_THEME.length - 1)]?.icon || '') + ' ' + setName
         + ' — ' + saved.correct + ' stjörnur. ✨</div>')
     }
 
@@ -2262,8 +2449,8 @@ function submitAnswer(answerFromOption = null) {
     document.getElementById('feedback').innerHTML = `
       <div class="feedback-advance">
         <div class="advance-emoji">🚀</div>
-        <div class="advance-title">🏔️ ${MOUNTAIN_THEME[Math.min(engine.getState().set, 4)]?.advance || 'Ótrúlegt! Þú ferð á næsta stig!'}</div>
-        <div class="advance-sub">${MOUNTAIN_THEME[Math.min(engine.getState().set, 4)]?.icon || ''} ${res.setName} — ${MOUNTAIN_THEME[Math.min(engine.getState().set, 4)]?.desc || 'Erfiðari dæmi bíða þín'}</div>
+        <div class="advance-title">🏔️ ${MOUNTAIN_THEME[Math.min(engine.getState().set, MOUNTAIN_THEME.length - 1)]?.advance || 'Ótrúlegt! Þú ferð á næsta stig!'}</div>
+        <div class="advance-sub">${MOUNTAIN_THEME[Math.min(engine.getState().set, MOUNTAIN_THEME.length - 1)]?.icon || ''} ${res.setName} — ${MOUNTAIN_THEME[Math.min(engine.getState().set, MOUNTAIN_THEME.length - 1)]?.desc || 'Erfiðari dæmi bíða þín'}</div>
       </div>`
     setTimeout(show, 2500)
   }
@@ -3880,41 +4067,56 @@ function newShopList() {
 <script>
 /* ===== MERKI OG PRÓF ===== */
 const BADGE_DEFS = [
-  {
-    id: 'margfoldun',
-    name: 'Margföldunarmeistari',
-    icon: '✖️',
-    desc: 'Farðu í próf og fáðu 9/10 rétt í margföldun',
-    topic: 'margföldun',
-    unlockAfter: 30,   // rétt svör til að opna próf
-    examSize: 10,
-    passScore: 9
-  }
+  { id: 'margfoldun',  name: 'Margföldunarmeistari',    icon: '✖️', desc: 'Fáðu 9/10 rétt í margföldunarprófi',        topic: 'margföldun',            unlockAfter: 30, examSize: 10, passScore: 9 },
+  { id: 'deilding',   name: 'Deilingarsnillingur',      icon: '➗', desc: 'Fáðu 9/10 rétt í deilingarprófi',          topic: 'deilding',              unlockAfter: 20, examSize: 10, passScore: 9 },
+  { id: 'brot',       name: 'Brotahetja',               icon: '🍕', desc: 'Fáðu 8/10 rétt í brotaprófi',              topic: 'brot',                  unlockAfter: 20, examSize: 10, passScore: 8 },
+  { id: 'flatarmal',  name: 'Rúmfræðimeistari',         icon: '📐', desc: 'Fáðu 8/10 rétt í rúmfræðiprófi',          topic: 'flatarmál',             unlockAfter: 6,  examSize: 10, passScore: 8 },
+  { id: 'prosentur',  name: 'Prósentumógúll',           icon: '💯', desc: 'Fáðu 8/10 rétt í prósentuprófi',           topic: 'prósentur',             unlockAfter: 8,  examSize: 10, passScore: 8 },
+  { id: 'samlagning', name: 'Samlagningarsérfræðingur', icon: '➕', desc: 'Fáðu 9/10 rétt í samlagningarprófi',       topic: 'samlagning',            unlockAfter: 20, examSize: 10, passScore: 9 },
+  { id: 'rod',        name: 'Reiknikóngur',             icon: '👑', desc: 'Fáðu 9/10 rétt í röð reikniaðgerða',      topic: 'röð reikniaðgerða',     unlockAfter: 10, examSize: 10, passScore: 9 },
+  { id: 'negativ',    name: 'Negatívur Ninja',          icon: '❄️', desc: 'Fáðu 8/10 rétt í negatívum tölum',        topic: 'negatívar tölur',       unlockAfter: 8,  examSize: 10, passScore: 8 },
+  { id: 'tolfraedi',  name: 'Tölfræðitrúður',           icon: '📊', desc: 'Fáðu 8/10 rétt í tölfræðiprófi',          topic: 'tölfræði',              unlockAfter: 15, examSize: 10, passScore: 8 },
+  { id: 'frumtolur',  name: 'Frumtölufinni',            icon: '🔍', desc: 'Fáðu 9/10 rétt í frumtöluprófi',          topic: 'frumtölur',             unlockAfter: 8,  examSize: 10, passScore: 9 },
+  { id: 'hringur',    name: 'Hringameistari',           icon: '⭕', desc: 'Fáðu 8/10 rétt í hrингaprófi',            topic: 'rúmfræði — hringur',    unlockAfter: 8,  examSize: 10, passScore: 8 },
+  { id: 'rummál',     name: 'Rúmmálsrisi',              icon: '📦', desc: 'Fáðu 8/10 rétt í rúmmálsprófi',           topic: 'rúmfræði — rúmmál',     unlockAfter: 6,  examSize: 10, passScore: 8 }
 ]
 
 let badgeState = {}   // { margfoldun: { topicCorrect: 0, earned: false, examUnlocked: false } }
 let examState = null  // núverandi próf
 
-function getBadgeStorage(name, pass) {
-  if (!name || !pass) return {}
-  const raw = localStorage.getItem('badges-' + getSaveKey(name, pass))
-  try { return raw ? JSON.parse(raw) : {} } catch(e) { return {} }
+function getBadgeStorage(name, pass, callback) {
+  if (!name || !pass) { if (callback) callback({}); return }
+  if (window.firebaseReady && window.firebaseDB) {
+    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/badges')
+    window.firebaseGet(r).then(snap => {
+      if (callback) callback(snap.exists() ? snap.val() : {})
+    }).catch(() => { if (callback) callback({}) })
+  } else {
+    const raw = localStorage.getItem('badges-' + getSaveKey(name, pass))
+    try { if (callback) callback(raw ? JSON.parse(raw) : {}) } catch(e) { if (callback) callback({}) }
+  }
 }
 
 function saveBadgeStorage() {
-  const name = document.getElementById('studentName').value
-  const pass = document.getElementById('studentPass').value
+  const name = document.getElementById('studentName')?.value
+  const pass = document.getElementById('studentPass')?.value
   if (!name || !pass) return
-  localStorage.setItem('badges-' + getSaveKey(name, pass), JSON.stringify(badgeState))
+  if (window.firebaseReady && window.firebaseDB) {
+    const r = window.firebaseRef(window.firebaseDB, fbPath(name, pass) + '/badges')
+    window.firebaseSet(r, badgeState)
+  } else {
+    localStorage.setItem('badges-' + getSaveKey(name, pass), JSON.stringify(badgeState))
+  }
 }
 
 function initBadges(name, pass) {
-  const saved = getBadgeStorage(name, pass)
-  badgeState = {}
-  BADGE_DEFS.forEach(b => {
-    badgeState[b.id] = saved[b.id] || { topicCorrect: 0, earned: false, examUnlocked: false }
+  getBadgeStorage(name, pass, function(saved) {
+    badgeState = {}
+    BADGE_DEFS.forEach(b => {
+      badgeState[b.id] = saved[b.id] || { topicCorrect: 0, earned: false, examUnlocked: false }
+    })
+    updateBadgeBtn()
   })
-  updateBadgeBtn()
 }
 
 function updateBadgeBtn() {
