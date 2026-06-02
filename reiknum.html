@@ -9,24 +9,25 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --indigo: #4f46e5;
-  --indigo-light: #6366f1;
-  --indigo-pale: #e0e7ff;
-  --teal: #0d9488;
-  --teal-light: #ccfbf1;
-  --amber: #f59e0b;
-  --amber-light: #fef3c7;
-  --rose: #e11d48;
-  --rose-light: #ffe4e6;
-  --green: #16a34a;
-  --green-light: #dcfce7;
-  --slate: #1e293b;
-  --slate-mid: #475569;
-  --slate-light: #94a3b8;
-  --bg: #f1f5f9;
+  /* Aðallitur — yfirvegaður djúp-grænblár (Khan/Duolingo andi) */
+  --indigo: #2b6a6a;
+  --indigo-light: #357d7d;
+  --indigo-pale: #e3efef;
+  --teal: #0e7c66;
+  --teal-light: #d6f0e8;
+  --amber: #d98a26;
+  --amber-light: #fbeed5;
+  --rose: #c2475a;
+  --rose-light: #f8e0e4;
+  --green: #2f8f57;
+  --green-light: #ddf0e3;
+  --slate: #22303b;
+  --slate-mid: #4a5b68;
+  --slate-light: #8a9aa6;
+  --bg: #f6f7f8;
   --white: #ffffff;
-  --radius: 18px;
-  --shadow: 0 8px 32px rgba(79,70,229,0.10);
+  --radius: 14px;
+  --shadow: 0 2px 12px rgba(34,48,59,0.06);
 }
 
 body {
@@ -42,7 +43,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #4f46e5 0%, #818cf8 50%, #0d9488 100%);
+  background: linear-gradient(160deg, #2b6a6a 0%, #357d7d 100%);
 }
 
 .login-card {
@@ -158,6 +159,124 @@ body {
 
 /* ===== MAIN ===== */
 .main { flex: 1; padding: 28px 24px; display: flex; flex-direction: column; }
+.main-body { display: flex; gap: 20px; align-items: flex-start; flex: 1; }
+.question-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* ===== RÚÐUNET PANEL ===== */
+.grid-panel {
+  width: 220px;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 18px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.grid-panel.visible { display: flex; }
+.grid-panel-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--slate-light);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.grid-table {
+  border-collapse: separate;
+  border-spacing: 2px;
+  margin: 0 auto;
+}
+.grid-table td {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--slate);
+  font-family: Nunito, sans-serif;
+  background: #f8fafc;
+}
+.grid-table td.op-cell {
+  border: none;
+  background: none;
+  font-size: 22px;
+  color: var(--indigo);
+  padding-right: 4px;
+  text-align: right;
+  width: 28px;
+}
+.grid-table tr.line-row td { border: none; background: none; height: 4px; }
+.grid-table tr.line-row td.line-actual { border-top: 3px solid var(--slate); border-radius: 0; }
+.grid-table td.carry {
+  font-size: 12px;
+  color: var(--rose);
+  font-weight: 900;
+  vertical-align: bottom;
+  border: none;
+  background: none;
+  height: 22px;
+}
+.grid-table td.result {
+  color: var(--green);
+  font-size: 22px;
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.grid-table td.borrowed { color: var(--rose); background: #faf2f3; border-color: #fca5a5; }
+.grid-table td.dim { color: #cbd5e1; background: #f8fafc; }
+.grid-step-btn {
+  background: var(--indigo);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: Nunito, sans-serif;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+  margin-top: 8px;
+  box-shadow: 0 1px 3px rgba(34,48,59,0.12);
+}
+.grid-step-btn:hover { background: var(--indigo-light); transform: translateY(-1px); }
+.grid-step-text {
+  font-size: 13px;
+  color: var(--slate-mid);
+  line-height: 1.7;
+  min-height: 52px;
+  padding: 8px 0;
+  font-weight: 500;
+}
+.grid-reset-btn {
+  background: var(--indigo-pale);
+  border: none;
+  color: var(--indigo);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Nunito, sans-serif;
+  text-align: center;
+  border-radius: 8px;
+  padding: 6px 12px;
+  width: 100%;
+  margin-top: 6px;
+  transition: all 0.15s;
+}
+.grid-reset-btn:hover { background: var(--indigo); color: white; }
+
+/* ===== HELP TABS ===== */
+.help-tab { padding: 9px 14px; font-size: 13px; font-weight: 700; font-family: Nunito,sans-serif; border: none; background: none; color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; white-space: nowrap; border-radius: 8px; }
+.help-tab.active { color: #4f46e5; border-bottom-color: #4f46e5; background: #eef2ff; }
+.help-step { display: flex; align-items: flex-start; gap: 10px; }
+.help-step-num { width: 22px; height: 22px; border-radius: 50%; background: #4f46e5; color: white; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.help-step-txt { font-size: 14px; color: #1e293b; line-height: 1.5; font-family: Nunito,sans-serif; }
+.help-step-txt b { color: #4f46e5; }
 
 /* ===== TOPBAR ===== */
 .topbar {
@@ -430,7 +549,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
   background: linear-gradient(135deg, var(--indigo), var(--teal));
   color: white;
   padding: 22px;
-  border-radius: 16px;
+  border-radius: 12px;
   animation: popIn 0.4s cubic-bezier(.4,0,.2,1);
   text-align: center;
 }
@@ -458,7 +577,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 .brain-break-overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #1e1b4b, #4f46e5, #0d9488);
+  background: linear-gradient(160deg, #234f4f, #2b6a6a);
   color: white;
   z-index: 9999;
   display: none;
@@ -488,7 +607,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
   font-weight: 700;
   background: rgba(255,255,255,0.15);
   padding: 20px 36px;
-  border-radius: 20px;
+  border-radius: 14px;
   margin-bottom: 32px;
   max-width: 500px;
 }
@@ -728,23 +847,9 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 .exam-dot.current { background: var(--amber); }
 
 /* ===== SIDEBAR COINS ===== */
-.sidebar-coins {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 12px 0 4px;
-  border-top: 1px solid rgba(255,255,255,0.15);
-  width: 100%;
-}
-.coin-icon { font-size: 24px; }
-.coin-amount {
-  font-size: 15px;
-  font-weight: 900;
-  color: #fbbf24;
-  font-variant-numeric: tabular-nums;
-}
+
+
+
 
 /* ===== COIN BURST ANIMATION ===== */
 @keyframes coinBurst {
@@ -786,7 +891,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 }
 
 .riddle-header {
-  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  background: linear-gradient(135deg, #6a5a9c, #a78bfa);
   color: white;
   padding: 22px 24px 18px;
   border-radius: 24px 24px 0 0;
@@ -800,17 +905,17 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 
 .riddle-card {
   background: #f5f3ff;
-  border-radius: 18px;
+  border-radius: 12px;
   padding: 20px;
   margin-bottom: 18px;
-  border: 1.5px solid #ede9fe;
+  border: 1.5px solid #eae8f2;
 }
 
 .riddle-image-area {
   width: 100%;
   height: 160px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  background: linear-gradient(135deg, #eae8f2, #ddd6fe);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -828,7 +933,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 
 .riddle-hint {
   font-size: 13px;
-  color: #7c3aed;
+  color: #6a5a9c;
   font-weight: 700;
   margin-bottom: 14px;
 }
@@ -844,19 +949,19 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
   font-size: 16px;
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
-  border: 2px solid #ede9fe;
+  border: 2px solid #eae8f2;
   border-radius: 12px;
   outline: none;
   transition: border 0.2s;
 }
-.riddle-input:focus { border-color: #7c3aed; }
+.riddle-input:focus { border-color: #6a5a9c; }
 
 .riddle-submit {
   padding: 12px 20px;
   font-size: 15px;
   font-weight: 800;
   font-family: 'Nunito', sans-serif;
-  background: #7c3aed;
+  background: #6a5a9c;
   color: white;
   border: none;
   border-radius: 12px;
@@ -890,9 +995,9 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
   font-size: 13px;
   font-weight: 800;
   font-family: 'Nunito', sans-serif;
-  border: 1.5px solid #ede9fe;
+  border: 1.5px solid #eae8f2;
   background: white;
-  color: #7c3aed;
+  color: #6a5a9c;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s;
@@ -923,7 +1028,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 }
 
 .shop-header {
-  background: linear-gradient(135deg, #0d9488, #2dd4bf);
+  background: linear-gradient(135deg, #2b7a6a, #2dd4bf);
   color: white;
   padding: 22px 24px 18px;
   border-radius: 24px 24px 0 0;
@@ -955,14 +1060,14 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 .shop-item {
   background: #f0fdfa;
   border: 1.5px solid #99f6e4;
-  border-radius: 16px;
+  border-radius: 12px;
   padding: 16px 12px;
   text-align: center;
   cursor: pointer;
   transition: all 0.15s;
   position: relative;
 }
-.shop-item:hover { border-color: #0d9488; background: #ccfbf1; transform: translateY(-2px); }
+.shop-item:hover { border-color: #2b7a6a; background: #ccfbf1; transform: translateY(-2px); }
 .shop-item.owned { background: #f0fdf4; border-color: #86efac; cursor: default; }
 .shop-item.owned:hover { transform: none; }
 .shop-item.cant-afford { opacity: 0.5; cursor: not-allowed; }
@@ -973,7 +1078,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 .shop-item-price {
   font-size: 12px;
   font-weight: 900;
-  color: #0d9488;
+  color: #2b7a6a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1067,11 +1172,6 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
         <span id="badgeNotif" style="display:none;position:absolute;top:6px;right:6px;width:10px;height:10px;background:#f59e0b;border-radius:50%;border:2px solid var(--indigo);"></span>
       </button>
 
-      <div class="sidebar-coins" id="sidebarCoins">
-        <div class="coin-icon">🪙</div>
-        <div class="coin-amount" id="coinDisplay">0</div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.6);font-weight:700;">kr</div>
-      </div>
     </div>
 
     <!-- MAIN -->
@@ -1123,8 +1223,8 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 
 <!-- ===== AÐSTOÐ ===== -->
 <div id="helpOverlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.65);align-items:center;justify-content:center;">
-  <div style="background:var(--white);width:min(860px,98vw);height:min(92vh,900px);overflow:hidden;border-radius:20px;box-shadow:0 32px 80px rgba(0,0,0,0.3);display:flex;flex-direction:column;">
-    <div style="background:linear-gradient(135deg,#4f46e5,#0d9488);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;flex-shrink:0;">
+  <div style="background:var(--white);width:min(860px,98vw);height:min(92vh,900px);overflow:hidden;border-radius: 14px;box-shadow:0 8px 40px rgba(34,48,59,0.18);display:flex;flex-direction:column;">
+    <div style="background:linear-gradient(160deg,#2b6a6a,#0e7c66);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;border-radius: 14px 20px 0 0;flex-shrink:0;">
       <div>
         <div style="font-size:18px;font-weight:900;color:white;">💡 Aðstoð</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:3px;">Lærdómstip, reiknivélar og hugtakalisti</div>
@@ -1170,7 +1270,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
         <div class="help-panel" id="hp-m" style="display:none;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
             <input type="number" id="h-ma" min="1" max="20" value="7" oninput="drawHelpM()" style="width:70px;padding:8px 10px;font-size:18px;font-weight:700;border:2px solid #e0e7ff;border-radius:8px;text-align:center;">
-            <span style="font-size:22px;font-weight:700;color:#7c3aed;">×</span>
+            <span style="font-size:22px;font-weight:700;color:#6a5a9c;">×</span>
             <input type="number" id="h-mb" min="1" max="20" value="13" oninput="drawHelpM()" style="width:70px;padding:8px 10px;font-size:18px;font-weight:700;border:2px solid #e0e7ff;border-radius:8px;text-align:center;">
             <span style="font-size:22px;color:#94a3b8;">=</span>
             <span id="h-m-ans" style="font-size:26px;font-weight:900;color:#16a34a;"></span>
@@ -1207,12 +1307,12 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
       </div>
       <div class="help-panel" id="hp-formul" style="display:none;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-          <div style="background:#f0f7ff;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#1d4ed8;margin-bottom:12px;">📐 Flatarmál</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>Ferhyrningur:</strong> l × b<br><strong>Þríhyrningur:</strong> (g × h) ÷ 2<br><strong>Hringur:</strong> π × r² ≈ 3,14 × r²</div></div>
+          <div style="background:#f3f7fa;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#1d4ed8;margin-bottom:12px;">📐 Flatarmál</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>Ferhyrningur:</strong> l × b<br><strong>Þríhyrningur:</strong> (g × h) ÷ 2<br><strong>Hringur:</strong> π × r² ≈ 3,14 × r²</div></div>
           <div style="background:#f0fdf4;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#166534;margin-bottom:12px;">📦 Rúmmál</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>Kassi:</strong> l × b × h<br><strong>1 dm³ = 1 lítri</strong><br><strong>1 m³ = 1000 lítrar</strong></div></div>
           <div style="background:#fef9c3;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#854d0e;margin-bottom:12px;">⭕ Hringur</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>Þvermál:</strong> d = 2 × r<br><strong>Ummál:</strong> π × d<br><strong>Flatarmál:</strong> π × r²</div></div>
           <div style="background:#fdf2f8;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#9d174d;margin-bottom:12px;">💯 Prósentur</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>Formúla:</strong> H × % ÷ 100<br><strong>10%</strong> = deilt með 10<br><strong>25%</strong> = deilt með 4</div></div>
           <div style="background:#f5f3ff;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#5b21b6;margin-bottom:12px;">🔢 Röð reikniaðgerða</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>1.</strong> Svigar ( )<br><strong>2.</strong> × og ÷<br><strong>3.</strong> + og −</div></div>
-          <div style="background:#f0fdfa;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#065f46;margin-bottom:12px;">📊 Tölfræði</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>Meðaltal:</strong> summa ÷ fjöldi<br><strong>Miðgildi:</strong> miðjan í röð<br><strong>Tíðasta:</strong> kemur oftast</div></div>
+          <div style="background:#f0fdfa;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#2a6b54;margin-bottom:12px;">📊 Tölfræði</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>Meðaltal:</strong> summa ÷ fjöldi<br><strong>Miðgildi:</strong> miðjan í röð<br><strong>Tíðasta:</strong> kemur oftast</div></div>
           <div style="background:#fef2f2;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#991b1b;margin-bottom:12px;">🌡️ Negatívar tölur</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>−5 + 3 = −2</strong><br><strong>−3 − 4 = −7</strong><br><strong>−5 &lt; −2</strong></div></div>
           <div style="background:#f0f9ff;border-radius:14px;padding:18px;"><div style="font-size:14px;font-weight:800;color:#0c4a6e;margin-bottom:12px;">📏 Mælingar</div><div style="font-size:13px;color:#1e293b;line-height:2;"><strong>1 km = 1.000 m</strong><br><strong>1 m = 100 cm</strong><br><strong>1 kg = 1.000 g</strong></div></div>
         </div>
@@ -1235,8 +1335,8 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 
 <!-- ===== ARISTÓTELESDÆMIÐ ===== -->
 <div id="hexPuzzleOverlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.65);align-items:center;justify-content:center;">
-  <div style="background:var(--white);width:min(700px,98vw);max-height:95vh;overflow-y:auto;border-radius:20px;box-shadow:0 32px 80px rgba(0,0,0,0.3);display:flex;flex-direction:column;">
-    <div style="background:linear-gradient(135deg,#92400e,#d97706);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;border-radius:20px 20px 0 0;flex-shrink:0;">
+  <div style="background:var(--white);width:min(700px,98vw);max-height:95vh;overflow-y:auto;border-radius: 14px;box-shadow:0 8px 40px rgba(34,48,59,0.18);display:flex;flex-direction:column;">
+    <div style="background:linear-gradient(160deg,#8a5a1e,#b8791f);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;border-radius: 14px 20px 0 0;flex-shrink:0;">
       <div>
         <div style="font-size:18px;font-weight:900;color:white;">🔢 Aristótelesdæmið</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-top:3px;">Raðaðu tölum 1–19 þannig að sérhver lína leggst saman í <strong style="color:#fef3c7;">38</strong></div>
@@ -1489,7 +1589,7 @@ const PROBLEM_SETS = [
       { question: "⚖️ Poki af hveiti er 2 kg. Hvað er það í g?", options: ["200g","1000g","2000g","20000g"], answer: ["2000g","2000"], solution: ["1 kg = 1000 g → 2 × 1000 = 2000 g"], topic: { key: "mælingar", msg: "Hér átt þú að læra um mælingar 📏" } },
       { question: "🏃 Keppnin er 5 km. Jón er búinn að hlaupa 3200 m. Hvað er eftir?", options: ["1,6km","1,8km","2,0km","2,2km"], answer: ["1,8km","1.8","1,8"], solution: ["5000 - 3200 = 1800 m = 1,8 km"], topic: { key: "mælingar", msg: "Hér átt þú að læra um mælingar 📏" } },
       { question: "<div style='text-align:center;margin:8px 0'><svg width='150' height='130' viewBox='0 0 150 130'><rect x='25' y='10' width='100' height='100' fill='#e0e7ff' stroke='#4f46e5' stroke-width='2'/><text x='75' y='67' text-anchor='middle' font-size='20' font-weight='800' fill='#4f46e5'>?</text><text x='75' y='122' text-anchor='middle' font-size='13' fill='#475569'>9 cm</text><text x='8' y='63' text-anchor='middle' font-size='13' fill='#475569'>9 cm</text></svg></div>Hvað er flatarmál þessa fernings?", options: ["72 cm²","81 cm²","90 cm²","64 cm²"], answer: ["81 cm²","81"], solution: ["Flatarmál fernings = hlið × hlið","9 × 9 = 81 cm²"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
-      { question: "<div style='text-align:center;margin:8px 0'><svg width='160' height='128' viewBox='0 0 160 128'><polygon points='80,10 15,110 145,110' fill='#ccfbf1' stroke='#0d9488' stroke-width='2'/><line x1='80' y1='10' x2='80' y2='110' stroke='#0d9488' stroke-width='1.5' stroke-dasharray='5,4'/><text x='90' y='65' font-size='12' fill='#0d9488'>hæð: 7 cm</text><text x='80' y='124' text-anchor='middle' font-size='12' fill='#475569'>grunnur: 10 cm</text></svg></div>Hvað er flatarmál þríhyrningsins?", options: ["70 cm²","35 cm²","50 cm²","40 cm²"], answer: ["35 cm²","35"], solution: ["(grunnur x hæð) / 2 = (10 x 7) / 2 = 35 cm²"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
+      { question: "<div style='text-align:center;margin:8px 0'><svg width='160' height='128' viewBox='0 0 160 128'><polygon points='80,10 15,110 145,110' fill='#ccfbf1' stroke='#2b7a6a' stroke-width='2'/><line x1='80' y1='10' x2='80' y2='110' stroke='#2b7a6a' stroke-width='1.5' stroke-dasharray='5,4'/><text x='90' y='65' font-size='12' fill='#2b7a6a'>hæð: 7 cm</text><text x='80' y='124' text-anchor='middle' font-size='12' fill='#475569'>grunnur: 10 cm</text></svg></div>Hvað er flatarmál þríhyrningsins?", options: ["70 cm²","35 cm²","50 cm²","40 cm²"], answer: ["35 cm²","35"], solution: ["(grunnur x hæð) / 2 = (10 x 7) / 2 = 35 cm²"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
       { question: "🍫 1/3 af súkkulaði er 6 bitar. Hvað eru 2/3 af sama súkkulaði?", options: ["9 bitar","10 bitar","12 bitar","8 bitar"], answer: ["12 bitar","12"], solution: ["1/3 = 6 bitar","2/3 = 6 × 2 = 12 bitar"], topic: { key: "brot af heild", msg: "Hér ert þú að reikna brot af heild 🍕" } },
       { question: "🎂 1/3 af tölu er 7. Hvað er talan?", options: ["14","21","28","35"], answer: ["21","21"], solution: ["Ef 1/3 = 7","þá er heild = 7 × 3 = 21"], topic: { key: "brot af heild", msg: "Hér ert þú að reikna brot af heild 🍕" } },
       { question: "🔢 Hvað er 1/3 af 18?", options: ["3","5","6","9"], answer: ["6","6"], solution: ["1/3 af 18 = 18 ÷ 3 = 6"], topic: { key: "brot af heild", msg: "Hér ert þú að reikna brot af heild 🍕" } },
@@ -1584,7 +1684,7 @@ const PROBLEM_SETS = [
       { question: "📊 Einkunnir: 6, 8, 7, 9, 5. Hvað er meðaltalið?", options: ["6","7","8","9"], answer: "7", solution: ["6+8+7+9+5=35", "35÷5=7"], topic: { key: "tölfræði", msg: "Hér átt þú að læra um tölfræði 📊" } },
       { question: "📈 Tölur í röð: 3, 5, 7, 9, 11. Hvað er miðgildið?", options: ["5","7","9","6"], answer: "7", solution: ["Miðgildið er talan í miðjunni — þriðja af fimm: 7"], topic: { key: "tölfræði", msg: "Hér átt þú að læra um tölfræði 📊" } },
       { question: "🎲 Í poka: 4 rauðar, 3 bláar, 2 grænar kúlur. Hvað er líklegast?", options: ["Bláar","Rauðar","Grænar","Allt jafnt"], answer: "Rauðar", solution: ["Rauðar: 4/9, Bláar: 3/9, Grænar: 2/9 — rauðar líklegastar"], topic: { key: "tölfræði", msg: "Hér átt þú að læra um tölfræði 📊" } },
-      { question: "<div style='text-align:center;margin:8px 0'><svg width='155' height='128' viewBox='0 0 155 128'><rect x='18' y='52' width='118' height='62' fill='#ddd6fe' stroke='#7c3aed' stroke-width='2'/><polygon points='18,52 77,12 136,52' fill='#ede9fe' stroke='#7c3aed' stroke-width='2'/><text x='77' y='88' text-anchor='middle' font-size='11' fill='#5b21b6'>12 m x 6 m</text><text x='77' y='36' text-anchor='middle' font-size='11' fill='#5b21b6'>h = 5 m</text><text x='77' y='120' text-anchor='middle' font-size='12' fill='#475569'>12 m</text></svg></div>Ferningur (12x6m) og þríhyrningur (g=12m, h=5m). Hvað er heildarflatarmálið?", options: ["92 m²","96 m²","102 m²","110 m²"], answer: ["102 m²","102"], solution: ["12 x 6 = 72 m²","(12 x 5) / 2 = 30 m²","72 + 30 = 102 m²"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
+      { question: "<div style='text-align:center;margin:8px 0'><svg width='155' height='128' viewBox='0 0 155 128'><rect x='18' y='52' width='118' height='62' fill='#ddd6fe' stroke='#6a5a9c' stroke-width='2'/><polygon points='18,52 77,12 136,52' fill='#eae8f2' stroke='#6a5a9c' stroke-width='2'/><text x='77' y='88' text-anchor='middle' font-size='11' fill='#5b21b6'>12 m x 6 m</text><text x='77' y='36' text-anchor='middle' font-size='11' fill='#5b21b6'>h = 5 m</text><text x='77' y='120' text-anchor='middle' font-size='12' fill='#475569'>12 m</text></svg></div>Ferningur (12x6m) og þríhyrningur (g=12m, h=5m). Hvað er heildarflatarmálið?", options: ["92 m²","96 m²","102 m²","110 m²"], answer: ["102 m²","102"], solution: ["12 x 6 = 72 m²","(12 x 5) / 2 = 30 m²","72 + 30 = 102 m²"], topic: { key: "flatarmál", msg: "Hér átt þú að læra hvað flatarmál er 📐" } },
       { question: "<div style='text-align:center;margin:8px 0'><svg width='165' height='150' viewBox='0 0 165 150'><line x1='10' y1='75' x2='155' y2='75' stroke='#cbd5e1' stroke-width='1.5'/><line x1='82' y1='10' x2='82' y2='140' stroke='#cbd5e1' stroke-width='1.5'/><polygon points='155,72 162,75 155,78' fill='#cbd5e1'/><polygon points='79,10 82,3 85,10' fill='#cbd5e1'/><text x='156' y='79' font-size='10' fill='#94a3b8'>x</text><text x='85' y='8' font-size='10' fill='#94a3b8'>y</text><line x1='52' y1='72' x2='52' y2='78' stroke='#94a3b8' stroke-width='1'/><line x1='112' y1='72' x2='112' y2='78' stroke='#94a3b8' stroke-width='1'/><line x1='79' y1='45' x2='85' y2='45' stroke='#94a3b8' stroke-width='1'/><line x1='79' y1='105' x2='85' y2='105' stroke='#94a3b8' stroke-width='1'/><text x='44' y='87' font-size='10' fill='#475569'>-2</text><text x='109' y='87' font-size='10' fill='#475569'>2</text><text x='87' y='44' font-size='10' fill='#475569'>2</text><text x='87' y='110' font-size='10' fill='#475569'>-2</text><circle cx='52' cy='45' r='6' fill='#4f46e5' stroke='white' stroke-width='2'/><circle cx='112' cy='45' r='6' fill='#4f46e5' stroke='white' stroke-width='2'/><circle cx='112' cy='105' r='6' fill='#4f46e5' stroke='white' stroke-width='2'/><circle cx='52' cy='105' r='6' fill='#e11d48' stroke='#e11d48' stroke-width='2' opacity='0.4'/><text x='37' y='41' font-size='11' font-weight='700' fill='#4f46e5'>A</text><text x='115' y='41' font-size='11' font-weight='700' fill='#4f46e5'>B</text><text x='115' y='115' font-size='11' font-weight='700' fill='#4f46e5'>C</text><text x='34' y='115' font-size='11' font-weight='700' fill='#e11d48'>D?</text></svg></div>A(-2,2) B(2,2) C(2,-2). Hvar er D til að mynda ferning?", options: ["(0,0)","(-2,2)","(-2,-2)","(2,-2)"], answer: ["(-2,-2)","-2,-2"], solution: ["D er undir A: x=-2","D er við hlið C: y=-2","D = (-2,-2)"], topic: { key: "hnitakerfi", msg: "Hér átt þú að læra um hnitakerfið 📍" } },
       { question: "🔢 Hvað er 3 × 1/4?", options: ["3/8","3/4","1/4","4/3"], answer: ["3/4","3/4"], solution: ["3 × 1/4 = 3/4"], topic: { key: "margföldun með brotum", msg: "Nú ert þú að margfalda með brotum 🔢" } },
       { question: "🔢 Hvað er 4 × 2/9?", options: ["6/9","7/9","8/9","9/9"], answer: ["8/9","8/9"], solution: ["4 × 2/9 = 8/9"], topic: { key: "margföldun með brotum", msg: "Nú ert þú að margfalda með brotum 🔢" } },
@@ -1774,11 +1874,11 @@ const MOUNTAIN_THEME = [
     height: "914 m",
     subtitle: "Fjall Reykjavíkinga",
     desc: "Esja er kunnasta fjall Íslands — sést úr Reykjavík. Klifraðu upp á Þverfell og byrjaðu ferðalagið!",
-    color: "#2563eb",
-    colorLight: "#dbeafe",
-    gradient: "linear-gradient(135deg, #1d4ed8, #3b82f6)",
-    progressGradient: "linear-gradient(90deg, #2563eb, #60a5fa)",
-    bg: "#f0f7ff",
+    color: "#2f6690",
+    colorLight: "#e1ebf2",
+    gradient: "linear-gradient(160deg, #2b6a6a, #357d7d)",
+    progressGradient: "linear-gradient(90deg, #2f6690, #60a5fa)",
+    bg: "#f3f7fa",
     advance: "Þú klifraðir Esjuna! 🏔️ Næst bíður Akrafjall!"
   },
   {
@@ -1787,10 +1887,10 @@ const MOUNTAIN_THEME = [
     height: "643 m",
     subtitle: "Heimafjall Akranesinga",
     desc: "Akrafjall gnæfir yfir Akranesi. Þetta er heimafjallið þitt — erfiðari dæmi bíða þín!",
-    color: "#0d9488",
+    color: "#2b7a6a",
     colorLight: "#ccfbf1",
-    gradient: "linear-gradient(135deg, #0f766e, #14b8a6)",
-    progressGradient: "linear-gradient(90deg, #0d9488, #2dd4bf)",
+    gradient: "linear-gradient(160deg, #246b5d, #2f8a76)",
+    progressGradient: "linear-gradient(90deg, #2b7a6a, #2dd4bf)",
     bg: "#f0fdfa",
     advance: "Akrafjall er unnið! ⛰️ Nú stefnir þú á Tindastól!"
   },
@@ -1800,11 +1900,11 @@ const MOUNTAIN_THEME = [
     height: "989 m",
     subtitle: "Tröllafjalið í Skagafirði",
     desc: "Tindastóll í Skagafirði er þekkt sem tröllafjalið. Þolinmæði og hugrekki þarf til að komast upp!",
-    color: "#7c3aed",
-    colorLight: "#ede9fe",
-    gradient: "linear-gradient(135deg, #6d28d9, #8b5cf6)",
-    progressGradient: "linear-gradient(90deg, #7c3aed, #a78bfa)",
-    bg: "#faf5ff",
+    color: "#6a5a9c",
+    colorLight: "#eae8f2",
+    gradient: "linear-gradient(160deg, #5d4f8a, #6a5a9c)",
+    progressGradient: "linear-gradient(90deg, #6a5a9c, #a78bfa)",
+    bg: "#f6f4fa",
     advance: "Tindastóll er á bak! 🗻 Askja kallar — eldfjall á miðhálendinu!"
   },
   {
@@ -1813,11 +1913,11 @@ const MOUNTAIN_THEME = [
     height: "1516 m",
     subtitle: "Eldfjall á miðhálendinu",
     desc: "Askja er öflug eldfjallakaldера á miðhálendi Íslands. Djúpasta öskjuvatn Íslands er hér. Þetta er stóra áskorunin!",
-    color: "#b45309",
+    color: "#9c6a2e",
     colorLight: "#fef3c7",
-    gradient: "linear-gradient(135deg, #92400e, #d97706)",
-    progressGradient: "linear-gradient(90deg, #b45309, #f59e0b)",
-    bg: "#fffbeb",
+    gradient: "linear-gradient(160deg, #835820, #a87328)",
+    progressGradient: "linear-gradient(90deg, #9c6a2e, #f59e0b)",
+    bg: "#faf7f0",
     advance: "Askja er sigruð! 🌋 Eitt fjall á eftir — Katla, öflugasta eldfjallið!"
   },
   {
@@ -1826,11 +1926,11 @@ const MOUNTAIN_THEME = [
     height: "1512 m",
     subtitle: "Öflugasta eldfjall Íslands",
     desc: "Katla er kraftmesta eldfjall Íslands undir Mýrdalsjökli. Þú ert kominn/n á meistarstig — bara bestu klifrarar komast hingað!",
-    color: "#be123c",
+    color: "#a8455a",
     colorLight: "#ffe4e6",
-    gradient: "linear-gradient(135deg, #9f1239, #e11d48)",
-    progressGradient: "linear-gradient(90deg, #be123c, #f43f5e)",
-    bg: "#fff1f2",
+    gradient: "linear-gradient(160deg, #8a3a4c, #b05064)",
+    progressGradient: "linear-gradient(90deg, #a8455a, #f43f5e)",
+    bg: "#faf2f3",
     advance: "Katla er sigruð! 🌋🏆 Þú ert stærðfræðiklifrarasnillingur!"
   },
   // ===== 7. BEKKUR =====
@@ -1840,10 +1940,10 @@ const MOUNTAIN_THEME = [
     height: "1.651 m",
     subtitle: "Frægasta eldfjall Íslands",
     desc: "Eyjafjallajökull gerði gos sitt 2010 og stöðvaði flug yfir Evrópu. Röð reikniaðgerða og negatívar tölur bíða þín!",
-    color: "#0f4c81",
-    colorLight: "#dbeafe",
-    gradient: "linear-gradient(135deg, #0f4c81, #1e6bb8)",
-    progressGradient: "linear-gradient(90deg, #0f4c81, #3b82f6)",
+    color: "#2f5a7a",
+    colorLight: "#e1ebf2",
+    gradient: "linear-gradient(135deg, #2f5a7a, #1e6bb8)",
+    progressGradient: "linear-gradient(90deg, #2f5a7a, #3b82f6)",
     bg: "#eff6ff",
     advance: "Eyjafjallajökull sigruð! 🌋 Nú bíður Hekla — drottning íslenskra eldfjalla!"
   },
@@ -1853,10 +1953,10 @@ const MOUNTAIN_THEME = [
     height: "1.491 m",
     subtitle: "Drottning íslenskra eldfjalla",
     desc: "Hekla er eitt virknasta eldfjall Íslands. Tölfræðin — meðaltal, miðgildi og tíðasta gildi — bíða þín hér!",
-    color: "#065f46",
+    color: "#2a6b54",
     colorLight: "#d1fae5",
-    gradient: "linear-gradient(135deg, #065f46, #059669)",
-    progressGradient: "linear-gradient(90deg, #065f46, #10b981)",
+    gradient: "linear-gradient(135deg, #2a6b54, #059669)",
+    progressGradient: "linear-gradient(90deg, #2a6b54, #10b981)",
     bg: "#ecfdf5",
     advance: "Hekla er sigruð! 🌋 Snæfellsjökull — frægasta jökull Íslands — kallar!"
   },
@@ -1866,10 +1966,10 @@ const MOUNTAIN_THEME = [
     height: "1.446 m",
     subtitle: "Frægasti jökull Íslands",
     desc: "Jules Verne skrifaði um Snæfellsjökul í Ferð til miðju jarðar. Margföldun tveggja stafa og frumtölur bíða þín!",
-    color: "#4338ca",
+    color: "#4a4f8a",
     colorLight: "#e0e7ff",
-    gradient: "linear-gradient(135deg, #3730a3, #4f46e5)",
-    progressGradient: "linear-gradient(90deg, #4338ca, #818cf8)",
+    gradient: "linear-gradient(160deg, #3f4576, #4a4f8a)",
+    progressGradient: "linear-gradient(90deg, #4a4f8a, #818cf8)",
     bg: "#eef2ff",
     advance: "Snæfellsjökull sigruð! 🏔️ Krafla — eldfjall á miðhálendinu — bíður!"
   },
@@ -1881,9 +1981,9 @@ const MOUNTAIN_THEME = [
     desc: "Krafla er virkt eldfjallakerfið í Norður-Þingeyjarsýslu. Rúmfræðin — horn, hringur, flatarmál og rúmmál — bíður!",
     color: "#92400e",
     colorLight: "#fef3c7",
-    gradient: "linear-gradient(135deg, #78350f, #d97706)",
-    progressGradient: "linear-gradient(90deg, #92400e, #f59e0b)",
-    bg: "#fffbeb",
+    gradient: "linear-gradient(160deg, #6e4a1e, #a87328)",
+    progressGradient: "linear-gradient(90deg, #835820, #c28f3a)",
+    bg: "#faf7f0",
     advance: "Krafla er sigruð! 🌋 Öræfajökull — hæsta fjall Íslands — kallar!"
   },
   {
@@ -1892,10 +1992,10 @@ const MOUNTAIN_THEME = [
     height: "2.110 m",
     subtitle: "Hæsta fjall Íslands",
     desc: "Öræfajökull er hæsta fjall Íslands og stærsta eldfjall landsins. Brot og prósentur á hæsta stigi bíða þín!",
-    color: "#7c3aed",
-    colorLight: "#ede9fe",
-    gradient: "linear-gradient(135deg, #6d28d9, #7c3aed)",
-    progressGradient: "linear-gradient(90deg, #7c3aed, #a78bfa)",
+    color: "#6a5a9c",
+    colorLight: "#eae8f2",
+    gradient: "linear-gradient(135deg, #6d28d9, #6a5a9c)",
+    progressGradient: "linear-gradient(90deg, #6a5a9c, #a78bfa)",
     bg: "#f5f3ff",
     advance: "Öræfajökull sigruð! 🏔️🏆 Þú hefur klífið öll fjöll Íslands — SNILLINGUR!"
   }
@@ -2703,23 +2803,23 @@ function showRiddle(i) {
     // Margar inntaksgátur
     area.innerHTML = r.inputs.map((inp, idx) => `
       <div style="margin-bottom:10px;">
-        <label style="font-size:13px;font-weight:800;color:#7c3aed;display:block;margin-bottom:5px;">${inp.label}</label>
+        <label style="font-size:13px;font-weight:800;color:#6a5a9c;display:block;margin-bottom:5px;">${inp.label}</label>
         <div style="display:flex;gap:8px;">
           <input id="riddleInput${idx}" type="number" placeholder="${inp.placeholder || '...'}" autocomplete="off"
-            style="flex:1;padding:11px 14px;font-size:16px;font-family:Nunito,sans-serif;font-weight:700;border:2px solid #ede9fe;border-radius:12px;outline:none;"
+            style="flex:1;padding:11px 14px;font-size:16px;font-family:Nunito,sans-serif;font-weight:700;border:2px solid #eae8f2;border-radius:12px;outline:none;"
             onkeydown="if(event.key==='Enter')submitRiddle()">
         </div>
       </div>`).join('') +
-      `<button onclick="submitRiddle()" style="width:100%;padding:12px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#7c3aed;color:white;border:none;border-radius:12px;cursor:pointer;margin-top:4px;">Svara ✓</button>`
+      `<button onclick="submitRiddle()" style="width:100%;padding:12px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#6a5a9c;color:white;border:none;border-radius:12px;cursor:pointer;margin-top:4px;">Svara ✓</button>`
     setTimeout(() => document.getElementById('riddleInput0')?.focus(), 50)
   } else {
     area.innerHTML = `
       <div style="display:flex;gap:10px;">
         <input id="riddleInput0" placeholder="Svarið þitt..." autocomplete="off"
-          style="flex:1;padding:12px 16px;font-size:16px;font-family:Nunito,sans-serif;font-weight:700;border:2px solid #ede9fe;border-radius:12px;outline:none;"
+          style="flex:1;padding:12px 16px;font-size:16px;font-family:Nunito,sans-serif;font-weight:700;border:2px solid #eae8f2;border-radius:12px;outline:none;"
           onkeydown="if(event.key==='Enter')submitRiddle()">
         <button onclick="submitRiddle()"
-          style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#7c3aed;color:white;border:none;border-radius:12px;cursor:pointer;">
+          style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#6a5a9c;color:white;border:none;border-radius:12px;cursor:pointer;">
           Svara
         </button>
       </div>`
@@ -2865,7 +2965,7 @@ function closeShopOutside(e) {
 function setShopTier(t) {
   shopTier = t
   document.querySelectorAll('.tier-btn').forEach((b, i) => {
-    b.style.background = (i + 1 === t) ? '#0d9488' : 'rgba(255,255,255,0.15)'
+    b.style.background = (i + 1 === t) ? '#2b7a6a' : 'rgba(255,255,255,0.15)'
     b.style.fontWeight = (i + 1 === t) ? '900' : '700'
   })
   startShopTier(t)
@@ -2942,15 +3042,15 @@ function renderTier1() {
     `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
       <span style="font-size:24px;">${i.emoji}</span>
       <span style="flex:1;font-size:15px;font-weight:700;color:#1e293b;">${i.name}</span>
-      <span style="font-size:15px;font-weight:800;color:#0d9488;">${i.price.toLocaleString('is-IS')} kr</span>
+      <span style="font-size:15px;font-weight:800;color:#2b7a6a;">${i.price.toLocaleString('is-IS')} kr</span>
     </div>`).join('')
 
   renderTierBase(`
     <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px;">Innkaupalisti</div>
     <div style="margin-bottom:12px;">${listHtml}</div>
     <div style="display:flex;justify-content:space-between;align-items:center;background:#f0fdf4;border-radius:12px;padding:12px 16px;margin-bottom:18px;">
-      <span style="font-size:14px;font-weight:800;color:#065f46;">Samtals að greiða</span>
-      <span style="font-size:20px;font-weight:900;color:#0d9488;">${shopTotal.toLocaleString('is-IS')} kr</span>
+      <span style="font-size:14px;font-weight:800;color:#2a6b54;">Samtals að greiða</span>
+      <span style="font-size:20px;font-weight:900;color:#2b7a6a;">${shopTotal.toLocaleString('is-IS')} kr</span>
     </div>
     <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px;">Lagt fram</div>
     <div style="display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border-radius:12px;padding:12px 16px;margin-bottom:8px;">
@@ -2972,7 +3072,7 @@ function renderTier2() {
     `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
       <span style="font-size:24px;">${i.emoji}</span>
       <span style="flex:1;font-size:15px;font-weight:700;color:#1e293b;">${i.name}</span>
-      <span style="font-size:15px;font-weight:800;color:#0d9488;">${i.price.toLocaleString('is-IS')} kr</span>
+      <span style="font-size:15px;font-weight:800;color:#2b7a6a;">${i.price.toLocaleString('is-IS')} kr</span>
     </div>`).join('')
 
   renderTierBase(`
@@ -2986,7 +3086,7 @@ function renderTier2() {
       <input id="shopAnswerInput" type="number" placeholder="Svarið í krónum..." 
         style="flex:1;padding:12px 16px;font-size:17px;font-family:Nunito,sans-serif;font-weight:700;border:2px solid #d1fae5;border-radius:12px;outline:none;"
         onkeydown="if(event.key==='Enter')checkShopAnswer()">
-      <button onclick="checkShopAnswer()" style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#0d9488;color:white;border:none;border-radius:12px;cursor:pointer;">Svara</button>
+      <button onclick="checkShopAnswer()" style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#2b7a6a;color:white;border:none;border-radius:12px;cursor:pointer;">Svara</button>
     </div>
     <div id="shopResult" style="display:none;font-size:15px;font-weight:700;padding:12px 16px;border-radius:12px;"></div>
   `)
@@ -2997,7 +3097,7 @@ function renderTier3() {
     `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;">
       <span style="font-size:24px;">${i.emoji}</span>
       <span style="flex:1;font-size:15px;font-weight:700;color:#1e293b;">${i.name}</span>
-      <span style="font-size:15px;font-weight:800;color:#0d9488;">${i.price.toLocaleString('is-IS')} kr</span>
+      <span style="font-size:15px;font-weight:800;color:#2b7a6a;">${i.price.toLocaleString('is-IS')} kr</span>
     </div>`).join('')
 
   renderTierBase(`
@@ -3007,15 +3107,15 @@ function renderTier3() {
     <div style="font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#94a3b8;margin-bottom:6px;">Innkaupalisti</div>
     <div style="margin-bottom:14px;">${listHtml}</div>
     <div style="display:flex;justify-content:space-between;align-items:center;background:#f0fdf4;border-radius:12px;padding:12px 16px;margin-bottom:14px;">
-      <span style="font-size:14px;font-weight:800;color:#065f46;">Samtals</span>
-      <span style="font-size:18px;font-weight:900;color:#0d9488;">${shopTotal.toLocaleString('is-IS')} kr</span>
+      <span style="font-size:14px;font-weight:800;color:#2a6b54;">Samtals</span>
+      <span style="font-size:18px;font-weight:900;color:#2b7a6a;">${shopTotal.toLocaleString('is-IS')} kr</span>
     </div>
     <div style="font-size:14px;font-weight:800;color:#1e293b;margin-bottom:8px;">Hversu mikil skiptimynt?</div>
     <div style="display:flex;gap:10px;margin-bottom:10px;">
       <input id="shopAnswerInput" type="number" placeholder="Skiptimynt í krónum..."
         style="flex:1;padding:12px 16px;font-size:17px;font-family:Nunito,sans-serif;font-weight:700;border:2px solid #d1fae5;border-radius:12px;outline:none;"
         onkeydown="if(event.key==='Enter')checkShopAnswer()">
-      <button onclick="checkShopAnswer()" style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#0d9488;color:white;border:none;border-radius:12px;cursor:pointer;">Svara</button>
+      <button onclick="checkShopAnswer()" style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#2b7a6a;color:white;border:none;border-radius:12px;cursor:pointer;">Svara</button>
     </div>
     <div id="shopResult" style="display:none;font-size:15px;font-weight:700;padding:12px 16px;border-radius:12px;"></div>
   `)
@@ -3049,7 +3149,7 @@ function renderTier4() {
       <input id="shopAnswerInput" type="number" placeholder="kr..."
         style="flex:1;padding:12px 16px;font-size:17px;font-family:Nunito,sans-serif;font-weight:700;border:2px solid #d1fae5;border-radius:12px;outline:none;"
         onkeydown="if(event.key==='Enter')checkShopAnswer()">
-      <button onclick="checkShopAnswer()" style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#0d9488;color:white;border:none;border-radius:12px;cursor:pointer;">Svara</button>
+      <button onclick="checkShopAnswer()" style="padding:12px 20px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;background:#2b7a6a;color:white;border:none;border-radius:12px;cursor:pointer;">Svara</button>
     </div>
     <div id="shopResult" style="display:none;font-size:15px;font-weight:700;padding:12px 16px;border-radius:12px;"></div>
   `)
@@ -3186,10 +3286,10 @@ const TIP_CONTENT = {
     </div>`,
   flatarmal2: `<h3 style="font-size:17px;font-weight:800;margin-bottom:12px;">📐 Flatarmál</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div style="background:#f0f7ff;border-radius:10px;padding:14px;"><div style="font-weight:800;margin-bottom:8px;">▭ Ferhyrningur</div><div style="font-size:20px;font-weight:900;color:#1d4ed8;text-align:center;margin:8px 0;">l × b</div><div style="font-size:13px;color:#64748b;">4m × 3m = 12 m²</div></div>
+      <div style="background:#f3f7fa;border-radius:10px;padding:14px;"><div style="font-weight:800;margin-bottom:8px;">▭ Ferhyrningur</div><div style="font-size:20px;font-weight:900;color:#1d4ed8;text-align:center;margin:8px 0;">l × b</div><div style="font-size:13px;color:#64748b;">4m × 3m = 12 m²</div></div>
       <div style="background:#fef9c3;border-radius:10px;padding:14px;"><div style="font-weight:800;margin-bottom:8px;">🔺 Þríhyrningur</div><div style="font-size:18px;font-weight:900;color:#854d0e;text-align:center;margin:8px 0;">(g × h) ÷ 2</div><div style="font-size:13px;color:#64748b;">g=6, h=4: 24÷2 = 12 m²</div></div>
-      <div style="background:#fdf4ff;border-radius:10px;padding:14px;"><div style="font-weight:800;margin-bottom:8px;">⭕ Hringur</div><div style="font-size:18px;font-weight:900;color:#7c3aed;text-align:center;margin:8px 0;">π × r²</div><div style="font-size:13px;color:#64748b;">r=5: 3,14×25 = 78,5 cm²</div></div>
-      <div style="background:#f0fdf4;border-radius:10px;padding:14px;"><div style="font-weight:800;margin-bottom:8px;">📦 Rúmmál kassa</div><div style="font-size:18px;font-weight:900;color:#065f46;text-align:center;margin:8px 0;">l × b × h</div><div style="font-size:13px;color:#64748b;">4×3×2 = 24 cm³</div></div>
+      <div style="background:#fdf4ff;border-radius:10px;padding:14px;"><div style="font-weight:800;margin-bottom:8px;">⭕ Hringur</div><div style="font-size:18px;font-weight:900;color:#6a5a9c;text-align:center;margin:8px 0;">π × r²</div><div style="font-size:13px;color:#64748b;">r=5: 3,14×25 = 78,5 cm²</div></div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:14px;"><div style="font-weight:800;margin-bottom:8px;">📦 Rúmmál kassa</div><div style="font-size:18px;font-weight:900;color:#2a6b54;text-align:center;margin:8px 0;">l × b × h</div><div style="font-size:13px;color:#64748b;">4×3×2 = 24 cm³</div></div>
     </div>`,
   prosentur2: `<h3 style="font-size:17px;font-weight:800;margin-bottom:12px;">💯 Prósentur</h3>
     <div style="background:#fdf2f8;border-radius:10px;padding:14px;text-align:center;margin-bottom:14px;">
@@ -3263,9 +3363,9 @@ function drawHelp() {
   })
 
   if (a10) h += hArc(pad, y, pad+a10*sc, '#4f46e5', 34, '+'+a10)
-  if (a1) h += hArc(pad+a10*sc, y, pad+a*sc, '#7c3aed', 20, '+'+a1)
-  if (b10) h += hArc(pad+a*sc, y, pad+(a+b10)*sc, '#0d9488', 34, '+'+b10)
-  if (b1) h += hArc(pad+(a+b10)*sc, y, pad+tot*sc, '#0d9488', 20, '+'+b1)
+  if (a1) h += hArc(pad+a10*sc, y, pad+a*sc, '#6a5a9c', 20, '+'+a1)
+  if (b10) h += hArc(pad+a*sc, y, pad+(a+b10)*sc, '#2b7a6a', 34, '+'+b10)
+  if (b1) h += hArc(pad+(a+b10)*sc, y, pad+tot*sc, '#2b7a6a', 20, '+'+b1)
 
   h += '<circle cx="'+(pad+a*sc)+'" cy="'+y+'" r="5" fill="#4f46e5"/>'
   h += '<circle cx="'+(pad+tot*sc)+'" cy="'+y+'" r="7" fill="#16a34a"/>'
@@ -3353,7 +3453,7 @@ function drawHelpM() {
   }
   // Labels
   if (b10) h += '<text x="'+(ox+b10*cw/2)+'" y="'+(oy+gh+20)+'" text-anchor="middle" font-size="14" font-weight="800" fill="#3730a3" font-family="Nunito,sans-serif">'+a+' × '+b10+' = '+p1+'</text>'
-  if (b1) h += '<text x="'+(ox+b10*cw+b1*cw/2)+'" y="'+(oy+gh+20)+'" text-anchor="middle" font-size="14" font-weight="800" fill="#065f46" font-family="Nunito,sans-serif">'+a+' × '+b1+' = '+p2+'</text>'
+  if (b1) h += '<text x="'+(ox+b10*cw+b1*cw/2)+'" y="'+(oy+gh+20)+'" text-anchor="middle" font-size="14" font-weight="800" fill="#2a6b54" font-family="Nunito,sans-serif">'+a+' × '+b1+' = '+p2+'</text>'
   // Row label on left
   h += '<text x="'+(ox-6)+'" y="'+(oy+gh/2+5)+'" text-anchor="end" font-size="12" fill="#64748b" font-family="Nunito,sans-serif">'+a+' raðir</text>'
   // Col label on top
@@ -3391,7 +3491,7 @@ function drawHelpD() {
       h += '<rect x="'+(ox+c*cw)+'" y="'+(oy+r*ch)+'" width="'+cw+'" height="'+ch+'" fill="'+col+'" stroke="white" stroke-width="2"/>'
     }
     // Hópsmerki til hægri
-    h += '<text x="'+(ox+gw+10)+'" y="'+(oy+r*ch+ch/2+5)+'" font-size="12" font-weight="700" fill="'+(['#3730a3','#065f46','#92400e','#9d174d'][r%4])+'" font-family="Nunito,sans-serif">'+b+'</text>'
+    h += '<text x="'+(ox+gw+10)+'" y="'+(oy+r*ch+ch/2+5)+'" font-size="12" font-weight="700" fill="'+(['#3730a3','#2a6b54','#92400e','#9d174d'][r%4])+'" font-family="Nunito,sans-serif">'+b+'</text>'
   }
   // Outer border
   if (rows > 0) h += '<rect x="'+ox+'" y="'+oy+'" width="'+gw+'" height="'+gh+'" fill="none" stroke="#475569" stroke-width="2"/>'
@@ -3822,8 +3922,11 @@ function renderGrid() {
     return '<td' + c + '>' + (val === null || val === '' ? '' : val) + '</td>'
   }
 
-  // Line separator
-  const line = '<tr class="line-row"><td class="op-cell"></td>' + '<td></td>'.repeat(len) + '</tr>'
+  // Line separator — actual line under digits
+  var lineCell = '<td class="line-actual"></td>'
+  var line = '<tr class="line-row"><td class="op-cell"></td>'
+  for (var li = 0; li < len; li++) line += lineCell
+  line += '</tr>'
 
   let html = ''
   let steps = []
@@ -3952,7 +4055,7 @@ function renderGrid() {
 <!-- ===== GÁTU POPUP ===== -->
 <div id="riddleOverlay" style="position:fixed;inset:0;background:rgba(15,23,42,0.55);z-index:8888;display:none;align-items:center;justify-content:center;padding:20px;" onclick="closeRiddlesOutside(event)">
   <div style="background:white;border-radius:24px;width:100%;max-width:520px;max-height:88vh;box-shadow:0 32px 80px rgba(0,0,0,0.2);display:flex;flex-direction:column;">
-    <div style="background:linear-gradient(135deg,#7c3aed,#a78bfa);color:white;padding:20px 24px 16px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <div style="background:linear-gradient(135deg,#6a5a9c,#a78bfa);color:white;padding:20px 24px 16px;border-radius:24px 24px 0 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
       <h2 style="font-size:20px;font-weight:900;">🧩 Gátur</h2>
       <button onclick="closeRiddles()" style="background:rgba(255,255,255,0.2);border:none;color:white;font-size:20px;width:36px;height:36px;border-radius:10px;cursor:pointer;">✕</button>
     </div>
@@ -3965,14 +4068,14 @@ function renderGrid() {
         Sjá lausn
       </button>
       <div id="riddleFeedback" style="font-size:15px;font-weight:700;padding:10px 14px;border-radius:10px;min-height:20px;margin-bottom:8px;"></div>
-      <div id="riddleExplain" style="display:none;background:#f5f3ff;border-left:4px solid #7c3aed;border-radius:0 10px 10px 0;padding:12px 14px;font-size:14px;font-weight:600;color:#4c1d95;line-height:1.6;margin-bottom:12px;"></div>
+      <div id="riddleExplain" style="display:none;background:#f5f3ff;border-left:4px solid #6a5a9c;border-radius:0 10px 10px 0;padding:12px 14px;font-size:14px;font-weight:600;color:#4c1d95;line-height:1.6;margin-bottom:12px;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;border-top:1px solid #f1f5f9;padding-top:14px;">
         <button id="riddlePrev" onclick="prevRiddle()"
-          style="padding:9px 18px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;background:white;border:2px solid #ede9fe;border-radius:10px;cursor:pointer;color:#7c3aed;"
+          style="padding:9px 18px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;background:white;border:2px solid #eae8f2;border-radius:10px;cursor:pointer;color:#6a5a9c;"
           disabled>← Fyrri</button>
         <span id="riddleCounter" style="font-size:13px;font-weight:700;color:#94a3b8;">1 / 14</span>
         <button id="riddleNext" onclick="nextRiddle()"
-          style="padding:9px 18px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;background:white;border:2px solid #ede9fe;border-radius:10px;cursor:pointer;color:#7c3aed;">
+          style="padding:9px 18px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;background:white;border:2px solid #eae8f2;border-radius:10px;cursor:pointer;color:#6a5a9c;">
           Næsta →</button>
       </div>
     </div>
@@ -3991,7 +4094,7 @@ function renderGrid() {
   border: 2px solid #d1fae5;
   border-radius: 12px;
   cursor: pointer;
-  color: #065f46;
+  color: #2a6b54;
   transition: all 0.15s;
   min-width: 60px;
 }
@@ -4004,7 +4107,7 @@ function renderGrid() {
   <div style="background:white;border-radius:24px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,0.2);">
 
     <!-- Header -->
-    <div style="background:linear-gradient(135deg,#0d9488,#2dd4bf);color:white;padding:18px 20px 14px;border-radius:24px 24px 0 0;position:sticky;top:0;z-index:1;">
+    <div style="background:linear-gradient(135deg,#2b7a6a,#2dd4bf);color:white;padding:18px 20px 14px;border-radius:24px 24px 0 0;position:sticky;top:0;z-index:1;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <h2 style="font-size:20px;font-weight:900;">🛒 Búðin</h2>
         <div style="display:flex;gap:8px;">
@@ -4014,7 +4117,7 @@ function renderGrid() {
       </div>
       <!-- Tier buttons -->
       <div style="display:flex;gap:6px;">
-        <button class="tier-btn" onclick="setShopTier(1)" style="flex:1;padding:7px 4px;font-size:12px;font-weight:900;font-family:Nunito,sans-serif;background:#0d9488;color:white;border:2px solid rgba(255,255,255,0.4);border-radius:8px;cursor:pointer;">⭐ Greiða</button>
+        <button class="tier-btn" onclick="setShopTier(1)" style="flex:1;padding:7px 4px;font-size:12px;font-weight:900;font-family:Nunito,sans-serif;background:#2b7a6a;color:white;border:2px solid rgba(255,255,255,0.4);border-radius:8px;cursor:pointer;">⭐ Greiða</button>
         <button class="tier-btn" onclick="setShopTier(2)" style="flex:1;padding:7px 4px;font-size:12px;font-weight:700;font-family:Nunito,sans-serif;background:rgba(255,255,255,0.15);color:white;border:2px solid rgba(255,255,255,0.2);border-radius:8px;cursor:pointer;">⭐⭐ Reikna</button>
         <button class="tier-btn" onclick="setShopTier(3)" style="flex:1;padding:7px 4px;font-size:12px;font-weight:700;font-family:Nunito,sans-serif;background:rgba(255,255,255,0.15);color:white;border:2px solid rgba(255,255,255,0.2);border-radius:8px;cursor:pointer;">⭐⭐⭐ Afgangur</button>
         <button class="tier-btn" onclick="setShopTier(4)" style="flex:1;padding:7px 4px;font-size:12px;font-weight:700;font-family:Nunito,sans-serif;background:rgba(255,255,255,0.15);color:white;border:2px solid rgba(255,255,255,0.2);border-radius:8px;cursor:pointer;">⭐⭐⭐⭐ Flóknara</button>
@@ -4266,9 +4369,9 @@ function showExamQuestion() {
     p.options.forEach(o => {
       const b = document.createElement('button')
       b.textContent = o
-      b.style.cssText = 'display:block;width:100%;margin-bottom:8px;padding:12px 16px;font-size:16px;font-weight:700;font-family:Nunito,sans-serif;border:2px solid var(--amber-light);border-radius:12px;background:#fffbeb;cursor:pointer;text-align:left;transition:background 0.15s;'
+      b.style.cssText = 'display:block;width:100%;margin-bottom:8px;padding:12px 16px;font-size:16px;font-weight:700;font-family:Nunito,sans-serif;border:2px solid var(--amber-light);border-radius:12px;background:#faf7f0;cursor:pointer;text-align:left;transition:background 0.15s;'
       b.onmouseover = () => b.style.background = '#fef3c7'
-      b.onmouseout = () => b.style.background = '#fffbeb'
+      b.onmouseout = () => b.style.background = '#faf7f0'
       b.onclick = () => { inp.value = o; submitExam() }
       opts.appendChild(b)
     })
