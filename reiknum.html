@@ -1364,6 +1364,17 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
   </div>
 </div>
 
+<!-- ===== PIPARDÆMI (frystir skjá) ===== -->
+<div id="piparFreezeOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#22303b,#2b4a4a);align-items:center;justify-content:center;flex-direction:column;padding:24px;">
+  <div style="text-align:center;margin-bottom:28px;">
+    <div style="font-size:48px;margin-bottom:8px;">🌶️</div>
+    <div style="font-size:26px;font-weight:900;color:white;">Pipardæmi!</div>
+    <div id="piparTopicLabel" style="font-size:16px;color:rgba(255,255,255,0.7);margin-top:4px;"></div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-top:10px;">Vinnið saman á blaði eða töflu — skjárinn er frosinn</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;max-width:900px;width:100%;" id="piparCards"></div>
+</div>
+
 <!-- ===== BRAIN BREAK ===== -->
 <div id="brainBreakOverlay" class="brain-break-overlay">
   <div class="bb-icon" id="bbIcon">🧠</div>
@@ -2203,6 +2214,50 @@ function getSaveKey(name, pass) {
     .replace(/\s+/g, '_')
 }
 
+
+// ===== PIPARDÆMI HLUSTUN =====
+function startPiparListener(name, pass) {
+  if (!window.firebaseReady || !window.firebaseDB) return
+  const bekkur = pass.toLowerCase().trim().replace(/[.#$\[\]/\s]/g, '_')
+  const r = window.firebaseRef(window.firebaseDB, 'bekkir/' + bekkur + '/pipar')
+  window.firebaseOnValue(r, function(snap) {
+    if (!snap.exists()) { hidePiparFreeze(); return }
+    const data = snap.val()
+    if (data && data.active) {
+      showPiparFreeze(data)
+    } else {
+      hidePiparFreeze()
+    }
+  })
+}
+
+function showPiparFreeze(data) {
+  const ov = document.getElementById('piparFreezeOverlay')
+  document.getElementById('piparTopicLabel').textContent = data.topic || ''
+  const peppers = [
+    { key: 'chili', icon: '🌶️', name: 'Grænn chili', level: 'Auðvelt', color: '#86d3a3', bg: 'rgba(47,143,87,0.15)' },
+    { key: 'habanero', icon: '🌶️', name: 'Habanero', level: 'Miðlungs', color: '#e8b765', bg: 'rgba(217,138,38,0.15)' },
+    { key: 'reaper', icon: '🔥', name: 'Carolina Reaper', level: 'Erfitt', color: '#e89aa6', bg: 'rgba(194,71,90,0.15)' }
+  ]
+  document.getElementById('piparCards').innerHTML = peppers.map(p => {
+    const prob = data[p.key]
+    if (!prob) return ''
+    return '<div style="background:' + p.bg + ';border:2px solid ' + p.color + ';border-radius:16px;padding:24px;text-align:center;">'
+      + '<div style="font-size:36px;margin-bottom:8px;">' + p.icon + '</div>'
+      + '<div style="font-size:15px;font-weight:800;color:' + p.color + ';">' + p.name + '</div>'
+      + '<div style="font-size:12px;font-weight:700;color:' + p.color + ';opacity:0.8;margin-bottom:16px;">' + p.level + '</div>'
+      + '<div style="font-size:24px;font-weight:900;color:white;line-height:1.4;">' + prob.q + '</div>'
+      + '</div>'
+  }).join('')
+  ov.style.display = 'flex'
+}
+
+function hidePiparFreeze() {
+  const ov = document.getElementById('piparFreezeOverlay')
+  if (ov) ov.style.display = 'none'
+}
+
+
 function fbPath(name, pass) {
   const bekkur = pass.toLowerCase().trim().replace(/[.#$\[\]/\s]/g, '_')
   const nafn = name.toLowerCase().trim().replace(/[.#$\[\]/\s]/g, '_')
@@ -2314,6 +2369,7 @@ function start() {
     document.getElementById('riddleQuestion').textContent = RIDDLES[0].question
     document.getElementById('riddleHint').textContent = '💡 Vísbending: ' + RIDDLES[0].hint
     initBadges(name, pass)
+    startPiparListener(name, pass)
     updateProgress(st.correct, st.set)
 
     if (saved) {
