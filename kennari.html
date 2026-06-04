@@ -229,6 +229,10 @@ body {
   transition: all 0.15s;
 }
 .delete-btn:hover { color: var(--rose); background: var(--rose-light); }
+
+.kn-tab { padding: 10px 18px; font-size: 14px; font-weight: 700; font-family: Nunito,sans-serif; border: none; background: none; color: #94a3b8; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.15s; border-radius: 8px 8px 0 0; }
+.kn-tab.active { color: #2b6a6a; border-bottom-color: #2b6a6a; background: #e3efef; }
+.pepper-card { border-radius: 12px; padding: 18px; border: 2px solid; }
 </style>
 </head>
 <body>
@@ -245,24 +249,67 @@ body {
       font-family:Nunito,sans-serif;width:220px;outline:none;"
       onfocus="this.style.background='rgba(255,255,255,0.25)'"
       onblur="this.style.background='rgba(255,255,255,0.15)'">
-    <button id="loadBtn" class="refresh-btn" style="white-space:nowrap;">🔍 Sækja nemendur</button>
+    <button id="loadBtn" class="refresh-btn" style="white-space:nowrap;" onclick="window.loadData && window.loadData()">🔍 Sækja nemendur</button>
   </div>
 </div>
 
 <div class="container">
 
-  <div class="summary-grid" id="summaryGrid"></div>
+  <!-- Flipar -->
+  <div style="display:flex;gap:4px;border-bottom:2px solid #e2e8f0;margin-bottom:24px;">
+    <button class="kn-tab active" onclick="showKnTab('nemendur',this)">👥 Nemendur</button>
+    <button class="kn-tab" onclick="showKnTab('pipar',this)">🌶️ Pipardæmi</button>
+  </div>
 
-<div id="topicArea"></div>
+  <!-- Nemendaflipi -->
+  <div id="knTab-nemendur">
+    <div class="summary-grid" id="summaryGrid"></div>
+    <div id="topicArea"></div>
+    <div class="section-title">Nemendur</div>
+    <div id="studentArea"></div>
+  </div>
 
-  <div class="section-title">Nemendur</div>
-  <div id="studentArea"></div>
+  <!-- Pipardæmaflipi -->
+  <div id="knTab-pipar" style="display:none;">
+    <div style="background:white;border-radius:12px;padding:24px;box-shadow:var(--shadow);">
+      <div style="font-size:18px;font-weight:900;color:var(--slate);margin-bottom:6px;">🌶️ Pipardæmi — vinna saman</div>
+      <div style="font-size:14px;color:var(--slate-light);margin-bottom:20px;">Veldu hugtak og bekk. Þrjú dæmi með mismunandi erfiðleika birtast á skjáum allra nemenda í bekknum, sem frjósa á meðan.</div>
+
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px;">
+        <div>
+          <label style="font-size:12px;font-weight:700;color:var(--slate-mid);display:block;margin-bottom:4px;">Hugtak</label>
+          <select id="piparTopic" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:14px;font-family:Nunito,sans-serif;font-weight:700;min-width:200px;">
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:700;color:var(--slate-mid);display:block;margin-bottom:4px;">Bekkur</label>
+          <input id="piparBekkur" placeholder="t.d. 6ss" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:14px;font-family:Nunito,sans-serif;font-weight:700;width:120px;">
+        </div>
+        <button onclick="sendPipar()" style="background:#c2475a;color:white;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;">🌶️ Senda á bekkinn</button>
+        <button onclick="stopPipar()" style="background:#e2e8f0;color:var(--slate);border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;">⏹ Affrysta</button>
+      </div>
+
+      <div id="piparPreview" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;"></div>
+      <div id="piparStatus" style="margin-top:16px;font-size:14px;font-weight:700;color:var(--slate-light);"></div>
+    </div>
+  </div>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"
 import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+
+// Skilgreina flipa-skiptingu STRAX (óháð Firebase)
+window.showKnTab = function(id, btn) {
+  document.querySelectorAll('.kn-tab').forEach(t => t.classList.remove('active'))
+  if (btn) btn.classList.add('active')
+  const nem = document.getElementById('knTab-nemendur')
+  const pip = document.getElementById('knTab-pipar')
+  if (nem) nem.style.display = id === 'nemendur' ? 'block' : 'none'
+  if (pip) pip.style.display = id === 'pipar' ? 'block' : 'none'
+  if (id === 'pipar' && window.fillPiparTopics) window.fillPiparTopics()
+}
 
 const firebaseConfig = {
   apiKey: "AIzaSyCEyFVVA4iHSqVeo_GYtM4H8nlO89KiXyU",
@@ -343,24 +390,12 @@ async function loadData() {
   try {
     snap = await get(ref(db, 'bekkir/' + bekkur + '/nemendur'))
   } catch(err) {
+    var rulesText = '{\n  "rules": {\n    "bekkir": {\n      "$bekkur": {\n        ".read": true,\n        "nemendur": {\n          "$nemandi": {\n            ".write": true\n          }\n        }\n      }\n    }\n  }\n}'
     document.getElementById('studentArea').innerHTML =
       '<div style="background:#fff1f2;border-radius:12px;padding:16px 20px;color:#e11d48;font-weight:700;">'
       + '⚠️ Heimild vantar. Farðu á Firebase → Realtime Database → Rules og settu inn:'
       + '<pre style="background:#1e293b;color:#a5f3fc;border-radius:8px;padding:12px;margin-top:10px;font-size:12px;overflow:auto;">'
-      + '{
-  "rules": {
-    "bekkir": {
-      "$bekkur": {
-        ".read": true,
-        "nemendur": {
-          "$nemandi": {
-            ".write": true
-          }
-        }
-      }
-    }
-  }
-}'
+      + rulesText
       + '</pre></div>'
     return
   }
@@ -471,21 +506,177 @@ async function loadData() {
   })
 }
 
-// Keyra þegar síða hleðst
-document.addEventListener('DOMContentLoaded', () => {
+
+// ===== PIPARDÆMI =====
+const PIPAR_BANK = {
+  'margföldun': {
+    label: 'Margföldun',
+    chili: { q: '6 × 7 = ?', a: '42' },
+    habanero: { q: '23 × 14 = ?', a: '322' },
+    reaper: { q: '47 × 38 = ?', a: '1.786' }
+  },
+  'deilding': {
+    label: 'Deilding',
+    chili: { q: '48 ÷ 6 = ?', a: '8' },
+    habanero: { q: '144 ÷ 12 = ?', a: '12' },
+    reaper: { q: '847 ÷ 7 = ?', a: '121' }
+  },
+  'brot': {
+    label: 'Brot',
+    chili: { q: '1/2 + 1/4 = ?', a: '3/4' },
+    habanero: { q: '2/3 + 1/6 = ?', a: '5/6' },
+    reaper: { q: '3/4 × 2/9 + 1/6 = ?', a: '1/3' }
+  },
+  'prósentur': {
+    label: 'Prósentur',
+    chili: { q: '50% af 80 = ?', a: '40' },
+    habanero: { q: '15% af 240 = ?', a: '36' },
+    reaper: { q: 'Vara lækkar úr 4.500 í 3.600 kr. Hversu mörg %?', a: '20%' }
+  },
+  'flatarmál': {
+    label: 'Flatarmál',
+    chili: { q: 'Ferhyrningur 5 × 4 cm. Flatarmál?', a: '20 cm²' },
+    habanero: { q: 'Þríhyrningur grunnur 8, hæð 6. Flatarmál?', a: '24' },
+    reaper: { q: 'Hringur r = 7 cm. Flatarmál? (π≈3,14)', a: '153,86 cm²' }
+  },
+  'samlagning': {
+    label: 'Samlagning',
+    chili: { q: '47 + 36 = ?', a: '83' },
+    habanero: { q: '268 + 457 = ?', a: '725' },
+    reaper: { q: '1.847 + 2.965 + 538 = ?', a: '5.350' }
+  },
+  'frádráttur': {
+    label: 'Frádráttur',
+    chili: { q: '84 - 27 = ?', a: '57' },
+    habanero: { q: '503 - 248 = ?', a: '255' },
+    reaper: { q: '6.002 - 3.487 = ?', a: '2.515' }
+  },
+  'negatívar tölur': {
+    label: 'Negatívar tölur',
+    chili: { q: '-5 + 8 = ?', a: '3' },
+    habanero: { q: '-12 - 7 = ?', a: '-19' },
+    reaper: { q: '-8 + 15 - 23 + 4 = ?', a: '-12' }
+  },
+  'röð reikniaðgerða': {
+    label: 'Röð reikniaðgerða',
+    chili: { q: '3 + 4 × 2 = ?', a: '11' },
+    habanero: { q: '(5 + 3) × 4 - 6 = ?', a: '26' },
+    reaper: { q: '2 × (8 - 3) + 4² ÷ 2 = ?', a: '18' }
+  },
+  'tölfræði': {
+    label: 'Tölfræði',
+    chili: { q: 'Meðaltal: 4, 6, 8 = ?', a: '6' },
+    habanero: { q: 'Miðgildi: 3, 7, 2, 9, 5 = ?', a: '5' },
+    reaper: { q: 'Meðaltal 5 talna er 12. Fjórar eru 8,10,14,16. Fimmta?', a: '12' }
+  },
+  'frumtölur': {
+    label: 'Frumtölur',
+    chili: { q: 'Er 7 frumtala?', a: 'Já' },
+    habanero: { q: 'Hvaða frumtölur eru milli 20 og 30?', a: '23, 29' },
+    reaper: { q: 'Þáttaðu 84 í frumtölur', a: '2² × 3 × 7' }
+  },
+  'rúmfræði — hringur': {
+    label: 'Hringur',
+    chili: { q: 'Geisli 5 cm. Þvermál?', a: '10 cm' },
+    habanero: { q: 'Þvermál 14 cm. Ummál? (π≈3,14)', a: '43,96 cm' },
+    reaper: { q: 'Ummál hrings er 31,4 cm. Geisli? (π≈3,14)', a: '5 cm' }
+  }
+}
+
+window.fillPiparTopics = function fillPiparTopics() {
+  const sel = document.getElementById('piparTopic')
+  if (!sel) return
+  sel.innerHTML = ''
+  Object.keys(PIPAR_BANK).forEach(key => {
+    const opt = document.createElement('option')
+    opt.value = key
+    opt.textContent = PIPAR_BANK[key].label
+    sel.appendChild(opt)
+  })
+  sel.addEventListener('change', renderPiparPreview)
+  renderPiparPreview()
+}
+
+function renderPiparPreview() {
+  const key = document.getElementById('piparTopic').value
+  const data = PIPAR_BANK[key]
+  if (!data) return
+  const peppers = [
+    { id: 'chili', icon: '🌶️', name: 'Grænn chili', level: 'Auðvelt', color: '#2f8f57', bg: '#ddf0e3', border: '#86d3a3' },
+    { id: 'habanero', icon: '🌶️', name: 'Habanero', level: 'Miðlungs', color: '#d98a26', bg: '#fbeed5', border: '#e8b765' },
+    { id: 'reaper', icon: '🔥', name: 'Carolina Reaper', level: 'Erfitt', color: '#c2475a', bg: '#f8e0e4', border: '#e89aa6' }
+  ]
+  const prev = document.getElementById('piparPreview')
+  prev.innerHTML = peppers.map(p => {
+    const prob = data[p.id]
+    return '<div class="pepper-card" style="background:' + p.bg + ';border-color:' + p.border + ';">'
+      + '<div style="font-size:24px;margin-bottom:6px;">' + p.icon + '</div>'
+      + '<div style="font-size:13px;font-weight:800;color:' + p.color + ';">' + p.name + '</div>'
+      + '<div style="font-size:11px;font-weight:700;color:' + p.color + ';opacity:0.7;margin-bottom:10px;">' + p.level + '</div>'
+      + '<div style="font-size:16px;font-weight:800;color:#22303b;margin-bottom:8px;">' + prob.q + '</div>'
+      + '<div style="font-size:12px;color:var(--slate-light);">Svar: ' + prob.a + '</div>'
+      + '</div>'
+  }).join('')
+}
+
+window.sendPipar = async function() {
+  const key = document.getElementById('piparTopic').value
+  const bekkur = document.getElementById('piparBekkur').value.trim().toLowerCase().replace(/[.#$\[\]/\s]/g, '_')
+  const data = PIPAR_BANK[key]
+  if (!bekkur) { document.getElementById('piparStatus').textContent = '⚠️ Sláðu inn bekk fyrst'; return }
+  if (!data) return
+
+  const payload = {
+    active: true,
+    topic: data.label,
+    chili: data.chili,
+    habanero: data.habanero,
+    reaper: data.reaper,
+    timestamp: Date.now()
+  }
+  try {
+    await set(ref(db, 'bekkir/' + bekkur + '/pipar'), payload)
+    document.getElementById('piparStatus').innerHTML = '<span style="color:#c2475a;">🌶️ Pipardæmi send á bekk <strong>' + bekkur + '</strong> — skjáir nemenda frosnir!</span>'
+  } catch(e) {
+    document.getElementById('piparStatus').textContent = '⚠️ Villa: ' + e.message
+  }
+}
+
+window.stopPipar = async function() {
+  const bekkur = document.getElementById('piparBekkur').value.trim().toLowerCase().replace(/[.#$\[\]/\s]/g, '_')
+  if (!bekkur) { document.getElementById('piparStatus').textContent = '⚠️ Sláðu inn bekk fyrst'; return }
+  try {
+    await set(ref(db, 'bekkir/' + bekkur + '/pipar'), { active: false, timestamp: Date.now() })
+    document.getElementById('piparStatus').innerHTML = '<span style="color:#2f8f57;">✓ Skjáir nemenda affrystir í bekk <strong>' + bekkur + '</strong></span>'
+  } catch(e) {
+    document.getElementById('piparStatus').textContent = '⚠️ Villa: ' + e.message
+  }
+}
+
+
+
+
+// Module scripts eru deferred — DOM er tilbúið hér
+function initKennari() {
   const btn = document.getElementById('loadBtn')
   const inp = document.getElementById('bekkurInput')
   if (btn) btn.addEventListener('click', loadData)
   if (inp) inp.addEventListener('keydown', e => {
     if (e.key === 'Enter') loadData()
   })
-  // Placeholder sýnt strax
-  document.getElementById('studentArea').innerHTML =
+  const area = document.getElementById('studentArea')
+  if (area) area.innerHTML =
     '<div style="color:#94a3b8;padding:20px;text-align:center;">Sláðu inn bekkjarkóðann og smelltu 🔍</div>'
-})
+}
 
-// Gera deleteStudent aðgengilegt utan module
-window.deleteStudent = window.deleteStudent || function() {}
+// Gera loadData aðgengilegt frá hnappi (öryggisventill)
+window.loadData = loadData
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initKennari)
+} else {
+  initKennari()
+}
 </script>
 </body>
 </html>
