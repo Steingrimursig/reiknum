@@ -267,36 +267,36 @@ body {
   <!-- Flipar -->
   <div style="display:flex;gap:4px;border-bottom:2px solid #e2e8f0;margin-bottom:24px;">
     <button class="kn-tab active" onclick="showKnTab('bekkir',this)">🏫 Bekkir</button>
-    <button class="kn-tab" onclick="showKnTab('nemendur',this)">👥 Nemendur</button>
     <button class="kn-tab" onclick="showKnTab('pipar',this)">🌶️ Pipardæmi</button>
   </div>
 
   <!-- Bekkjaflipi -->
   <div id="knTab-bekkir">
-    <div style="background:white;border-radius:12px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px;">
-      <div style="font-size:18px;font-weight:900;color:var(--slate);margin-bottom:6px;">🏫 Bekkirnir þínir</div>
-      <div style="font-size:14px;color:var(--slate-light);margin-bottom:20px;">Búðu til bekk og deildu kóðanum með nemendum. Þeir slá hann inn til að byrja.</div>
-      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px;">
-        <div>
-          <label style="font-size:12px;font-weight:700;color:var(--slate-mid);display:block;margin-bottom:4px;">Nafn bekkjar</label>
-          <input id="newClassName" placeholder="t.d. 7. bekkur SS" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:14px;font-family:Nunito,sans-serif;font-weight:700;width:220px;">
+    <!-- Yfirlit bekkja (sýnt þegar enginn bekkur er valinn) -->
+    <div id="classOverview">
+      <div style="background:white;border-radius:12px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px;">
+        <div style="font-size:18px;font-weight:900;color:var(--slate);margin-bottom:6px;">🏫 Bekkirnir þínir</div>
+        <div style="font-size:14px;color:var(--slate-light);margin-bottom:20px;">Smelltu á bekk til að sjá nemendur hans. Deildu kóðanum með nemendum — þeir slá hann inn til að byrja.</div>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px;">
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--slate-mid);display:block;margin-bottom:4px;">Nafn bekkjar</label>
+            <input id="newClassName" placeholder="t.d. 7. bekkur SS" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:14px;font-family:Nunito,sans-serif;font-weight:700;width:220px;">
+          </div>
+          <button onclick="createClass()" style="background:#2b6a6a;color:white;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;">➕ Búa til bekk</button>
         </div>
-        <button onclick="createClass()" style="background:#2b6a6a;color:white;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;">➕ Búa til bekk</button>
+        <div id="classList"></div>
       </div>
-      <div id="classList"></div>
     </div>
-  </div>
 
-  <!-- Nemendaflipi -->
-  <div id="knTab-nemendur" style="display:none;">
-    <div style="margin-bottom:16px;">
-      <label style="font-size:12px;font-weight:700;color:var(--slate-mid);display:block;margin-bottom:4px;">Veldu bekk</label>
-      <select id="classSelect" onchange="loadData()" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:14px;font-family:Nunito,sans-serif;font-weight:700;min-width:220px;"></select>
+    <!-- Nemendasýn (sýnt þegar bekkur er valinn) -->
+    <div id="classDetail" style="display:none;">
+      <button onclick="backToClasses()" style="background:none;border:none;color:#2b6a6a;font-size:14px;font-weight:700;font-family:Nunito,sans-serif;cursor:pointer;margin-bottom:16px;padding:0;">← Til baka í bekki</button>
+      <div id="classDetailHeader" style="font-size:20px;font-weight:900;color:var(--slate);margin-bottom:16px;"></div>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div id="topicArea"></div>
+      <div class="section-title">Nemendur</div>
+      <div id="studentArea"></div>
     </div>
-    <div class="summary-grid" id="summaryGrid"></div>
-    <div id="topicArea"></div>
-    <div class="section-title">Nemendur</div>
-    <div id="studentArea"></div>
   </div>
 
   <!-- Pipardæmaflipi -->
@@ -336,13 +336,28 @@ window.showKnTab = function(id, btn) {
   document.querySelectorAll('.kn-tab').forEach(t => t.classList.remove('active'))
   if (btn) btn.classList.add('active')
   const bek = document.getElementById('knTab-bekkir')
-  const nem = document.getElementById('knTab-nemendur')
   const pip = document.getElementById('knTab-pipar')
   if (bek) bek.style.display = id === 'bekkir' ? 'block' : 'none'
-  if (nem) nem.style.display = id === 'nemendur' ? 'block' : 'none'
   if (pip) pip.style.display = id === 'pipar' ? 'block' : 'none'
   if (id === 'pipar' && window.fillPiparTopics) window.fillPiparTopics()
-  if (id === 'bekkir' && window.loadClasses) window.loadClasses()
+  if (id === 'bekkir') { backToClasses(); if (window.loadClasses) window.loadClasses() }
+}
+
+// Sýna nemendur eins bekkjar
+let selectedClass = null
+window.openClass = function(code, name) {
+  selectedClass = { code, name }
+  document.getElementById('classOverview').style.display = 'none'
+  document.getElementById('classDetail').style.display = 'block'
+  document.getElementById('classDetailHeader').textContent = '👥 ' + name + '  ·  kóði ' + code
+  loadData()
+}
+window.backToClasses = function() {
+  selectedClass = null
+  const ov = document.getElementById('classOverview')
+  const dt = document.getElementById('classDetail')
+  if (ov) ov.style.display = 'block'
+  if (dt) dt.style.display = 'none'
 }
 
 const firebaseConfig = {
@@ -380,7 +395,6 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('appHeader').style.display = 'flex'
     document.getElementById('appContainer').style.display = 'block'
     document.getElementById('teacherName').textContent = '👤 ' + currentTeacher.name
-    loadClassSelect()
     // Vista kennaraupplýsingar
     await set(ref(db, 'teachers/' + user.uid + '/info'), {
       name: currentTeacher.name, email: currentTeacher.email, lastLogin: Date.now()
@@ -427,7 +441,6 @@ window.createClass = async function() {
   })
   document.getElementById('newClassName').value = ''
   loadClasses()
-  loadClassSelect()
 }
 
 window.deleteClass = async function(code, name) {
@@ -435,7 +448,6 @@ window.deleteClass = async function(code, name) {
   await remove(ref(db, 'bekkir/' + code))
   await remove(ref(db, 'teachers/' + currentTeacher.uid + '/classes/' + code))
   loadClasses()
-  loadClassSelect()
 }
 
 window.loadClasses = async function() {
@@ -449,18 +461,22 @@ window.loadClasses = async function() {
     return
   }
   const classes = snap.val()
-  el.innerHTML = Object.entries(classes).map(([code, c]) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:#f6f7f8;border-radius:12px;margin-bottom:10px;">
+  el.innerHTML = Object.entries(classes).map(([code, c]) => {
+    const safeName = c.name.replace(/'/g, "\\'")
+    return `
+    <div onclick="openClass('${code}','${safeName}')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:#f6f7f8;border-radius:12px;margin-bottom:10px;cursor:pointer;transition:background 0.15s;border:2px solid transparent;"
+      onmouseover="this.style.background='#e3efef';this.style.borderColor='#c9e0e0'"
+      onmouseout="this.style.background='#f6f7f8';this.style.borderColor='transparent'">
       <div>
-        <div style="font-size:15px;font-weight:800;color:#22303b;">${c.name}</div>
+        <div style="font-size:15px;font-weight:800;color:#22303b;">${c.name} <span style="font-size:13px;color:#2b6a6a;font-weight:700;">→ skoða nemendur</span></div>
         <div style="font-size:13px;color:#8a9aa6;margin-top:2px;">Kóði: <span style="font-family:monospace;font-size:15px;font-weight:800;color:#2b6a6a;letter-spacing:1px;">${code}</span></div>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;" onclick="event.stopPropagation()">
         <button onclick="copyCode('${code}')" style="background:#e3efef;color:#2b6a6a;border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;font-family:Nunito,sans-serif;cursor:pointer;">📋 Afrita kóða</button>
-        <button onclick="deleteClass('${code}','${c.name.replace(/'/g,"")}')" style="background:none;border:none;color:#c2475a;font-size:16px;cursor:pointer;" title="Eyða bekk">🗑</button>
+        <button onclick="deleteClass('${code}','${safeName}')" style="background:none;border:none;color:#c2475a;font-size:16px;cursor:pointer;" title="Eyða bekk">🗑</button>
       </div>
-    </div>
-  `).join('')
+    </div>`
+  }).join('')
 }
 
 window.copyCode = function(code) {
@@ -540,8 +556,7 @@ window.deleteStudent = async function(bekkur, nafn) {
 }
 
 async function loadData() {
-  const sel = document.getElementById('classSelect')
-  const bekkur = sel ? sel.value : ''
+  const bekkur = selectedClass ? selectedClass.code : ''
   if (!bekkur) {
     document.getElementById('studentArea').innerHTML =
       '<div style="color:#94a3b8;padding:20px;">Veldu bekk til að sjá nemendur.</div>'
