@@ -3043,24 +3043,25 @@ async function start() {
       return
     }
 
-    // 2. Athuga hvort þessi nemandi (þetta tæki) hafi dulnefni fyrir þennan bekk
-    let codename = localStorage.getItem('codename-' + bekkur)
-    let existing = null
-    if (codename) {
-      const eSnap = await window.firebaseGet(window.firebaseRef(window.firebaseDB, fbPath(codename, bekkur)))
-      existing = eSnap.exists() ? eSnap.val() : null
+    // 2. Fletta nemanda upp eftir NAFNI (ekki tæki) — virkar á hvaða iPad sem er
+    const nameKey = rawName.toLowerCase().trim().replace(/[.#$\[\]/\s]+/g, '_')
+    let codename = null
+    const mapSnap = await window.firebaseGet(window.firebaseRef(window.firebaseDB, 'bekkir/' + bekkur + '/namemap/' + nameKey))
+    if (mapSnap.exists()) {
+      // Nemandi með þetta nafn er þegar til — halda áfram með hans dulnefni
+      codename = mapSnap.val()
     }
 
-    // 3. Ef ekkert dulnefni — búa til nýtt (einstakt í bekknum)
-    if (!codename || !existing) {
+    // 3. Nýr nemandi — búa til einstakt dulnefni og skrá nafnið
+    if (!codename) {
       const nemSnap = await window.firebaseGet(window.firebaseRef(window.firebaseDB, 'bekkir/' + bekkur + '/nemendur'))
       const taken = nemSnap.exists() ? Object.keys(nemSnap.val()) : []
-      for (let tries = 0; tries < 20; tries++) {
+      for (let tries = 0; tries < 30; tries++) {
         const c = genCodename()
         if (!taken.includes(c)) { codename = c; break }
       }
-      localStorage.setItem('codename-' + bekkur, codename)
-      // Skrá nýjan nemanda með rétta nafnið
+      // Skrá nafn → dulnefni kortlagningu OG rétta nafnið
+      await window.firebaseSet(window.firebaseRef(window.firebaseDB, 'bekkir/' + bekkur + '/namemap/' + nameKey), codename)
       await window.firebaseSet(window.firebaseRef(window.firebaseDB, fbPath(codename, bekkur) + '/realName'), rawName)
     }
 
