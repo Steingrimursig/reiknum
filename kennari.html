@@ -313,7 +313,7 @@ body {
         </div>
         <div>
           <label style="font-size:12px;font-weight:700;color:var(--slate-mid);display:block;margin-bottom:4px;">Bekkur</label>
-          <input id="piparBekkur" placeholder="t.d. 6ss" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:14px;font-family:Nunito,sans-serif;font-weight:700;width:120px;">
+          <select id="piparBekkur" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:14px;font-family:Nunito,sans-serif;font-weight:700;min-width:180px;"></select>
         </div>
         <button onclick="sendPipar()" style="background:#c2475a;color:white;border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;">🌶️ Senda á bekkinn</button>
         <button onclick="stopPipar()" style="background:#e2e8f0;color:var(--slate);border:none;border-radius:10px;padding:11px 20px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;">⏹ Affrysta</button>
@@ -763,7 +763,23 @@ const PIPAR_BANK = {
   }
 }
 
+async function fillPiparClasses() {
+  const sel = document.getElementById('piparBekkur')
+  if (!sel || !currentTeacher) return
+  const snap = await get(ref(db, 'teachers/' + currentTeacher.uid + '/classes'))
+  sel.innerHTML = ''
+  if (!snap.exists()) { sel.innerHTML = '<option value="">Engir bekkir</option>'; return }
+  Object.entries(snap.val()).forEach(([code, c]) => {
+    const opt = document.createElement('option')
+    opt.value = code
+    opt.textContent = c.name + ' (' + code + ')'
+    sel.appendChild(opt)
+  })
+}
+window.fillPiparClasses = fillPiparClasses
+
 window.fillPiparTopics = function fillPiparTopics() {
+  fillPiparClasses()
   const sel = document.getElementById('piparTopic')
   if (!sel) return
   sel.innerHTML = ''
@@ -801,7 +817,7 @@ function renderPiparPreview() {
 
 window.sendPipar = async function() {
   const key = document.getElementById('piparTopic').value
-  const bekkur = document.getElementById('piparBekkur').value.trim().toLowerCase().replace(/[.#$\[\]/\s]/g, '_')
+  const bekkur = document.getElementById('piparBekkur').value.trim()
   const data = PIPAR_BANK[key]
   if (!bekkur) { document.getElementById('piparStatus').textContent = '⚠️ Sláðu inn bekk fyrst'; return }
   if (!data) return
@@ -823,7 +839,7 @@ window.sendPipar = async function() {
 }
 
 window.stopPipar = async function() {
-  const bekkur = document.getElementById('piparBekkur').value.trim().toLowerCase().replace(/[.#$\[\]/\s]/g, '_')
+  const bekkur = document.getElementById('piparBekkur').value.trim()
   if (!bekkur) { document.getElementById('piparStatus').textContent = '⚠️ Sláðu inn bekk fyrst'; return }
   try {
     await set(ref(db, 'bekkir/' + bekkur + '/pipar'), { active: false, timestamp: Date.now() })
