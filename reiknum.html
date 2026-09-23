@@ -2211,11 +2211,134 @@ function genDivision(level) {
   return { q: a + ' ÷ ' + divisor, a: quotient, op: '÷', operands: [a, divisor] }
 }
 
+// ---------- NEGATÍVAR TÖLUR ----------
+function genNegatives(level) {
+  let a, b, op, ans, q
+  switch(true) {
+    case level <= 1: // -3 + 5, lítil, niðurstaða oft jákvæð
+      a = -randInt(1,5); b = randInt(1,9); op='+'; ans=a+b
+      q = a + ' + ' + b
+      break
+    case level === 2: // 4 - 7 (niðurstaða neikvæð)
+      a = randInt(2,8); b = randInt(a+1, a+6); op='-'; ans=a-b
+      q = a + ' − ' + b
+      break
+    case level === 3: // -6 + 2, -3 + 8
+      a = -randInt(2,9); b = randInt(1,9); op='+'; ans=a+b
+      q = a + ' + ' + b
+      break
+    case level === 4: // -4 - 3 (verður neikvæðara)
+      a = -randInt(1,9); b = randInt(1,9); op='-'; ans=a-b
+      q = a + ' − ' + b
+      break
+    case level === 5: // stærri: -12 + 7
+      a = -randInt(5,15); b = randInt(1,15); op='+'; ans=a+b
+      q = a + ' + ' + b
+      break
+    case level === 6: // 8 - 15, -10 - 6
+      if (Math.random()<0.5){ a=randInt(2,12); b=randInt(a+1,a+12); op='-'; ans=a-b; q=a+' − '+b }
+      else { a=-randInt(5,15); b=randInt(1,15); op='-'; ans=a-b; q=a+' − '+b }
+      break
+    case level === 7: // þrír liðir: -5 + 8 - 3
+      { const x=-randInt(2,9), y=randInt(1,9), z=randInt(1,9); ans=x+y-z; q=x+' + '+y+' − '+z }
+      break
+    case level === 8: // -15 + 20 - 8
+      { const x=-randInt(5,15), y=randInt(5,20), z=randInt(1,12); ans=x+y-z; q=x+' + '+y+' − '+z }
+      break
+    case level === 9: // margföldun með neikvæðum: -4 × 3
+      { const x=-randInt(2,9), y=randInt(2,9); ans=x*y; q=x+' × '+y }
+      break
+    default: // -6 × -4 (tvær neikvæðar)
+      { const x=-randInt(2,9), y=-randInt(2,9); ans=x*y; q=x+' × '+y }
+  }
+  return { q: q, a: ans, op: 'neg', operands: [] }
+}
+
+// ---------- TUGABROT (decimals) ----------
+function dec(n, places) { return parseFloat(n.toFixed(places)) }
+function genDecimals(level) {
+  let a, b, ans, q, op='+'
+  switch(true) {
+    case level <= 1: // 0,5 + 0,3
+      a = dec(randInt(1,8)/10,1); b = dec(randInt(1,9-Math.round(a*10))/10,1); if(b<=0)b=0.1; ans=dec(a+b,1); q=fmt(a)+' + '+fmt(b)
+      break
+    case level === 2: // 1,2 + 0,4
+      a = dec(randInt(10,19)/10,1); b = dec(randInt(1,7)/10,1); ans=dec(a+b,1); q=fmt(a)+' + '+fmt(b)
+      break
+    case level === 3: // 0,8 - 0,3
+      a = dec(randInt(4,9)/10,1); b = dec(randInt(1,Math.round(a*10)-1)/10,1); ans=dec(a-b,1); q=fmt(a)+' − '+fmt(b)
+      break
+    case level === 4: // 2,5 + 1,7
+      a = dec(randInt(15,39)/10,1); b = dec(randInt(8,19)/10,1); ans=dec(a+b,1); q=fmt(a)+' + '+fmt(b)
+      break
+    case level === 5: // 3,6 - 1,8
+      a = dec(randInt(25,49)/10,1); b = dec(randInt(8,Math.round(a*10)-5)/10,1); ans=dec(a-b,1); q=fmt(a)+' − '+fmt(b)
+      break
+    case level === 6: // 2,45 + 1,3 (tveir aukastafir)
+      a = dec(randInt(120,299)/100,2); b = dec(randInt(11,49)/10,1); ans=dec(a+b,2); q=fmt(a)+' + '+fmt(b)
+      break
+    case level === 7: // 5,25 - 2,4
+      a = dec(randInt(300,599)/100,2); b = dec(randInt(11,29)/10,1); ans=dec(a-b,2); q=fmt(a)+' − '+fmt(b)
+      break
+    case level === 8: // 3,75 + 2,68
+      a = dec(randInt(150,499)/100,2); b = dec(randInt(120,399)/100,2); ans=dec(a+b,2); q=fmt(a)+' + '+fmt(b)
+      break
+    case level === 9: // 0,5 × 4  (margföldun tugabrots með heilli)
+      a = dec(randInt(2,9)/10,1); b = randInt(2,9); ans=dec(a*b,2); q=fmt(a)+' × '+b
+      break
+    default: // 2,4 × 3
+      a = dec(randInt(11,49)/10,1); b = randInt(2,9); ans=dec(a*b,2); q=fmt(a)+' × '+b
+  }
+  return { q: q, a: fmt(ans), op: 'dec', operands: [] }
+}
+function fmt(n){ return String(n).replace('.', ',') }  // íslenskt komma í spurningu
+
+// ---------- RÖÐ REIKNIAÐGERÐA ----------
+function genOrderOps(level) {
+  let q, ans
+  const r = (lo,hi)=>randInt(lo,hi)
+  switch(true) {
+    case level <= 1: // 3 + 4 × 2
+      { const a=r(2,6),b=r(2,5),c=r(2,4); ans=a+b*c; q=a+' + '+b+' × '+c }
+      break
+    case level === 2: // 10 - 2 × 3
+      { const a=r(8,15),b=r(2,4),c=r(2,4); ans=a-b*c; q=a+' − '+b+' × '+c }
+      break
+    case level === 3: // 2 × 5 + 3
+      { const a=r(2,6),b=r(2,6),c=r(2,8); ans=a*b+c; q=a+' × '+b+' + '+c }
+      break
+    case level === 4: // (5 + 3) × 2
+      { const a=r(2,7),b=r(2,7),c=r(2,5); ans=(a+b)*c; q='('+a+' + '+b+') × '+c }
+      break
+    case level === 5: // (10 - 4) × 3
+      { const a=r(6,12),b=r(1,5),c=r(2,5); ans=(a-b)*c; q='('+a+' − '+b+') × '+c }
+      break
+    case level === 6: // 3 + 4 × 2 - 1
+      { const a=r(2,6),b=r(2,5),c=r(2,4),d=r(1,5); ans=a+b*c-d; q=a+' + '+b+' × '+c+' − '+d }
+      break
+    case level === 7: // 20 ÷ (2 + 3)
+      { const c=r(2,5),d=r(1,4),res=r(2,6); const s=c+d; const a=s*res; ans=a/s; q=a+' ÷ ('+c+' + '+d+')' }
+      break
+    case level === 8: // 2 × (8 - 3) + 4
+      { const a=r(2,5),b=r(5,10),c=r(1,4),d=r(2,8); ans=a*(b-c)+d; q=a+' × ('+b+' − '+c+') + '+d }
+      break
+    case level === 9: // 4² ÷ 2 + 3  (veldi)
+      { const a=r(2,6),b=r(1,4)*2,c=r(2,8); const sq=a*a; ans=sq/b+c; if(!Number.isInteger(ans)){return genOrderOps(9)} q=a+'² ÷ '+b+' + '+c }
+      break
+    default: // 2 × (8 - 3) + 4² ÷ 2
+      { const a=r(2,4),b=r(5,9),c=r(1,4),d=r(2,4)*2; const e=r(2,6); const sq=e*e; if(sq%d!==0)return genOrderOps(10); ans=a*(b-c)+sq/d; q=a+' × ('+b+' − '+c+') + '+e+'² ÷ '+d }
+  }
+  return { q: q, a: ans, op: 'order', operands: [] }
+}
+
 const GENERATORS = {
   'samlagning': genAddition,
   'frádráttur': genSubtraction,
   'margföldun': genMultiplication,
-  'deiling': genDivision
+  'deiling': genDivision,
+  'negatívar tölur': genNegatives,
+  'tugabrot': genDecimals,
+  'röð reikniaðgerða': genOrderOps
 }
 
 function generate(topic, level) {
@@ -2411,14 +2534,16 @@ const CONCEPT_TREE = {
   // --- GRUNNUR (opið frá byrjun) ---
   'samlagning':        { generated: true,  requires: [],                          label: 'Samlagning' },
   'frádráttur':        { generated: true,  requires: [],                          label: 'Frádráttur' },
+  // 7. bekkjar hugtök — opin frá byrjun, dæmavél sér um erfiðleikastig
+  'negatívar tölur':   { generated: true,  requires: [],                          label: 'Negatívar tölur' },
+  'tugabrot':          { generated: true,  requires: [],                          label: 'Tugabrot' },
+  'röð reikniaðgerða': { generated: true,  requires: [],                          label: 'Röð reikniaðgerða' },
 
   // --- ANNAÐ STIG ---
   'margföldun':        { generated: true,  requires: ['samlagning'],              label: 'Margföldun' },
-  'röð reikniaðgerða': { generated: false, requires: ['margföldun','samlagning'], label: 'Röð reikniaðgerða' },
 
   // --- ÞRIÐJA STIG ---
   'deiling':           { generated: true,  requires: ['margföldun'],              label: 'Deiling' },
-  'negatívar tölur':   { generated: false, requires: ['samlagning','frádráttur'], label: 'Negatívar tölur' },
 
   // --- FJÓRÐA STIG ---
   'brot':              { generated: false, requires: ['margföldun','deiling'],    label: 'Brot' },
@@ -2691,7 +2816,8 @@ function mapTopicToConcept(t) {
   if (tl.indexOf('rúmfræði') !== -1 || tl.indexOf('flatarmál') !== -1 || tl.indexOf('rúmmál') !== -1 || tl.indexOf('horn') !== -1 || tl.indexOf('hringur') !== -1 || tl.indexOf('ummál') !== -1 || tl.indexOf('pýþagóras') !== -1 || tl.indexOf('þríhyrning') !== -1) return 'rúmfræði'
   if (tl.indexOf('frumtöl') !== -1 || tl.indexOf('frumtal') !== -1 || tl.indexOf('þáttun') !== -1 || tl.indexOf('deilar') !== -1) return 'frumtölur'
   if (tl.indexOf('mynstr') !== -1 || tl.indexOf('skapandi') !== -1 || tl.indexOf('fibonacci') !== -1) return 'mynstur'
-  if (tl.indexOf('mæling') !== -1 || tl.indexOf('tugabrot') !== -1 || tl.indexOf('aukabrot') !== -1) return 'mælingar'
+  if (tl.indexOf('tugabrot') !== -1 || tl.indexOf('aukabrot') !== -1) return 'tugabrot'
+  if (tl.indexOf('mæling') !== -1) return 'mælingar'
   if (tl.indexOf('jöfn') !== -1) return 'jöfnur'
   // Allt annað -> áskorun
   return 'áskorun'
@@ -4677,12 +4803,99 @@ function parseNumbers(questionText) {
   // Samlagning: X + Y
   m = plain.match(/(\d+)\s*\+\s*(\d+)/)
   if (m) return { op: '+', a: parseInt(m[1]), b: parseInt(m[2]) }
-  // Frádráttur: X - Y
+  // Frádráttur: X - Y (skilar U+2212 svo það passi við renderGrid)
   m = plain.match(/(\d+)\s*[-−]\s*(\d+)/)
-  if (m) return { op: '-', a: parseInt(m[1]), b: parseInt(m[2]) }
+  if (m) return { op: '−', a: parseInt(m[1]), b: parseInt(m[2]) }
   return null
 }
 
+
+/* ===== TÖLULÍNA fyrir negatívar tölur og tugabrot ===== */
+// Þekkir einfalt "a + b" eða "a − b" (a, b mega vera neikvæð/tugabrot, EINN liður)
+function parseLineExpr(questionText) {
+  let s = questionText.replace(/<[^>]+>/g, ' ').replace('= ?','').replace('=?','').trim()
+  s = s.replace(/,/g, '.')  // íslenskt komma -> punktur
+  // form: [-]num (+|−|-) [-]num   — aðeins tveir liðir, engir svigar/margföldun
+  const m = s.match(/^\s*(-?\d+(?:\.\d+)?)\s*([+\u2212-])\s*(-?\d+(?:\.\d+)?)\s*$/)
+  if (!m) return null
+  const a = parseFloat(m[1])
+  const op = m[2] === '+' ? '+' : '-'
+  const b = parseFloat(m[3])
+  return { a, op, b, result: op === '+' ? a + b : a - b }
+}
+
+function renderNumberLine(expr) {
+  const host = document.getElementById('gridTable')  // endurnýtum reitinn
+  const stepText = document.getElementById('gridStepText')
+  const stepBtn = document.getElementById('gridStepBtn')
+  const { a, op, b, result } = expr
+
+  // Ákveða svið línunnar
+  const vals = [a, result, 0]
+  let lo = Math.floor(Math.min(...vals)) - 1
+  let hi = Math.ceil(Math.max(...vals)) + 1
+  // tryggja lágmarksbreidd
+  if (hi - lo < 6) { hi = lo + 6 }
+  const W = 300, H = 90, pad = 20
+  const span = hi - lo
+  const x = v => pad + (v - lo) / span * (W - 2*pad)
+  const y0 = 50
+
+  let svg = '<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="display:block;font-family:Nunito,sans-serif;">'
+  // ás
+  svg += '<line x1="'+pad+'" y1="'+y0+'" x2="'+(W-pad)+'" y2="'+y0+'" stroke="#94a3b8" stroke-width="2"/>'
+  // heiltölumerki
+  const stepInt = span > 20 ? Math.ceil(span/20) : 1
+  for (let v = Math.ceil(lo); v <= hi; v += stepInt) {
+    const xx = x(v)
+    svg += '<line x1="'+xx+'" y1="'+(y0-4)+'" x2="'+xx+'" y2="'+(y0+4)+'" stroke="#94a3b8" stroke-width="'+(v===0?2.5:1)+'"/>'
+    svg += '<text x="'+xx+'" y="'+(y0+18)+'" text-anchor="middle" font-size="9" fill="'+(v===0?'#22303b':'#8a9aa6')+'">'+v+'</text>'
+  }
+  // upphafspunktur a
+  svg += '<circle cx="'+x(a)+'" cy="'+y0+'" r="5" fill="#2b6a6a"/>'
+  svg += '<text x="'+x(a)+'" y="'+(y0-10)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#2b6a6a">'+fmtNum(a)+'</text>'
+  // bogi frá a til result
+  const x1 = x(a), x2 = x(result)
+  const midX = (x1+x2)/2, arcH = 22
+  const dir = (op === '+' ? b >= 0 : b < 0) ? 1 : -1  // hægri ef bætt við jákvæðu
+  svg += '<path d="M '+x1+' '+y0+' Q '+midX+' '+(y0-arcH)+' '+x2+' '+y0+'" fill="none" stroke="#d98a26" stroke-width="2.5" marker-end="url(#arr)"/>'
+  svg += '<defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d98a26"/></marker></defs>'
+  svg += '<text x="'+midX+'" y="'+(y0-arcH-4)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#d98a26">'+(op==='+'?'+':'−')+fmtNum(Math.abs(b))+'</text>'
+  // niðurstöðupunktur
+  svg += '<circle cx="'+x2+'" cy="'+y0+'" r="5" fill="#2f8f57"/>'
+  svg += '<text x="'+x2+'" y="'+(y0+32)+'" text-anchor="middle" font-size="12" font-weight="900" fill="#2f8f57">'+fmtNum(result)+'</text>'
+  svg += '</svg>'
+
+  host.style.display = 'none'  // fela töfluna
+  let nlHost = document.getElementById('numberLineHost')
+  if (!nlHost) {
+    nlHost = document.createElement('div')
+    nlHost.id = 'numberLineHost'
+    host.parentNode.insertBefore(nlHost, host)
+  }
+  nlHost.style.display = 'block'
+  nlHost.innerHTML = svg
+
+  stepText.innerHTML = 'Byrjaðu á <b>'+fmtNum(a)+'</b> og færðu þig ' + (dir>0?'til hægri':'til vinstri') + ' um <b>'+fmtNum(Math.abs(b))+'</b>. Þú lendir á <b>'+fmtNum(result)+'</b>.'
+  stepBtn.style.display = 'none'
+  const resetBtn = document.querySelector('.grid-reset-btn')
+  if (resetBtn) resetBtn.style.display = 'none'
+}
+
+function fmtNum(n) {
+  return String(Math.round(n*100)/100).replace('.', ',')
+}
+
+function hideNumberLine() {
+  const nl = document.getElementById('numberLineHost')
+  if (nl) nl.style.display = 'none'
+  const tbl = document.getElementById('gridTable')
+  if (tbl) tbl.style.display = ''
+  const stepBtn = document.getElementById('gridStepBtn')
+  if (stepBtn) stepBtn.style.display = ''
+  const resetBtn = document.querySelector('.grid-reset-btn')
+  if (resetBtn) resetBtn.style.display = ''
+}
 
 /* ===== KUBBASVIÐ ===== */
 let kubbaState = null
@@ -4691,19 +4904,34 @@ function updateGridPanel() {
   const panel = document.getElementById('gridPanel')
   const p = engine.getProblem()
   if (!p) { panel.classList.remove('visible'); return }
+
+  const concept = engine.getState().currentConcept
+
+  // 1) TÖLULÍNA fyrir negatívar tölur og tugabrot (einn liður a ± b)
+  if (concept === 'negatívar tölur' || concept === 'tugabrot') {
+    const expr = parseLineExpr(p.question)
+    if (expr) {
+      const t = document.querySelector('.grid-panel-title')
+      if (t) t.textContent = concept === 'tugabrot' ? '🔢 Tölulína — tugabrot' : '🌡️ Tölulína'
+      panel.classList.add('visible')
+      renderNumberLine(expr)
+      return
+    }
+    panel.classList.remove('visible'); return
+  }
+
+  // 2) RÚÐUNET fyrir +, −, × (heiltölur)
+  hideNumberLine()
   const nums = parseNumbers(p.question)
   if (!nums) { panel.classList.remove('visible'); return }
 
-  // Hjálpartólið birtist eftir HUGTAKI/erfiðleika dæmisins, ekki safni:
   if (nums.op === '×') {
-    // Rúðumargföldun aðeins fyrir tveggja stafa margföldun
     if (nums.a < 10 || nums.b < 10 || nums.a > 99 || nums.b > 99) {
       panel.classList.remove('visible'); return
     }
     const t = document.querySelector('.grid-panel-title')
     if (t) t.textContent = '✖️ Rúðumargföldun — fylltu reitina'
   } else if (nums.op === '+' || nums.op === '−') {
-    // Súludæmi fyrir + og − þegar tölur eru nógu stórar til að sýna dálka (>=2 stafir)
     if (nums.a < 10 && nums.b < 10) { panel.classList.remove('visible'); return }
     const t = document.querySelector('.grid-panel-title')
     if (t) t.textContent = '📐 Þú getur líka sett dæmið upp svona'
