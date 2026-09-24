@@ -2719,7 +2719,10 @@ function createConceptEngine(fixedProblems) {
     state.examLog = []
     state.examQueue = []
     const c = CONCEPT_TREE[concept]
-    for (let i = 0; i < M.CONFIG.examSize; i++) {
+    const fixed = fixedProblems[concept] || []
+    let guard = 0
+    while (state.examQueue.length < M.CONFIG.examSize && guard < M.CONFIG.examSize * 5) {
+      guard++
       if (c && c.generated) {
         const g = generate(concept, M.CONFIG.examLevel)
         if (g) state.examQueue.push({
@@ -2727,10 +2730,10 @@ function createConceptEngine(fixedProblems) {
           op: g.op, operands: g.operands, correctNum: g.a,
           topic: { key: concept, msg: c.label }
         })
+      } else if (fixed.length) {
+        state.examQueue.push({ ...fixed[Math.floor(Math.random()*fixed.length)], generated: false })
       } else {
-        // fast dæmi próf — velja handahófs
-        const fixed = fixedProblems[concept] || []
-        if (fixed.length) state.examQueue.push({ ...fixed[Math.floor(Math.random()*fixed.length)], generated: false })
+        break  // ekkert til að spyrja um
       }
     }
     state.current = null
@@ -2754,23 +2757,25 @@ function createConceptEngine(fixedProblems) {
     // --- Í MASTERY-PRÓFI ---
     if (state.inExam) {
       state.examLog.push({
-        studentAnswer: p.generated ? Number(answer.replace(',','.')) : answer,
-        correctAnswer: p.generated ? p.correctNum : p.answer,
+        isCorrect: isCorrect,                                  // notar answersMatch
+        studentAnswer: answer,
+        correctAnswer: Array.isArray(p.answer) ? p.answer[0] : p.answer,
         op: p.op, operands: p.operands
       })
       state.current = null
       if (state.examQueue.length === 0) {
-        // Próf búið
-        const correctCount = state.examLog.filter(e =>
-          String(e.studentAnswer) === String(e.correctAnswer)).length
+        // Próf búið — stigagjöf út frá raunverulegum fjölda spurninga
+        const total = state.examLog.length
+        const correctCount = state.examLog.filter(e => e.isCorrect).length
+        const passed = total > 0 && (correctCount / total) >= 0.8   // 80% óháð fjölda
         const sk = skill(state.examConcept)
-        const passed = M.takeExam(sk, correctCount)
+        sk.examBestScore = Math.max(sk.examBestScore || 0, correctCount)
         const concept = state.examConcept
-        if (passed) state.mastered.add(concept)
+        if (passed) { sk.mastered = true; state.mastered.add(concept) }
         state.inExam = false
         return {
           status: 'examComplete', passed, concept,
-          score: correctCount, total: M.CONFIG.examSize,
+          score: correctCount, total: total,
           examLog: state.examLog.slice()
         }
       }
@@ -3361,6 +3366,8 @@ function show() {
   }
 }
 
+let retryProblem = null  // dæmi sem nemandi má reyna aftur
+
 function submitAnswer(answerFromOption = null) {
   const inp = document.getElementById('answerInput')
   const answer = answerFromOption ?? inp.value
@@ -3368,6 +3375,7 @@ function submitAnswer(answerFromOption = null) {
   const name = null  // saveProgress notar hnattræna auðkennið
   const st = engine.getState()
   const currentConcept = st.inExam ? st.examConcept : st.currentConcept
+  const problemBeingSolved = st.current  // geyma fyrir "reyna aftur"
   const res = engine.submit(answer)
 
   // ---- MASTERY-PRÓF Í GANGI ----
@@ -3435,6 +3443,7 @@ function submitAnswer(answerFromOption = null) {
 
   // ---- RANGT SVAR (engin refsing, engin stjarna dettur) ----
   if (res.status === 'incorrect') {
+    retryProblem = problemBeingSolved  // leyfa að reyna sama dæmi aftur
     saveProgress(name, 'incorrect', res.concept)
     const steps = res.solution && res.solution.length ? res.solution : ['Skoðaðu dæmið aftur — þú getur þetta!']
     const stepsHtml = steps.map(s => '<div class="solution-step">' + s + '</div>').join('')
@@ -3480,6 +3489,18 @@ document.getElementById('answerInput').addEventListener('keydown', e => {
 })
 
 function retry() {
+  // Endurheimta SAMA dæmið sem var rangt svo nemandi svari því aftur
+  if (retryProblem) {
+    engine.getState().current = retryProblem
+    engine.getState().currentConcept = (retryProblem.topic && retryProblem.topic.key) || engine.getState().currentConcept
+  }
+  document.getElementById('feedback').innerHTML = ''
+  document.getElementById('answerInput').value = ''
+  show()
+  return
+}
+
+function retryOLD() {
   document.getElementById('feedback').innerHTML = ''
   document.getElementById('answerInput').value = ''
   const opts = document.getElementById('options')
@@ -3530,6 +3551,7 @@ function retry() {
 }
 
 function skip() {
+  retryProblem = null
   engine.getState().current = null  // henda núverandi dæmi
   document.getElementById('feedback').innerHTML = ''
   show()
