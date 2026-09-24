@@ -300,6 +300,13 @@ body {
         </div>
       </div>
       <div id="freezeStatus" style="font-size:13px;font-weight:700;color:#0e7c66;margin-bottom:14px;min-height:18px;"></div>
+
+      <!-- Kennarastýrð hugtök -->
+      <div style="background:#f6f7f8;border-radius:12px;padding:16px 18px;margin-bottom:20px;">
+        <div style="font-size:14px;font-weight:800;color:var(--slate);margin-bottom:4px;">⚙️ Hugtök sem nemendur fá</div>
+        <div style="font-size:12px;color:var(--slate-light);margin-bottom:12px;">Kveiktu á hugtökum þegar þú hefur farið yfir þau. Grunnhugtök eru alltaf virk.</div>
+        <div id="conceptToggles" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
       <div class="summary-grid" id="summaryGrid"></div>
       <div id="topicArea"></div>
       <div class="section-title">Nemendur</div>
@@ -364,7 +371,42 @@ window.openClass = async function(code, name) {
   document.getElementById('freezeBtn').style.display = active ? 'none' : 'inline-block'
   document.getElementById('unfreezeBtn').style.display = active ? 'inline-block' : 'none'
   document.getElementById('freezeStatus').textContent = active ? '❄️ Skjáir eru frosnir.' : ''
+  await loadConceptToggles(code)
   loadData()
+}
+
+// Kennarastýrð hugtök (verður að passa við nemendasíðuna)
+const TEACHER_CONCEPTS = [
+  { key: 'almenn brot', label: '🍕 Almenn brot' },
+  { key: 'horn',        label: '📐 Horn' },
+  { key: 'flatarmál',   label: '⬛ Flatarmál' },
+  { key: 'hlutfall',    label: '📊 Hlutfall' }
+]
+
+async function loadConceptToggles(code) {
+  const el = document.getElementById('conceptToggles')
+  if (!el) return
+  const snap = await get(ref(db, 'bekkir/' + code + '/enabledConcepts'))
+  const raw = snap.exists() ? snap.val() : []
+  const enabled = new Set(Array.isArray(raw) ? raw : Object.values(raw || {}))
+  el.innerHTML = TEACHER_CONCEPTS.map(c => {
+    const on = enabled.has(c.key)
+    return '<button onclick="toggleConcept(\''+c.key+'\')" data-key="'+c.key+'" '
+      + 'style="border:2px solid '+(on?'#2b6a6a':'#e2e8f0')+';background:'+(on?'#e3efef':'white')+';'
+      + 'color:'+(on?'#2b6a6a':'#8a9aa6')+';border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;'
+      + 'font-family:Nunito,sans-serif;cursor:pointer;">'+(on?'✓ ':'')+c.label+'</button>'
+  }).join('')
+}
+
+window.toggleConcept = async function(key) {
+  if (!selectedClass) return
+  const code = selectedClass.code
+  const snap = await get(ref(db, 'bekkir/' + code + '/enabledConcepts'))
+  const raw = snap.exists() ? snap.val() : []
+  const enabled = new Set(Array.isArray(raw) ? raw : Object.values(raw || {}))
+  if (enabled.has(key)) enabled.delete(key); else enabled.add(key)
+  await set(ref(db, 'bekkir/' + code + '/enabledConcepts'), [...enabled])
+  loadConceptToggles(code)
 }
 window.freezeClass = async function() {
   if (!selectedClass) return
