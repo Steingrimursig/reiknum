@@ -291,7 +291,15 @@ body {
     <!-- Nemendasýn (sýnt þegar bekkur er valinn) -->
     <div id="classDetail" style="display:none;">
       <button onclick="backToClasses()" style="background:none;border:none;color:#2b6a6a;font-size:14px;font-weight:700;font-family:Nunito,sans-serif;cursor:pointer;margin-bottom:16px;padding:0;">← Til baka í bekki</button>
-      <div id="classDetailHeader" style="font-size:20px;font-weight:900;color:var(--slate);margin-bottom:16px;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+        <div id="classDetailHeader" style="font-size:20px;font-weight:900;color:var(--slate);"></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="freezeMessage" placeholder="Horfðu upp á töfluna" style="padding:9px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:13px;font-family:Nunito,sans-serif;font-weight:600;width:200px;">
+          <button id="freezeBtn" onclick="freezeClass()" style="background:#0e7c66;color:white;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;white-space:nowrap;">❄️ Frysta skjái</button>
+          <button id="unfreezeBtn" onclick="unfreezeClass()" style="display:none;background:#c2475a;color:white;border:none;border-radius:10px;padding:10px 18px;font-size:14px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;white-space:nowrap;">▶️ Afrysta</button>
+        </div>
+      </div>
+      <div id="freezeStatus" style="font-size:13px;font-weight:700;color:#0e7c66;margin-bottom:14px;min-height:18px;"></div>
       <div class="summary-grid" id="summaryGrid"></div>
       <div id="topicArea"></div>
       <div class="section-title">Nemendur</div>
@@ -345,13 +353,36 @@ window.showKnTab = function(id, btn) {
 
 // Sýna nemendur eins bekkjar
 let selectedClass = null
-window.openClass = function(code, name) {
+window.openClass = async function(code, name) {
   selectedClass = { code, name }
   document.getElementById('classOverview').style.display = 'none'
   document.getElementById('classDetail').style.display = 'block'
   document.getElementById('classDetailHeader').textContent = '👥 ' + name + '  ·  kóði ' + code
+  // Endurstilla frystitakka eftir núverandi stöðu
+  const fz = await get(ref(db, 'bekkir/' + code + '/freeze'))
+  const active = fz.exists() && fz.val() && fz.val().active
+  document.getElementById('freezeBtn').style.display = active ? 'none' : 'inline-block'
+  document.getElementById('unfreezeBtn').style.display = active ? 'inline-block' : 'none'
+  document.getElementById('freezeStatus').textContent = active ? '❄️ Skjáir eru frosnir.' : ''
   loadData()
 }
+window.freezeClass = async function() {
+  if (!selectedClass) return
+  const msg = (document.getElementById('freezeMessage').value || '').trim() || 'Horfðu upp á töfluna'
+  await set(ref(db, 'bekkir/' + selectedClass.code + '/freeze'), { active: true, message: msg, ts: Date.now() })
+  document.getElementById('freezeBtn').style.display = 'none'
+  document.getElementById('unfreezeBtn').style.display = 'inline-block'
+  document.getElementById('freezeStatus').textContent = '❄️ Skjáir nemenda eru frosnir — þau sjá: "' + msg + '"'
+}
+
+window.unfreezeClass = async function() {
+  if (!selectedClass) return
+  await set(ref(db, 'bekkir/' + selectedClass.code + '/freeze'), { active: false, ts: Date.now() })
+  document.getElementById('freezeBtn').style.display = 'inline-block'
+  document.getElementById('unfreezeBtn').style.display = 'none'
+  document.getElementById('freezeStatus').textContent = '▶️ Skjáir afrystir.'
+}
+
 window.backToClasses = function() {
   selectedClass = null
   const ov = document.getElementById('classOverview')
