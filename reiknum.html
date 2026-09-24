@@ -2383,6 +2383,122 @@ function genOrderOps(level) {
   return { q: q, a: ans, op: 'order', operands: [] }
 }
 
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1}
+function simplify(n,d){const g=gcd(n,d);return [n/g,d/g]}
+function fracStr(n,d){ if(d===1)return String(n); return n+'/'+d }
+// skila mörgum ásættanlegum formum svars fyrir brot
+function fracAnswers(n,d){
+  const [sn,sd]=simplify(n,d)
+  const forms=new Set()
+  forms.add(fracStr(n,d))       // óstytt
+  forms.add(fracStr(sn,sd))     // stytt
+  if(sd===1) forms.add(String(sn))
+  return [...forms]
+}
+
+// ---------- ALMENN BROT (stig stýrir undirfærni) ----------
+// stig 1-3: sami nefnari (+ og −), 4-6: margföldun/deiling, 7-10: samnefnari
+function genFractions(level){
+  if(level<=3){
+    // sami nefnari, + eða −
+    const d=randInt(3, 4+level*2)
+    const plus=Math.random()<0.5
+    if(plus){
+      const a=randInt(1,d-1), b=randInt(1,d-a) // a+b<=d
+      const [n,dd]=[a+b,d]
+      return { q: fracStr(a,d)+' + '+fracStr(b,d), a: fracAnswers(n,dd), op:'frac' }
+    } else {
+      const a=randInt(2,d-1), b=randInt(1,a-0) // a>b (a-b>=0, tryggjum >0)
+      const bb=randInt(1,a-1>=1?a-1:1)
+      const [n,dd]=[a-bb,d]
+      return { q: fracStr(a,d)+' − '+fracStr(bb,d), a: fracAnswers(n,dd), op:'frac' }
+    }
+  } else if(level<=6){
+    // margföldun eða deiling brota
+    const mul=Math.random()<0.5
+    const b=randInt(2,6), d=randInt(2,6)
+    const a=randInt(1,b), c=randInt(1,d)
+    if(mul){
+      return { q: fracStr(a,b)+' × '+fracStr(c,d), a: fracAnswers(a*c, b*d), op:'frac' }
+    } else {
+      // a/b ÷ c/d = a*d / b*c
+      const cc=randInt(1,d)
+      return { q: fracStr(a,b)+' ÷ '+fracStr(cc,d), a: fracAnswers(a*d, b*cc), op:'frac' }
+    }
+  } else {
+    // samnefnari: ólíkir nefnarar, + eða −
+    const denoms=[2,3,4,5,6]
+    let b=denoms[randInt(0,denoms.length-1)], d=denoms[randInt(0,denoms.length-1)]
+    while(d===b) d=denoms[randInt(0,denoms.length-1)]
+    const a=randInt(1,b-1), c=randInt(1,d-1)
+    const plus=Math.random()<0.5
+    const lcm=b*d/gcd(b,d)
+    const na=a*(lcm/b), nc=c*(lcm/d)
+    if(plus){
+      return { q: fracStr(a,b)+' + '+fracStr(c,d), a: fracAnswers(na+nc, lcm), op:'frac' }
+    } else {
+      if(na===nc) return genFractions(level)  // forðast 0
+      if(na>nc) return { q: fracStr(a,b)+' − '+fracStr(c,d), a: fracAnswers(na-nc, lcm), op:'frac' }
+      else return { q: fracStr(c,d)+' − '+fracStr(a,b), a: fracAnswers(nc-na, lcm), op:'frac' }
+    }
+  }
+}
+
+// ---------- HORN (horn, grannhorn, topphorn) ----------
+function genAngles(level){
+  if(level<=3){
+    // þekkja hornagerð
+    const ang = level<=1 ? [30,45,60,90,120,135][randInt(0,5)] : randInt(10,170)
+    let type = ang<90?'hvasst':(ang===90?'rétt':(ang<180?'gleitt':'beint'))
+    return { q:'📐 Horn er '+ang+'°. Hvers konar horn er það? (hvasst / rétt / gleitt)', a:[type], op:'text' }
+  } else if(level<=6){
+    // grannhorn (leggjast í 180)
+    const a=randInt(20,160)
+    return { q:'📐 Grannhorn: eitt horn er '+a+'°. Hvað er hitt hornið? (leggjast í 180°)', a:[String(180-a)+'°',String(180-a)], op:'num' }
+  } else {
+    // topphorn (jöfn) OG hornasumma þríhyrnings
+    if(Math.random()<0.5){
+      const a=randInt(20,160)
+      return { q:'📐 Topphorn: eitt horn er '+a+'°. Hvað er hornið á móti? (topphorn eru jöfn)', a:[String(a)+'°',String(a)], op:'num' }
+    } else {
+      const a=randInt(30,90)
+      const bb=randInt(30, 180-a-30)  // þriðja horn a.m.k. 30°
+      return { q:'📐 Þríhyrningur hefur horn '+a+'° og '+bb+'°. Hvað er þriðja hornið? (summa = 180°)', a:[String(180-a-bb)+'°',String(180-a-bb)], op:'num' }
+    }
+  }
+}
+
+// ---------- FLATARMÁL (ferhyrningur + þríhyrningur) ----------
+function genArea(level){
+  if(level<=5){
+    // ferhyrningur l×b
+    const l=randInt(2, 4+level*2), b=randInt(2, 4+level*2)
+    return { q:'📐 Ferhyrningur er '+l+' × '+b+'. Hvað er flatarmálið?', a:[String(l*b),String(l*b)+' cm²',String(l*b)+'cm²'], op:'num' }
+  } else {
+    // þríhyrningur (g×h)/2 — tryggja heiltölu
+    let g=randInt(2,20), h=randInt(2,20)
+    if((g*h)%2!==0) h+=1
+    return { q:'📐 Þríhyrningur: grunnur '+g+', hæð '+h+'. Flatarmál? ((g×h)÷2)', a:[String(g*h/2),String(g*h/2)+' cm²',String(g*h/2)+'cm²'], op:'num' }
+  }
+}
+
+// ---------- HLUTFALL ----------
+function genRatio(level){
+  // velja tvö ósamþátta gildi (coprime) sem eru ekki eins
+  function coprimePair(){
+    let a,b
+    do { a=randInt(1,6); b=randInt(1,6) } while(a===b || gcd(a,b)!==1)
+    return [a,b]
+  }
+  if(level<=4){
+    const [a,b]=coprimePair(), k=randInt(2,6)
+    return { q:'📊 Einfaldaðu hlutfallið '+(a*k)+':'+(b*k)+' (t.d. 2:3)', a:[a+':'+b], op:'text' }
+  } else {
+    const [r1,r2]=coprimePair(), mult=randInt(2,6)
+    return { q:'📊 Hlutfallið er '+r1+':'+r2+'. Ef fyrri talan er '+(r1*mult)+', hver er seinni talan?', a:[String(r2*mult)], op:'num' }
+  }
+}
+
 const GENERATORS = {
   'samlagning': genAddition,
   'frádráttur': genSubtraction,
@@ -2390,7 +2506,11 @@ const GENERATORS = {
   'deiling': genDivision,
   'negatívar tölur': genNegatives,
   'tugabrot': genDecimals,
-  'röð reikniaðgerða': genOrderOps
+  'röð reikniaðgerða': genOrderOps,
+  'almenn brot': genFractions,
+  'horn': genAngles,
+  'flatarmál': genArea,
+  'hlutfall': genRatio
 }
 
 function generate(topic, level) {
@@ -2612,19 +2732,29 @@ const CONCEPT_TREE = {
   'jöfnur':            { generated: false, requires: ['margföldun','frádráttur'], label: 'Jöfnur' },
 
   // --- ÁSKORUN (opnast síðast) ---
-  'áskorun':           { generated: false, requires: ['brot','prósentur','rúmfræði'], label: 'Áskorun' }
+  'áskorun':           { generated: false, requires: ['brot','prósentur','rúmfræði'], label: 'Áskorun' },
+
+  // --- KENNARASTÝRÐ (slökkt sjálfgefið — kennari kveikir þegar efnið hefur verið kennt) ---
+  'almenn brot':       { generated: true, requires: [], teacherControlled: true, label: 'Almenn brot' },
+  'horn':              { generated: true, requires: [], teacherControlled: true, label: 'Horn' },
+  'flatarmál':         { generated: true, requires: [], teacherControlled: true, label: 'Flatarmál' },
+  'hlutfall':          { generated: true, requires: [], teacherControlled: true, label: 'Hlutfall' }
 }
 
-// Er hugtak opið? (allar forkröfur mastered)
-function isUnlocked(conceptKey, masteredSet) {
+// Listi yfir kennarastýrð hugtök (fyrir kennarasíðu)
+const TEACHER_CONTROLLED = Object.keys(CONCEPT_TREE).filter(k => CONCEPT_TREE[k].teacherControlled)
+
+// Er hugtak opið? (forkröfur mastered OG, ef kennarastýrt, kveikt af kennara)
+function isUnlocked(conceptKey, masteredSet, enabledSet) {
   const c = CONCEPT_TREE[conceptKey]
   if (!c) return false
+  if (c.teacherControlled && !(enabledSet && enabledSet.has(conceptKey))) return false
   return c.requires.every(req => masteredSet.has(req))
 }
 
-// Öll opin hugtök miðað við hvað er mastered
-function unlockedConcepts(masteredSet) {
-  return Object.keys(CONCEPT_TREE).filter(k => isUnlocked(k, masteredSet))
+// Öll opin hugtök miðað við mastered + kveikt
+function unlockedConcepts(masteredSet, enabledSet) {
+  return Object.keys(CONCEPT_TREE).filter(k => isUnlocked(k, masteredSet, enabledSet))
 }
 
 /* --- concept-engine --- */
@@ -2702,7 +2832,8 @@ function createConceptEngine(fixedProblems) {
     examLog: [],          // svör í prófi (fyrir feedback)
     fixedUsed: {},        // conceptKey -> [notuð föst dæmi] (svo ekki endurtaka)
     lastConcept: null,    // til að forðast sömu hugtak margoft í röð
-    totalAnswered: 0
+    totalAnswered: 0,
+    enabledConcepts: new Set()  // kennarastýrð hugtök sem eru kveikt
   }
 
   function skill(concept) {
@@ -2719,7 +2850,7 @@ function createConceptEngine(fixedProblems) {
 
   // Velja hvaða hugtak næsta dæmi kemur úr
   function pickConcept() {
-    const open = unlockedConcepts(state.mastered)
+    const open = unlockedConcepts(state.mastered, state.enabledConcepts)
       .filter(k => k !== 'áskorun' || state.mastered.has('brot'))
       .filter(hasProblems)   // aðeins hugtök með dæmi
     if (open.length === 0) return null
@@ -2896,7 +3027,8 @@ function createConceptEngine(fixedProblems) {
   }
 
   function getState() { return state }
-  return { getProblem, submit, getState, startExam,
+  function setEnabledConcepts(arr) { state.enabledConcepts = new Set(arr || []) }
+  return { getProblem, submit, getState, startExam, setEnabledConcepts,
            _skills: () => state.skills, _mastered: () => state.mastered }
 }
 
@@ -3082,6 +3214,18 @@ function getSaveKey(name, pass) {
 
 
 // ===== PIPARDÆMI HLUSTUN =====
+function startEnabledConceptsListener(bekkur) {
+  function attach() {
+    if (!window.firebaseReady || !window.firebaseDB || !window.firebaseOnValue) { setTimeout(attach, 400); return }
+    const r = window.firebaseRef(window.firebaseDB, 'bekkir/' + bekkur + '/enabledConcepts')
+    window.firebaseOnValue(r, function(snap) {
+      const arr = snap.exists() ? snap.val() : []
+      engine.setEnabledConcepts(Array.isArray(arr) ? arr : Object.values(arr || {}))
+    })
+  }
+  attach()
+}
+
 function startFreezeListener(bekkur) {
   function attach() {
     if (!window.firebaseReady || !window.firebaseDB || !window.firebaseOnValue) {
@@ -3337,6 +3481,7 @@ async function start() {
       initBadges(codename, bekkur)
       startPiparListener(codename, bekkur)
       startFreezeListener(bekkur)
+      startEnabledConceptsListener(bekkur)
       updateConceptProgress()
 
       if (saved && saved.mastered && saved.mastered.length) {
@@ -5125,6 +5270,10 @@ function updateGridPanel() {
   if (!p) { panel.classList.remove('visible'); return }
 
   const concept = engine.getState().currentConcept
+
+  // Hjálpartól aðeins fyrir hrein reiknihugtök — ekki brot/rúmfræði/hlutfall/röð/orðadæmi
+  const HELP_OK = ['samlagning','frádráttur','margföldun','negatívar tölur','tugabrot']
+  if (!HELP_OK.includes(concept) || (p && p.isWord)) { hideNumberLine(); panel.classList.remove('visible'); return }
 
   // 1) TÖLULÍNA fyrir negatívar tölur og tugabrot (einn liður a ± b)
   if (concept === 'negatívar tölur' || concept === 'tugabrot') {
