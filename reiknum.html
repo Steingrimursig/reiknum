@@ -2637,6 +2637,59 @@ function unlockedConcepts(masteredSet) {
 
 // fixedProblems: { conceptKey: [ {question, answer, solution, topic}, ... ] }
 // (byggt úr PROBLEM_SETS þegar tengt við síðuna)
+/* ===== ORÐADÆMA-VÉL — pakkar reiknuðu tölunum í samhengi ===== */
+// operands koma frá generate(); erfiðleiki fylgir stiginu sjálfkrafa.
+const WORD_TEMPLATES = {
+  'samlagning': [
+    (a,b)=>['🍎 '+a+' epli eru í körfu og '+b+' til viðbótar. Hvað eru þau mörg alls?', a+b],
+    (a,b)=>['⚽ Liðið skoraði '+a+' mörk í fyrri hálfleik og '+b+' í þeim seinni. Hvað mörg alls?', a+b],
+    (a,b)=>['📚 '+a+' bækur eru í hillunni og '+b+' á borðinu. Hvað margar samtals?', a+b],
+    (a,b)=>['💰 Þú átt '+a+' kr og færð '+b+' kr í viðbót. Hvað átt þú núna?', a+b],
+    (a,b)=>['🚌 '+a+' farþegar eru í strætó og '+b+' bætast við. Hvað margir núna?', a+b]
+  ],
+  'frádráttur': [
+    (a,b)=>['🍪 '+a+' smákökur eru á diski. Þú borðar '+b+'. Hvað margar eru eftir?', a-b],
+    (a,b)=>['🎈 '+a+' blöðrur eru á veislunni og '+b+' springa. Hvað margar heilar?', a-b],
+    (a,b)=>['💰 Þú átt '+a+' kr og eyðir '+b+' kr. Hvað átt þú eftir?', a-b],
+    (a,b)=>['🐦 '+a+' fuglar sitja á vír og '+b+' fljúga burt. Hvað margir eftir?', a-b],
+    (a,b)=>['📦 '+a+' hlutir voru í kassanum, '+b+' voru teknir. Hvað margir eftir?', a-b]
+  ],
+  'margföldun': [
+    (a,b)=>['📦 '+a+' kassar eru með '+b+' eplum í hverjum. Hvað mörg epli alls?', a*b],
+    (a,b)=>['🎟️ '+a+' miðar kosta '+b+' kr hver. Hvað kostar allt saman?', a*b],
+    (a,b)=>['🌸 '+a+' vasar eru með '+b+' blómum í hverjum. Hvað mörg blóm alls?', a*b],
+    (a,b)=>['💺 '+a+' raðir eru með '+b+' sætum í hverri. Hvað mörg sæti alls?', a*b],
+    (a,b)=>['🍬 '+a+' pokar eru með '+b+' nammum í hverjum. Hvað mörg nammi alls?', a*b]
+  ],
+  'deiling': [
+    (a,b)=>['🍬 '+a+' nammi er deilt jafnt á '+b+' krakka. Hvað fær hver?', a/b],
+    (a,b)=>['📦 '+a+' hlutir eru settir jafnt í '+b+' kassa. Hvað margir í hverjum?', a/b],
+    (a,b)=>['💰 '+a+' kr er skipt jafnt milli '+b+' vina. Hvað fær hver?', a/b],
+    (a,b)=>['🪑 '+a+' nemendur setjast '+b+' við hvert borð. Hvað mörg borð þarf?', a/b],
+    (a,b)=>['🎨 '+a+' litir eru settir jafnt í '+b+' bakka. Hvað margir í hverjum?', a/b]
+  ]
+}
+
+function hasWordTemplate(concept) { return !!WORD_TEMPLATES[concept] }
+
+function makeWordProblem(concept, g) {
+  const tpls = WORD_TEMPLATES[concept]
+  if (!tpls || !g.operands || g.operands.length < 2) return null
+  const [a, b] = g.operands
+  const tpl = tpls[Math.floor(Math.random() * tpls.length)]
+  const [text, ans] = tpl(a, b)
+  return {
+    question: text,
+    answer: String(ans),
+    generated: true,
+    isWord: true,
+    op: g.op,
+    operands: g.operands,
+    correctNum: ans,
+    topic: { key: concept, msg: (CONCEPT_TREE[concept] ? CONCEPT_TREE[concept].label : concept) }
+  }
+}
+
 function createConceptEngine(fixedProblems) {
   const state = {
     skills: {},           // conceptKey -> skill (M.newSkill)
@@ -2692,26 +2745,30 @@ function createConceptEngine(fixedProblems) {
   function makeProblem(concept) {
     const c = CONCEPT_TREE[concept]
     const sk = skill(concept)
-
-    // Sýna orðadæmi (beiting) ef færni komin á veg OG föst dæmi til
     const fixed = fixedProblems[concept] || []
-    const wantsApplication = M.showsApplication(sk) && fixed.length > 0 && Math.random() < 0.35
 
-    if (c && c.generated && !wantsApplication) {
-      // Reiknað dæmi á núverandi æfingastigi
+    if (c && c.generated) {
+      // Reiknað hugtak — blanda orðadæmum inn (~3. hvert) á sama stigi
       const g = generate(concept, sk.level)
-      if (g) return {
-        question: g.q + ' = ?',
-        answer: String(g.a),
-        generated: true,
-        op: g.op,
-        operands: g.operands,
-        correctNum: g.a,
-        topic: { key: concept, msg: c.label }
+      if (g) {
+        // Orðadæmi ef templöt til fyrir hugtakið, annars venjulegt reiknað
+        if (hasWordTemplate(concept) && Math.random() < 0.34) {
+          const wp = makeWordProblem(concept, g)
+          if (wp) return wp
+        }
+        return {
+          question: g.q + ' = ?',
+          answer: String(g.a),
+          generated: true,
+          op: g.op,
+          operands: g.operands,
+          correctNum: g.a,
+          topic: { key: concept, msg: c.label }
+        }
       }
     }
 
-    // Fast dæmi (orðadæmi)
+    // Föst dæmi — fyrir hugtök sem vélin getur ekki reiknað (rúmfræði, tölfræði, mynstur o.fl.)
     if (fixed.length) {
       const used = state.fixedUsed[concept] || []
       const avail = fixed.filter(p => !used.includes(p))
@@ -2719,16 +2776,6 @@ function createConceptEngine(fixedProblems) {
       const p = poolF[Math.floor(Math.random() * poolF.length)]
       state.fixedUsed[concept] = [...(used.length < fixed.length ? used : []), p]
       return { ...p, generated: false, topic: p.topic || { key: concept, msg: (c?c.label:concept) } }
-    }
-
-    // Fallback: ef ekkert fast en generated til
-    if (c && c.generated) {
-      const g = generate(concept, sk.level)
-      if (g) return {
-        question: g.q + ' = ?', answer: String(g.a), generated: true,
-        op: g.op, operands: g.operands, correctNum: g.a,
-        topic: { key: concept, msg: c.label }
-      }
     }
     return null
   }
