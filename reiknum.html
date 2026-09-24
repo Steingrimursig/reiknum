@@ -1153,7 +1153,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
         <span class="btn-label">Aðstoð</span>
       </button>
 
-      <button class="sidebar-btn" onclick="openHexPuzzle()" title="Verklegar þrautir">
+      <button class="sidebar-btn" onclick="openPuzzleMenu()" title="Þrautir">
         <span class="btn-icon">🔢</span>
         <span class="btn-label">Þrautir</span>
       </button>
@@ -1335,6 +1335,50 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 </div>
 
 <!-- ===== ARISTÓTELESDÆMIÐ ===== -->
+<!-- ===== ÞRAUTAVALMYND ===== -->
+<div id="puzzleMenuOverlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.65);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:16px;padding:28px;max-width:520px;width:100%;box-shadow:0 8px 40px rgba(34,48,59,0.18);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:20px;font-weight:900;color:var(--slate);">🧩 Þrautir</div>
+      <button onclick="closePuzzleMenu()" style="background:#f0f2f4;border:none;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;color:var(--slate);">✕</button>
+    </div>
+    <div style="display:grid;gap:12px;">
+      <button onclick="closePuzzleMenu();openBoxPuzzle()" style="text-align:left;background:#eef7f7;border:2px solid #c9e0e0;border-radius:12px;padding:18px 20px;cursor:pointer;font-family:Nunito,sans-serif;">
+        <div style="font-size:16px;font-weight:800;color:#2b6a6a;">🔢 Talnareitir</div>
+        <div style="font-size:13px;color:#5a6b74;margin-top:4px;">Settu tölur 0–9 í reitina svo dæmið standist. Óendanlega margar þrautir!</div>
+      </button>
+      <button onclick="closePuzzleMenu();openHexPuzzle()" style="text-align:left;background:#fef7ec;border:2px solid #e8d3a8;border-radius:12px;padding:18px 20px;cursor:pointer;font-family:Nunito,sans-serif;">
+        <div style="font-size:16px;font-weight:800;color:#8a5a1e;">⬡ Aristótelesþraut</div>
+        <div style="font-size:13px;color:#8a6a3a;margin-top:4px;">Raðaðu tölum 1–19 svo hver lína leggist saman í 38.</div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TALNAREITIR ÞRAUT ===== -->
+<div id="boxPuzzleOverlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.65);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:white;border-radius:16px;max-width:560px;width:100%;box-shadow:0 8px 40px rgba(34,48,59,0.18);overflow:hidden;">
+    <div style="background:linear-gradient(160deg,#2b6a6a,#0e7c66);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:18px;font-weight:900;color:white;">🔢 Talnareitir</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-top:3px;">Settu eina tölu (0–9) í hvern reit. Hver tala aðeins einu sinni.</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button onclick="genBoxPuzzle()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:7px 14px;color:white;font-size:13px;font-weight:700;font-family:Nunito,sans-serif;cursor:pointer;">↻ Ný þraut</button>
+        <button onclick="closeBoxPuzzle()" style="background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;color:white;">✕</button>
+      </div>
+    </div>
+    <div style="padding:32px 28px;">
+      <div id="boxPuzzleExpr" style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;font-size:28px;font-weight:800;color:var(--slate);margin-bottom:24px;"></div>
+      <div id="boxPuzzleFeedback" style="text-align:center;font-size:15px;font-weight:700;min-height:24px;margin-bottom:16px;"></div>
+      <div style="display:flex;justify-content:center;gap:12px;">
+        <button onclick="checkBoxPuzzle()" style="background:#2b6a6a;color:white;border:none;border-radius:12px;padding:12px 28px;font-size:15px;font-weight:800;font-family:Nunito,sans-serif;cursor:pointer;">Athuga ✓</button>
+      </div>
+      <div style="margin-top:20px;padding:12px 16px;background:#f6f7f8;border-radius:10px;font-size:12px;color:#8a9aa6;text-align:center;">💡 Það getur verið fleiri en eitt rétt svar!</div>
+    </div>
+  </div>
+</div>
+
 <div id="hexPuzzleOverlay" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(15,23,42,0.65);align-items:center;justify-content:center;">
   <div style="background:var(--white);width:min(700px,98vw);max-height:95vh;overflow-y:auto;border-radius: 14px;box-shadow:0 8px 40px rgba(34,48,59,0.18);display:flex;flex-direction:column;">
     <div style="background:linear-gradient(160deg,#8a5a1e,#b8791f);padding:20px 28px;display:flex;align-items:center;justify-content:space-between;border-radius: 14px 20px 0 0;flex-shrink:0;">
@@ -4626,6 +4670,82 @@ const HEX_SOLUTION = [3,17,18,19,7,1,11,16,2,5,6,12,8,14,4,13,9,15,10]
 let hexBoard = new Array(19).fill(null)  // cell id → number (1-19)
 let hexSelected = null  // currently selected tile number
 let hexDragNum = null
+
+/* ===== ÞRAUTAVALMYND ===== */
+function openPuzzleMenu() { document.getElementById('puzzleMenuOverlay').style.display = 'flex' }
+function closePuzzleMenu() { document.getElementById('puzzleMenuOverlay').style.display = 'none' }
+
+/* ===== TALNAREITIR ÞRAUT ===== */
+let boxPuzzle = null
+
+function openBoxPuzzle() {
+  document.getElementById('boxPuzzleOverlay').style.display = 'flex'
+  genBoxPuzzle()
+}
+function closeBoxPuzzle() {
+  document.getElementById('boxPuzzleOverlay').style.display = 'none'
+}
+
+function genBoxPuzzle() {
+  const rnd = (lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo
+  // Byggingar: (a op1 b) op2 (c op3 d) = target
+  const innerOps = ['+','−']
+  // Velja 4 ólíkar tölur 0-9
+  let digits
+  let op1, op2, op3, target
+  for (let tries = 0; tries < 200; tries++) {
+    // 4 ólíkar tölur
+    const pool = [0,1,2,3,4,5,6,7,8,9]
+    for (let i = pool.length-1; i>0; i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]] }
+    digits = pool.slice(0,4)
+    op1 = innerOps[rnd(0,1)]
+    op2 = innerOps[rnd(0,1)]
+    op3 = innerOps[rnd(0,1)]
+    const left  = op1==='+' ? digits[0]+digits[1] : digits[0]-digits[1]
+    const right = op3==='+' ? digits[2]+digits[3] : digits[2]-digits[3]
+    target = op2==='+' ? left+right : left-right
+    // Viljum snyrtilegt markmið: 0..24, og ekki of létt (target != augljóst)
+    if (target >= 3 && target <= 24) break
+  }
+  boxPuzzle = { op1, op2, op3, target }
+  renderBoxPuzzle()
+}
+
+function renderBoxPuzzle() {
+  const p = boxPuzzle
+  const box = (i)=>'<input class="bp-box" data-i="'+i+'" inputmode="numeric" maxlength="1" '
+    + 'style="width:44px;height:52px;text-align:center;font-size:26px;font-weight:800;border:2px solid #c9e0e0;border-radius:10px;background:#fbfdf4;font-family:Nunito,sans-serif;outline:none;" '
+    + 'oninput="this.value=this.value.replace(/[^0-9]/g,\'\')">'
+  const el = document.getElementById('boxPuzzleExpr')
+  el.innerHTML = '<span>(</span>'+box(0)+'<span>'+p.op1+'</span>'+box(1)+'<span>)</span>'
+    + '<span style="margin:0 4px;">'+p.op2+'</span>'
+    + '<span>(</span>'+box(2)+'<span>'+p.op3+'</span>'+box(3)+'<span>)</span>'
+    + '<span style="margin-left:8px;">= '+p.target+'</span>'
+  document.getElementById('boxPuzzleFeedback').innerHTML = ''
+}
+
+function checkBoxPuzzle() {
+  const p = boxPuzzle
+  const boxes = [...document.querySelectorAll('#boxPuzzleExpr .bp-box')]
+  const vals = boxes.map(b => b.value.trim())
+  const fb = document.getElementById('boxPuzzleFeedback')
+
+  if (vals.some(v => v === '')) { fb.style.color='#d98a26'; fb.textContent='Fylltu í alla reitina fyrst.'; return }
+  const nums = vals.map(Number)
+  // öll ólík?
+  if (new Set(nums).size !== 4) { fb.style.color='#c2475a'; fb.textContent='Hver tala má aðeins koma einu sinni fyrir.'; return }
+  const left  = p.op1==='+' ? nums[0]+nums[1] : nums[0]-nums[1]
+  const right = p.op3==='+' ? nums[2]+nums[3] : nums[2]-nums[3]
+  const result = p.op2==='+' ? left+right : left-right
+  if (result === p.target) {
+    fb.style.color='#2f8f57'
+    fb.textContent='✅ Rétt! Flott hjá þér.'
+    boxes.forEach(b => { b.style.borderColor='#2f8f57'; b.style.background='#e9f7ee' })
+  } else {
+    fb.style.color='#c2475a'
+    fb.textContent='Útkoman þín er ' + result + ' — á að vera ' + p.target + '. Reyndu aftur!'
+  }
+}
 
 function openHexPuzzle() {
   document.getElementById('hexPuzzleOverlay').style.display = 'flex'
