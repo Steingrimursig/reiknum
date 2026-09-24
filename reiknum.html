@@ -2530,8 +2530,9 @@ function generate(topic, level) {
 
 const CONFIG = {
   windowSize: 20,
-  upStreak: 3,          // 3 rétt í röð → upp um stig
+  upStreak: 2,          // 2 rétt í röð → upp um stig (hraðara klifur)
   downStreak: 2,        // 2 röng í röð → niður
+  hotStreak: 6,         // 6+ rétt í röð → hoppa 2 stig í einu (mæta sterkum nemanda)
   maxLevel: 10,
   minLevel: 1,
   // Mastery-próf
@@ -2548,6 +2549,7 @@ function newSkill() {
     history: [],
     correctStreak: 0,
     wrongStreak: 0,
+    hotStreak: 0,        // samfelldar réttar (núllast ekki við stighækkun)
     totalAttempts: 0,
     totalCorrect: 0,
     mastered: false,
@@ -2563,12 +2565,16 @@ function recordAnswer(skill, isCorrect) {
   skill.history.push(isCorrect)
   if (skill.history.length > CONFIG.windowSize) skill.history.shift()
 
-  if (isCorrect) { skill.correctStreak++; skill.wrongStreak = 0 }
-  else { skill.wrongStreak++; skill.correctStreak = 0 }
+  if (isCorrect) { skill.correctStreak++; skill.wrongStreak = 0; skill.hotStreak = (skill.hotStreak||0) + 1 }
+  else { skill.wrongStreak++; skill.correctStreak = 0; skill.hotStreak = 0 }  // villa núllar hröðun
 
   let levelChanged = null
   if (skill.correctStreak >= CONFIG.upStreak && skill.level < CONFIG.maxLevel) {
-    skill.level++; skill.correctStreak = 0; levelChanged = 'up'
+    // Hröðun: á heitri rispu (6+ rétt í röð) hoppa 2 stig, annars 1
+    const jump = (skill.hotStreak >= CONFIG.hotStreak) ? 2 : 1
+    skill.level = Math.min(CONFIG.maxLevel, skill.level + jump)
+    skill.correctStreak = 0
+    levelChanged = 'up'
   } else if (skill.wrongStreak >= CONFIG.downStreak && skill.level > CONFIG.minLevel) {
     skill.level--; skill.wrongStreak = 0; levelChanged = 'down'
   }
