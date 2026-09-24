@@ -1131,6 +1131,7 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
       onkeydown="if(event.key==='Enter')start()">
     <div id="loginMsg" style="font-size:13px;color:#e11d48;margin-top:8px;min-height:18px;"></div>
     <button class="btn-primary" onclick="start()">Byrja →</button>
+    <div style="font-size:10px;color:#c9c9c9;margin-top:14px;">útgáfa 2.1 · tugabrot + negatívar + röð</div>
   </div>
 </div>
 
@@ -1365,6 +1366,13 @@ img { max-width: 100%; border-radius: 12px; margin: 12px 0; }
 </div>
 
 <!-- ===== PIPARDÆMI (frystir skjá) ===== -->
+<!-- ===== FRYSTING (horfðu á töfluna) ===== -->
+<div id="freezeOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#0e7c66,#2b6a6a);align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;">
+  <div style="font-size:72px;margin-bottom:20px;">👀</div>
+  <div style="font-size:32px;font-weight:900;color:white;margin-bottom:12px;" id="freezeMsg">Horfðu upp á töfluna</div>
+  <div style="font-size:16px;color:rgba(255,255,255,0.7);">Skjárinn þinn er frosinn í smá stund</div>
+</div>
+
 <div id="piparFreezeOverlay" style="display:none;position:fixed;inset:0;z-index:99999;background:linear-gradient(160deg,#22303b,#2b4a4a);align-items:center;justify-content:center;flex-direction:column;padding:24px;">
   <div style="text-align:center;margin-bottom:28px;">
     <div style="font-size:48px;margin-bottom:8px;">🌶️</div>
@@ -2978,6 +2986,27 @@ function getSaveKey(name, pass) {
 
 
 // ===== PIPARDÆMI HLUSTUN =====
+function startFreezeListener(bekkur) {
+  function attach() {
+    if (!window.firebaseReady || !window.firebaseDB || !window.firebaseOnValue) {
+      setTimeout(attach, 400); return
+    }
+    const r = window.firebaseRef(window.firebaseDB, 'bekkir/' + bekkur + '/freeze')
+    window.firebaseOnValue(r, function(snap) {
+      const ov = document.getElementById('freezeOverlay')
+      if (!ov) return
+      if (snap.exists() && snap.val() && snap.val().active) {
+        const msg = snap.val().message || 'Horfðu upp á töfluna'
+        document.getElementById('freezeMsg').textContent = msg
+        ov.style.display = 'flex'
+      } else {
+        ov.style.display = 'none'
+      }
+    })
+  }
+  attach()
+}
+
 function startPiparListener(codename, bekkur) {
   // bekkur kemur þegar normaliseraður (hástafir) frá start()
   function attach() {
@@ -3211,6 +3240,7 @@ async function start() {
       document.getElementById('riddleHint').textContent = '💡 Vísbending: ' + RIDDLES[0].hint
       initBadges(codename, bekkur)
       startPiparListener(codename, bekkur)
+      startFreezeListener(bekkur)
       updateConceptProgress()
 
       if (saved && saved.mastered && saved.mastered.length) {
