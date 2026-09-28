@@ -4891,7 +4891,7 @@ function genBoxPuzzle() {
   // Velja 4 ólíkar tölur 0-9
   let digits
   let op1, op2, op3, target
-  for (let tries = 0; tries < 200; tries++) {
+  for (let tries = 0; tries < 400; tries++) {
     // 4 ólíkar tölur
     const pool = [0,1,2,3,4,5,6,7,8,9]
     for (let i = pool.length-1; i>0; i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]] }
@@ -4899,10 +4899,14 @@ function genBoxPuzzle() {
     op1 = innerOps[rnd(0,1)]
     op2 = innerOps[rnd(0,1)]
     op3 = innerOps[rnd(0,1)]
+    // Raða innan sviga svo frádráttur verði ALDREI negatívur —
+    // tryggir að náttúruleg lausn (jákvæðir svigar) sé til, engir tveggja stafa "brellur".
+    if (op1==='−' && digits[0] < digits[1]) { const t=digits[0]; digits[0]=digits[1]; digits[1]=t }
+    if (op3==='−' && digits[2] < digits[3]) { const t=digits[2]; digits[2]=digits[3]; digits[3]=t }
     const left  = op1==='+' ? digits[0]+digits[1] : digits[0]-digits[1]
     const right = op3==='+' ? digits[2]+digits[3] : digits[2]-digits[3]
     target = op2==='+' ? left+right : left-right
-    // Viljum snyrtilegt markmið: 0..24, og ekki of létt (target != augljóst)
+    // Snyrtilegt markmið og ekki of létt. Svigar eru nú báðir jákvæðir → alltaf leysanlegt eðlilega.
     if (target >= 3 && target <= 24) break
   }
   boxPuzzle = { op1, op2, op3, target }
