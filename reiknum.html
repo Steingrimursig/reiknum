@@ -5200,26 +5200,39 @@ function renderNumberLine(expr) {
   const stepBtn = document.getElementById('gridStepBtn')
   const { a, op, b, result } = expr
 
-  // Ákveða svið línunnar
-  const vals = [a, result, 0]
-  let lo = Math.floor(Math.min(...vals)) - 1
-  let hi = Math.ceil(Math.max(...vals)) + 1
-  // tryggja lágmarksbreidd
-  if (hi - lo < 6) { hi = lo + 6 }
-  const W = 300, H = 90, pad = 20
-  const span = hi - lo
+  // Er dæmið með tugabrot? (einhver gildanna ekki heiltala)
+  const isDecimal = [a, b, result].some(v => Math.abs(v - Math.round(v)) > 1e-9)
+
+  // Velja strikabil (step) sem gefur ~6-12 strik og passar við gildin
+  const rawMin = Math.min(a, result, 0)
+  const rawMax = Math.max(a, result, 0)
+  const rawSpan = Math.max(rawMax - rawMin, isDecimal ? 0.1 : 1)
+  const niceSteps = isDecimal ? [0.1, 0.2, 0.25, 0.5, 1] : [1, 2, 5, 10, 20, 50, 100]
+  let step = niceSteps[niceSteps.length - 1]
+  for (const s of niceSteps) { if (rawSpan / s <= 10) { step = s; break } }
+
+  // Svið: rúnna út í næsta strik, með einu striki til vaðrar
+  const round = 1e9
+  let lo = Math.floor((rawMin - step) / step + 1e-9) * step
+  let hi = Math.ceil((rawMax + step) / step - 1e-9) * step
+  lo = Math.round(lo * round) / round
+  hi = Math.round(hi * round) / round
+
+  const W = 300, H = 90, pad = 24
+  const span = (hi - lo) || step
   const x = v => pad + (v - lo) / span * (W - 2*pad)
   const y0 = 50
 
   let svg = '<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="display:block;font-family:Nunito,sans-serif;">'
-  // ás
   svg += '<line x1="'+pad+'" y1="'+y0+'" x2="'+(W-pad)+'" y2="'+y0+'" stroke="#94a3b8" stroke-width="2"/>'
-  // heiltölumerki
-  const stepInt = span > 20 ? Math.ceil(span/20) : 1
-  for (let v = Math.ceil(lo); v <= hi; v += stepInt) {
+  // strik með völdu bili
+  const nTicks = Math.round((hi - lo) / step)
+  for (let i = 0; i <= nTicks; i++) {
+    const v = Math.round((lo + i*step) * round) / round
     const xx = x(v)
-    svg += '<line x1="'+xx+'" y1="'+(y0-4)+'" x2="'+xx+'" y2="'+(y0+4)+'" stroke="#94a3b8" stroke-width="'+(v===0?2.5:1)+'"/>'
-    svg += '<text x="'+xx+'" y="'+(y0+18)+'" text-anchor="middle" font-size="9" fill="'+(v===0?'#22303b':'#8a9aa6')+'">'+v+'</text>'
+    const isZero = Math.abs(v) < 1e-9
+    svg += '<line x1="'+xx+'" y1="'+(y0-4)+'" x2="'+xx+'" y2="'+(y0+4)+'" stroke="#94a3b8" stroke-width="'+(isZero?2.5:1)+'"/>'
+    svg += '<text x="'+xx+'" y="'+(y0+18)+'" text-anchor="middle" font-size="8.5" fill="'+(isZero?'#22303b':'#8a9aa6')+'">'+fmtNum(v)+'</text>'
   }
   // upphafspunktur a
   svg += '<circle cx="'+x(a)+'" cy="'+y0+'" r="5" fill="#2b6a6a"/>'
